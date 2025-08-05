@@ -6,80 +6,16 @@ import { Button } from '@/components/ui/button'
 import { Car, Phone, MapPin, Calendar, Zap, Fuel, Gauge, Star, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-
-interface CarData {
-  id: string
-  brand: string
-  model: string
-  year: number
-  mileage: number
-  fuel: string
-  power: number
-  price: number
-  type: 'new' | 'used' | 'delivery'
-  description: string
-  imageUrl?: string
-  featured: boolean
-  source?: 'manual' | 'otomoto'
-}
+import { getCarById, type CarData } from '@/lib/car-data'
 
 export default function CarDetailsPage() {
   const params = useParams()
   const [car, setCar] = useState<CarData | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Mock car data - in a real app, this would come from an API
-  const mockCars: CarData[] = [
-    {
-      id: '1',
-      brand: 'Volkswagen',
-      model: 'T-Roc',
-      year: 2024,
-      mileage: 10,
-      fuel: 'Hybryda',
-      power: 150,
-      price: 129900,
-      type: 'new',
-      description: 'Nowy Volkswagen T-Roc w doskonałym stanie. Samochód wyposażony w najnowsze technologie bezpieczeństwa i komfortu. Idealny do jazdy miejskiej i dalekich podróży.',
-      imageUrl: '/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp',
-      featured: true,
-      source: 'manual'
-    },
-    {
-      id: '2',
-      brand: 'Volkswagen',
-      model: 'Passat',
-      year: 2024,
-      mileage: 5,
-      fuel: 'Diesel',
-      power: 150,
-      price: 189900,
-      type: 'new',
-      description: 'Elegancki Volkswagen Passat - flagowy sedan marki. Luksusowe wnętrze, zaawansowane systemy bezpieczeństwa i doskonałe osiągi.',
-      imageUrl: '/images/Passat_SE.webp',
-      featured: true,
-      source: 'manual'
-    },
-    {
-      id: '3',
-      brand: 'Volkswagen',
-      model: 'Tiguan',
-      year: 2023,
-      mileage: 45000,
-      fuel: 'Benzyna',
-      power: 184,
-      price: 89900,
-      type: 'used',
-      description: 'Używany Volkswagen Tiguan w świetnym stanie. Samochód z pełną historią serwisową, idealny dla rodzin.',
-      imageUrl: '/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp',
-      featured: true,
-      source: 'manual'
-    }
-  ]
-
   useEffect(() => {
     const carId = params.id as string
-    const foundCar = mockCars.find(c => c.id === carId)
+    const foundCar = getCarById(carId)
     setCar(foundCar || null)
     setLoading(false)
   }, [params.id])

@@ -2,57 +2,11 @@ import { Button } from '@/components/ui/button'
 import { Car, Wrench, Phone, MapPin, Clock, Users, Shield, Star, ArrowRight, CheckCircle, Award, Zap, Search, Filter, Calendar, CreditCard, Truck, Car as CarIcon, ChevronRight, Play } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-
-// Unified car data - this would come from an API in a real app
-const featuredCars = [
-  {
-    id: '1',
-    brand: 'Volkswagen',
-    model: 'T-Roc',
-    year: 2024,
-    mileage: 10,
-    fuel: 'Hybryda',
-    power: 150,
-    price: 129900,
-    type: 'new' as const,
-    description: 'Nowy Volkswagen T-Roc w doskonałym stanie',
-    imageUrl: '/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp',
-    featured: true,
-    source: 'manual' as const
-  },
-  {
-    id: '2',
-    brand: 'Volkswagen',
-    model: 'Passat',
-    year: 2024,
-    mileage: 5,
-    fuel: 'Diesel',
-    power: 150,
-    price: 189900,
-    type: 'new' as const,
-    description: 'Elegancki Volkswagen Passat',
-    imageUrl: '/images/Passat_SE.webp',
-    featured: true,
-    source: 'manual' as const
-  },
-  {
-    id: '3',
-    brand: 'Volkswagen',
-    model: 'Tiguan',
-    year: 2023,
-    mileage: 45000,
-    fuel: 'Benzyna',
-    power: 184,
-    price: 89900,
-    type: 'used' as const,
-    description: 'Używany Volkswagen Tiguan w świetnym stanie',
-    imageUrl: '/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp',
-    featured: true,
-    source: 'manual' as const
-  }
-]
+import { getFeaturedCars } from '@/lib/car-data'
 
 export default function HomePage() {
+  const featuredCars = getFeaturedCars()
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header - Volkswagen Style */}
