@@ -1,13 +1,13 @@
 import { Button } from '@/components/ui/button'
-import { Car, Wrench, Phone, MapPin, Clock, Users, Shield, Star, ArrowRight, CheckCircle, Award, Zap } from 'lucide-react'
+import { Car, Wrench, Phone, MapPin, Clock, Users, Shield, Star, ArrowRight, CheckCircle, Award, Zap, Search, Filter, Calendar, CreditCard, Truck, Car as CarIcon } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-md shadow-lg border-b sticky top-0 z-50">
+      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center">
@@ -38,21 +38,18 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        {/* Background with gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-blue-700/90 z-10"></div>
+      {/* Hero Section with Car Showcase */}
+      <section className="relative bg-gradient-to-r from-gray-900 via-blue-900 to-gray-900 text-white overflow-hidden">
         <div className="absolute inset-0 bg-[url('/images/hero/dealership-bg.jpg')] bg-cover bg-center opacity-20"></div>
-        
-        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
                 <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm">
                   <Award className="h-4 w-4" />
                   <span>Autoryzowany salon Volkswagen</span>
                 </div>
-                <h1 className="text-5xl md:text-6xl font-bold text-white leading-tight">
+                <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight">
                   Volkswagen Wątarski
                   <span className="block text-blue-200">Włocławek</span>
                 </h1>
@@ -77,7 +74,7 @@ export default function HomePage() {
               </div>
 
               {/* Trust indicators */}
-              <div className="flex items-center space-x-6 pt-8">
+              <div className="flex flex-wrap items-center gap-6 pt-8">
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="h-5 w-5 text-green-400" />
                   <span className="text-white text-sm">30+ lat doświadczenia</span>
@@ -112,14 +109,14 @@ export default function HomePage() {
                   </div>
                   <div className="text-center group">
                     <div className="bg-white/20 rounded-2xl w-20 h-20 flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-all transform group-hover:scale-110">
-                      <Wrench className="h-10 w-10 text-white" />
+                      <Truck className="h-10 w-10 text-white" />
                     </div>
                     <h3 className="font-semibold mb-2 text-white">Samochody dostawcze</h3>
                     <p className="text-sm text-blue-100">Dla firm</p>
                   </div>
                   <div className="text-center group">
                     <div className="bg-white/20 rounded-2xl w-20 h-20 flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-all transform group-hover:scale-110">
-                      <Zap className="h-10 w-10 text-white" />
+                      <CreditCard className="h-10 w-10 text-white" />
                     </div>
                     <h3 className="font-semibold mb-2 text-white">Finansowanie</h3>
                     <p className="text-sm text-blue-100">Dogodne warunki</p>
@@ -127,6 +124,192 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Search Section */}
+      <section className="py-12 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Wyszukaj samochód</h2>
+            <div className="grid md:grid-cols-4 gap-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Marka, model..."
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option>Wszystkie typy</option>
+                <option>Nowe samochody</option>
+                <option>Używane samochody</option>
+                <option>Samochody dostawcze</option>
+              </select>
+              <select className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option>Wszystkie ceny</option>
+                <option>Do 50 000 PLN</option>
+                <option>50 000 - 100 000 PLN</option>
+                <option>100 000 - 200 000 PLN</option>
+                <option>Powyżej 200 000 PLN</option>
+              </select>
+              <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                <Search className="h-5 w-5 mr-2" />
+                Szukaj
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Cars Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Polecane samochody</h2>
+            <p className="text-lg text-gray-600">Sprawdź nasze najnowsze oferty</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Car Card 1 */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+              <div className="h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                <CarIcon className="h-24 w-24 text-blue-600" />
+              </div>
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900">Volkswagen Golf</h3>
+                    <p className="text-gray-600">2024 • 10 km • Hybryda • 150 KM</p>
+                  </div>
+                  <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full">Nowy</span>
+                </div>
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-2xl font-bold text-gray-900">129 900 zł</span>
+                  <span className="text-sm text-gray-500">1 299 zł/mies.</span>
+                </div>
+                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  Zobacz szczegóły
+                </Button>
+              </div>
+            </div>
+
+            {/* Car Card 2 */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+              <div className="h-48 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                <Truck className="h-24 w-24 text-green-600" />
+              </div>
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900">Volkswagen Transporter</h3>
+                    <p className="text-gray-600">2024 • 5 km • Diesel • 150 KM</p>
+                  </div>
+                  <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded-full">Dostawczy</span>
+                </div>
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-2xl font-bold text-gray-900">189 900 zł</span>
+                  <span className="text-sm text-gray-500">1 899 zł/mies.</span>
+                </div>
+                <Button className="w-full bg-green-600 hover:bg-green-700">
+                  Zobacz szczegóły
+                </Button>
+              </div>
+            </div>
+
+            {/* Car Card 3 */}
+            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+              <div className="h-48 bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center">
+                <CarIcon className="h-24 w-24 text-orange-600" />
+              </div>
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900">Volkswagen Passat</h3>
+                    <p className="text-gray-600">2023 • 45 000 km • Diesel • 150 KM</p>
+                  </div>
+                  <span className="bg-purple-100 text-purple-800 text-xs font-semibold px-2 py-1 rounded-full">Używany</span>
+                </div>
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-2xl font-bold text-gray-900">89 900 zł</span>
+                  <span className="text-sm text-gray-500">899 zł/mies.</span>
+                </div>
+                <Button className="w-full bg-orange-600 hover:bg-orange-700">
+                  Zobacz szczegóły
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-8">
+            <Link href="/inventory">
+              <Button size="lg" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white">
+                Zobacz wszystkie samochody
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Nasze usługi</h2>
+            <p className="text-lg text-gray-600">Kompleksowa obsługa motoryzacyjna w jednym miejscu</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <Link href="/inventory" className="group">
+              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 cursor-pointer border border-gray-100">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <Car className="h-10 w-10 text-white" />
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-4 text-center">Samochody osobowe</h3>
+                <p className="text-gray-600 text-center mb-6">Nowe i używane samochody Volkswagen i Skoda z pełną gwarancją</p>
+                <div className="text-center">
+                  <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg group-hover:shadow-xl">
+                    Przeglądaj ofertę
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/inventory" className="group">
+              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 cursor-pointer border border-gray-100">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <Truck className="h-10 w-10 text-white" />
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-4 text-center">Samochody dostawcze</h3>
+                <p className="text-gray-600 text-center mb-6">Transporter i inne modele dostawcze dla Twojej firmy</p>
+                <div className="text-center">
+                  <Button className="bg-green-600 hover:bg-green-700 shadow-lg group-hover:shadow-xl">
+                    Zobacz dostawcze
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/service" className="group">
+              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 cursor-pointer border border-gray-100">
+                <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <Wrench className="h-10 w-10 text-white" />
+                </div>
+                <h3 className="text-2xl font-semibold text-gray-900 mb-4 text-center">Autoryzowany serwis</h3>
+                <p className="text-gray-600 text-center mb-6">Profesjonalny serwis z gwarancją marki Volkswagen</p>
+                <div className="text-center">
+                  <Button className="bg-orange-600 hover:bg-orange-700 shadow-lg group-hover:shadow-xl">
+                    Umów serwis
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -172,68 +355,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Services Section */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Nasze usługi</h2>
-            <p className="text-xl text-gray-600">Kompleksowa obsługa motoryzacyjna w jednym miejscu</p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <Link href="/inventory" className="group">
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 cursor-pointer border border-gray-100">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                  <Car className="h-10 w-10 text-white" />
-                </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-4 text-center">Samochody osobowe</h3>
-                <p className="text-gray-600 text-center mb-6">Nowe i używane samochody Volkswagen i Skoda z pełną gwarancją</p>
-                <div className="text-center">
-                  <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg group-hover:shadow-xl">
-                    Przeglądaj ofertę
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </Link>
-
-            <Link href="/inventory" className="group">
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 cursor-pointer border border-gray-100">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                  <Shield className="h-10 w-10 text-white" />
-                </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-4 text-center">Samochody dostawcze</h3>
-                <p className="text-gray-600 text-center mb-6">Transporter i inne modele dostawcze dla Twojej firmy</p>
-                <div className="text-center">
-                  <Button className="bg-green-600 hover:bg-green-700 shadow-lg group-hover:shadow-xl">
-                    Zobacz dostawcze
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </Link>
-
-            <Link href="/service" className="group">
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 cursor-pointer border border-gray-100">
-                <div className="w-20 h-20 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
-                  <Wrench className="h-10 w-10 text-white" />
-                </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-4 text-center">Autoryzowany serwis</h3>
-                <p className="text-gray-600 text-center mb-6">Profesjonalny serwis z gwarancją marki Volkswagen</p>
-                <div className="text-center">
-                  <Button className="bg-orange-600 hover:bg-orange-700 shadow-lg group-hover:shadow-xl">
-                    Umów serwis
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* Contact Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Skontaktuj się z nami</h2>
@@ -241,7 +364,7 @@ export default function HomePage() {
           </div>
           
           <div className="grid md:grid-cols-2 gap-12">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 shadow-lg">
+            <div className="bg-white rounded-2xl p-8 shadow-lg">
               <h3 className="text-2xl font-semibold text-gray-900 mb-6">Dane kontaktowe</h3>
               <div className="space-y-6">
                 <div className="flex items-center space-x-4">
@@ -274,18 +397,18 @@ export default function HomePage() {
               </div>
             </div>
             
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-8 shadow-lg">
+            <div className="bg-white rounded-2xl p-8 shadow-lg">
               <h3 className="text-2xl font-semibold text-gray-900 mb-6">Godziny otwarcia</h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center p-4 bg-white rounded-xl">
+                <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
                   <span className="font-medium">Poniedziałek - Piątek</span>
                   <span className="text-blue-600 font-semibold">08:00 - 17:00</span>
                 </div>
-                <div className="flex justify-between items-center p-4 bg-white rounded-xl">
+                <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
                   <span className="font-medium">Sobota</span>
                   <span className="text-green-600 font-semibold">09:00 - 14:00</span>
                 </div>
-                <div className="flex justify-between items-center p-4 bg-white rounded-xl">
+                <div className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
                   <span className="font-medium">Niedziela</span>
                   <span className="text-red-600 font-semibold">Nieczynne</span>
                 </div>
