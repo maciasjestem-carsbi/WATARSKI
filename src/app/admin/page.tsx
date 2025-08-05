@@ -450,6 +450,9 @@ export default function AdminPage() {
                     Polecany
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nr
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Źródło
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -506,6 +509,15 @@ export default function AdminPage() {
                       >
                         <Star className="h-4 w-4" />
                       </Button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {car.featured && car.featuredOrder ? (
+                        <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-600 text-white text-xs font-bold rounded-full">
+                          {car.featuredOrder}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400 text-xs">-</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 py-1 text-xs font-semibold rounded-full ${

@@ -150,7 +150,7 @@ class SupabaseCarDatabase {
         .from('cars')
         .select('*')
         .eq('featured', true)
-        .order('created_at', { ascending: false })
+        .order('featured_order', { ascending: true })
 
       if (error) {
         console.error('Error fetching featured cars:', error)
@@ -170,6 +170,7 @@ class SupabaseCarDatabase {
         description: row.description,
         imageUrl: row.image_url,
         featured: row.featured,
+        featuredOrder: row.featured_order,
         source: row.source as 'manual' | 'otomoto',
         createdAt: new Date(row.created_at),
         updatedAt: new Date(row.updated_at)
@@ -331,71 +332,128 @@ class SupabaseCarDatabase {
 
       const newFeatured = !car.featured
 
-      // Update featured status
-      const { data, error } = await supabase
-        .from('cars')
-        .update({ 
-          featured: newFeatured,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', id)
-        .select()
-        .single()
-
-      if (error || !data) {
-        return null
-      }
-
-      // If setting as featured and we have more than 3 featured cars,
-      // remove featured status from the oldest non-featured car
       if (newFeatured) {
+        // Check how many featured cars we have
         const { data: featuredCars } = await supabase
           .from('cars')
           .select('id')
           .eq('featured', true)
 
-        if (featuredCars && featuredCars.length > 3) {
-          // Get the oldest non-featured car
-          const { data: oldestNonFeatured } = await supabase
-            .from('cars')
-            .select('id')
-            .eq('featured', false)
-            .order('created_at', { ascending: true })
-            .limit(1)
-            .single()
-
-          if (oldestNonFeatured) {
-            await supabase
-              .from('cars')
-              .update({ 
-                featured: false,
-                updated_at: new Date().toISOString()
-              })
-              .eq('id', oldestNonFeatured.id)
-          }
+        if (featuredCars && featuredCars.length >= 3) {
+          // Cannot add more featured cars
+          return null
         }
-      }
 
-      return {
-        id: data.id,
-        brand: data.brand,
-        model: data.model,
-        year: data.year,
-        mileage: data.mileage,
-        fuel: data.fuel,
-        power: data.power,
-        price: data.price,
-        type: data.type as 'new' | 'used' | 'delivery',
-        description: data.description,
-        imageUrl: data.image_url,
-        featured: data.featured,
-        source: data.source as 'manual' | 'otomoto',
-        createdAt: new Date(data.created_at),
-        updatedAt: new Date(data.updated_at)
+        // Get the next available order number
+        const { data: maxOrder } = await supabase
+          .from('cars')
+          .select('featured_order')
+          .eq('featured', true)
+          .not('featured_order', 'is', null)
+          .order('featured_order', { ascending: false })
+          .limit(1)
+          .single()
+
+        const nextOrder = (maxOrder?.featured_order || 0) + 1
+
+        // Update featured status with order
+        const { data, error } = await supabase
+          .from('cars')
+          .update({ 
+            featured: newFeatured,
+            featured_order: nextOrder,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', id)
+          .select()
+          .single()
+
+        if (error || !data) {
+          return null
+        }
+
+        return {
+          id: data.id,
+          brand: data.brand,
+          model: data.model,
+          year: data.year,
+          mileage: data.mileage,
+          fuel: data.fuel,
+          power: data.power,
+          price: data.price,
+          type: data.type as 'new' | 'used' | 'delivery',
+          description: data.description,
+          imageUrl: data.image_url,
+          featured: data.featured,
+          featuredOrder: data.featured_order,
+          source: data.source as 'manual' | 'otomoto',
+          createdAt: new Date(data.created_at),
+          updatedAt: new Date(data.updated_at)
+        }
+      } else {
+        // Remove featured status
+        const { data, error } = await supabase
+          .from('cars')
+          .update({ 
+            featured: newFeatured,
+            featured_order: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', id)
+          .select()
+          .single()
+
+        if (error || !data) {
+          return null
+        }
+
+        // Reorder remaining featured cars
+        await this.reorderFeaturedCars()
+
+        return {
+          id: data.id,
+          brand: data.brand,
+          model: data.model,
+          year: data.year,
+          mileage: data.mileage,
+          fuel: data.fuel,
+          power: data.power,
+          price: data.price,
+          type: data.type as 'new' | 'used' | 'delivery',
+          description: data.description,
+          imageUrl: data.image_url,
+          featured: data.featured,
+          featuredOrder: data.featured_order,
+          source: data.source as 'manual' | 'otomoto',
+          createdAt: new Date(data.created_at),
+          updatedAt: new Date(data.updated_at)
+        }
       }
     } catch (error) {
       console.error('Error toggling featured status:', error)
       return null
+    }
+  }
+
+  // Reorder featured cars after removing one
+  private async reorderFeaturedCars() {
+    try {
+      const { data: featuredCars } = await supabase
+        .from('cars')
+        .select('id')
+        .eq('featured', true)
+        .order('featured_order', { ascending: true })
+
+      if (featuredCars) {
+        for (let i = 0; i < featuredCars.length; i++) {
+          await supabase
+            .from('cars')
+            .update({ featured_order: i + 1 })
+            .eq('id', featuredCars[i].id)
+        }
+      }
+    } catch (error) {
+      console.error('Error reordering featured cars:', error)
     }
   }
 }

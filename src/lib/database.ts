@@ -14,6 +14,7 @@ export interface CarData {
   description: string
   imageUrl?: string
   featured: boolean
+  featuredOrder?: number
   source?: 'manual' | 'otomoto'
   createdAt: Date
   updatedAt: Date
