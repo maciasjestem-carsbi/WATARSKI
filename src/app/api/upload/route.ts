@@ -33,21 +33,7 @@ export async function POST(request: NextRequest) {
     const extension = file.name.split('.').pop()
     const filename = `car-${timestamp}.${extension}`
 
-    // Check if Vercel Blob is configured
-    const blobStoreToken = process.env.WATARSKI_READ_WRITE_TOKEN
-    
-    if (!blobStoreToken) {
-      // Fallback to placeholder image if Vercel Blob is not configured
-      console.log('Vercel Blob not configured, using placeholder image')
-      return NextResponse.json({
-        url: '/api/placeholder/400/300',
-        filename,
-        size: file.size,
-        message: 'Vercel Blob not configured - using placeholder image'
-      })
-    }
-
-    // Try to use Vercel Blob if configured
+    // Use Vercel Blob with the provided token
     try {
       const { put } = await import('@vercel/blob')
       const { url } = await put(filename, file, {
@@ -57,7 +43,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         url,
         filename,
-        size: file.size
+        size: file.size,
+        message: 'Image uploaded successfully to Vercel Blob'
       })
     } catch (blobError) {
       console.error('Vercel Blob error:', blobError)
