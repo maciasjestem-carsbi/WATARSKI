@@ -1,3 +1,6 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Car, Wrench, Phone, MapPin, Clock, Users, Shield, Star, ArrowRight, CheckCircle, Award, Zap, Search, Filter, Calendar, CreditCard, Truck, Car as CarIcon, ChevronRight, Play } from 'lucide-react'
 import Link from 'next/link'
@@ -5,28 +8,42 @@ import Image from 'next/image'
 import Layout from '@/components/layout'
 import type { CarData } from '@/lib/database'
 
-export default async function HomePage() {
-  // Fetch featured cars from API
-  let featuredCars: CarData[] = []
-  try {
-    // Use relative URL for server-side rendering
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    
-    const response = await fetch(`${baseUrl}/api/cars/featured`, {
-      cache: 'no-store'
-    })
-    if (response.ok) {
-      featuredCars = await response.json()
-    } else {
-      console.error('Failed to fetch featured cars:', response.status, response.statusText)
-    }
-  } catch (error) {
-    console.error('Error fetching featured cars:', error)
-  }
+export default function HomePage() {
+  const [featuredCars, setFeaturedCars] = useState<CarData[]>([])
+  const [loading, setLoading] = useState(true)
 
-  console.log('Featured cars fetched:', featuredCars.length)
+  useEffect(() => {
+    const fetchFeaturedCars = async () => {
+      try {
+        const response = await fetch('/api/cars/featured')
+        if (response.ok) {
+          const cars = await response.json()
+          setFeaturedCars(cars)
+        } else {
+          console.error('Failed to fetch featured cars:', response.status)
+        }
+      } catch (error) {
+        console.error('Error fetching featured cars:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchFeaturedCars()
+  }, [])
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <Car className="h-12 w-12 text-blue-600 mx-auto mb-4 animate-pulse" />
+            <p className="text-lg text-gray-700">Ładowanie samochodów...</p>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
 
   return (
     <Layout>
