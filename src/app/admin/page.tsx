@@ -196,7 +196,7 @@ export default function AdminPage() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <Car className="h-8 w-8 text-blue-600 mr-2" />
-              <h1 className="text-2xl font-bold text-gray-900">Volkswagen Wątarski - Panel Admin</h1>
+              <h1 className="text-2xl font-bold text-gray-900">WĄTARSKI - Panel Admin</h1>
             </div>
             <div className="flex items-center space-x-4">
               <Button onClick={() => setShowAddForm(true)}>

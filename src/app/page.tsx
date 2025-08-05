@@ -15,7 +15,7 @@ export default function HomePage() {
                 <Car className="h-7 w-7 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Volkswagen Wątarski</h1>
+                <h1 className="text-2xl font-bold text-gray-900">WĄTARSKI</h1>
                 <p className="text-sm text-gray-600">Włocławek</p>
               </div>
             </div>
@@ -47,15 +47,15 @@ export default function HomePage() {
               <div className="space-y-4">
                 <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm">
                   <Award className="h-4 w-4" />
-                  <span>Autoryzowany salon Volkswagen</span>
+                  <span>Autoryzowany salon Volkswagen i Skoda</span>
                 </div>
                 <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight">
-                  Volkswagen Wątarski
+                  WĄTARSKI
                   <span className="block text-blue-200">Włocławek</span>
                 </h1>
                 <p className="text-xl text-blue-100 leading-relaxed">
                   Zaufany partner w motoryzacji z wieloletnim doświadczeniem. 
-                  Oferujemy nowe i używane samochody Volkswagen oraz profesjonalny serwis.
+                  Oferujemy nowe samochody Volkswagen i Skoda oraz używane samochody różnych marek.
                 </p>
               </div>
               
@@ -199,19 +199,19 @@ export default function HomePage() {
             {/* Car Card 2 */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
               <div className="h-48 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
-                <Truck className="h-24 w-24 text-green-600" />
+                <CarIcon className="h-24 w-24 text-green-600" />
               </div>
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900">Volkswagen Transporter</h3>
+                    <h3 className="text-xl font-semibold text-gray-900">Skoda Octavia</h3>
                     <p className="text-gray-600">2024 • 5 km • Diesel • 150 KM</p>
                   </div>
-                  <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded-full">Dostawczy</span>
+                  <span className="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded-full">Nowy</span>
                 </div>
                 <div className="flex justify-between items-center mb-4">
-                  <span className="text-2xl font-bold text-gray-900">189 900 zł</span>
-                  <span className="text-sm text-gray-500">1 899 zł/mies.</span>
+                  <span className="text-2xl font-bold text-gray-900">119 900 zł</span>
+                  <span className="text-sm text-gray-500">1 199 zł/mies.</span>
                 </div>
                 <Button className="w-full bg-green-600 hover:bg-green-700">
                   Zobacz szczegóły
@@ -227,8 +227,8 @@ export default function HomePage() {
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-900">Volkswagen Passat</h3>
-                    <p className="text-gray-600">2023 • 45 000 km • Diesel • 150 KM</p>
+                    <h3 className="text-xl font-semibold text-gray-900">BMW 3 Series</h3>
+                    <p className="text-gray-600">2023 • 45 000 km • Benzyna • 184 KM</p>
                   </div>
                   <span className="bg-purple-100 text-purple-800 text-xs font-semibold px-2 py-1 rounded-full">Używany</span>
                 </div>
@@ -269,7 +269,7 @@ export default function HomePage() {
                   <Car className="h-10 w-10 text-white" />
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-900 mb-4 text-center">Samochody osobowe</h3>
-                <p className="text-gray-600 text-center mb-6">Nowe i używane samochody Volkswagen i Skoda z pełną gwarancją</p>
+                <p className="text-gray-600 text-center mb-6">Nowe Volkswagen i Skoda oraz używane samochody różnych marek</p>
                 <div className="text-center">
                   <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg group-hover:shadow-xl">
                     Przeglądaj ofertę
@@ -301,7 +301,7 @@ export default function HomePage() {
                   <Wrench className="h-10 w-10 text-white" />
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-900 mb-4 text-center">Autoryzowany serwis</h3>
-                <p className="text-gray-600 text-center mb-6">Profesjonalny serwis z gwarancją marki Volkswagen</p>
+                <p className="text-gray-600 text-center mb-6">Profesjonalny serwis z gwarancją marki</p>
                 <div className="text-center">
                   <Button className="bg-orange-600 hover:bg-orange-700 shadow-lg group-hover:shadow-xl">
                     Umów serwis
@@ -318,7 +318,7 @@ export default function HomePage() {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Dlaczego Volkswagen Wątarski?</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Dlaczego WĄTARSKI?</h2>
             <p className="text-xl text-gray-600">Ponad 30 lat doświadczenia w branży motoryzacyjnej</p>
           </div>
           
@@ -437,12 +437,12 @@ export default function HomePage() {
                   <Car className="h-7 w-7 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold">Volkswagen Wątarski</h3>
+                  <h3 className="text-xl font-bold">WĄTARSKI</h3>
                   <p className="text-sm text-gray-400">Włocławek</p>
                 </div>
               </div>
               <p className="text-gray-400 mb-6">
-                Autoryzowany salon Volkswagen z wieloletnim doświadczeniem w sprzedaży i serwisie samochodów.
+                Autoryzowany salon Volkswagen i Skoda z wieloletnim doświadczeniem w sprzedaży i serwisie samochodów.
               </p>
               <div className="flex space-x-4">
                 <Phone className="h-5 w-5 text-blue-400" />
@@ -482,7 +482,7 @@ export default function HomePage() {
           </div>
           
           <div className="border-t border-gray-800 mt-12 pt-8 text-center">
-            <p className="text-gray-400">&copy; 2025 Volkswagen Wątarski Włocławek. Wszystkie prawa zastrzeżone.</p>
+            <p className="text-gray-400">&copy; 2025 WĄTARSKI Włocławek. Wszystkie prawa zastrzeżone.</p>
             <div className="mt-2">
               <Link href="/admin" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
                 Panel administracyjny
