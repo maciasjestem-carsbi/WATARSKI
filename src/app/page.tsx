@@ -9,15 +9,24 @@ export default async function HomePage() {
   // Fetch featured cars from API
   let featuredCars: CarData[] = []
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/cars/featured`, {
+    // Use relative URL for server-side rendering
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+    
+    const response = await fetch(`${baseUrl}/api/cars/featured`, {
       cache: 'no-store'
     })
     if (response.ok) {
       featuredCars = await response.json()
+    } else {
+      console.error('Failed to fetch featured cars:', response.status, response.statusText)
     }
   } catch (error) {
     console.error('Error fetching featured cars:', error)
   }
+
+  console.log('Featured cars fetched:', featuredCars.length)
 
   return (
     <Layout>
