@@ -3,6 +3,55 @@ import { Car, Wrench, Phone, MapPin, Clock, Users, Shield, Star, ArrowRight, Che
 import Link from 'next/link'
 import Image from 'next/image'
 
+// Unified car data - this would come from an API in a real app
+const featuredCars = [
+  {
+    id: '1',
+    brand: 'Volkswagen',
+    model: 'T-Roc',
+    year: 2024,
+    mileage: 10,
+    fuel: 'Hybryda',
+    power: 150,
+    price: 129900,
+    type: 'new' as const,
+    description: 'Nowy Volkswagen T-Roc w doskonałym stanie',
+    imageUrl: '/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp',
+    featured: true,
+    source: 'manual' as const
+  },
+  {
+    id: '2',
+    brand: 'Volkswagen',
+    model: 'Passat',
+    year: 2024,
+    mileage: 5,
+    fuel: 'Diesel',
+    power: 150,
+    price: 189900,
+    type: 'new' as const,
+    description: 'Elegancki Volkswagen Passat',
+    imageUrl: '/images/Passat_SE.webp',
+    featured: true,
+    source: 'manual' as const
+  },
+  {
+    id: '3',
+    brand: 'Volkswagen',
+    model: 'Tiguan',
+    year: 2023,
+    mileage: 45000,
+    fuel: 'Benzyna',
+    power: 184,
+    price: 89900,
+    type: 'used' as const,
+    description: 'Używany Volkswagen Tiguan w świetnym stanie',
+    imageUrl: '/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp',
+    featured: true,
+    source: 'manual' as const
+  }
+]
+
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
@@ -185,101 +234,44 @@ export default function HomePage() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Car Card 1 - Volkswagen T-Roc */}
-            <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-              <div className="h-56 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center relative overflow-hidden">
-                <Image 
-                  src="/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"
-                  alt="Volkswagen T-Roc"
-                  width={400}
-                  height={300}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                  Nowy
-                </div>
-              </div>
-              <div className="p-8">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Volkswagen T-Roc</h3>
-                    <p className="text-gray-600 text-lg">2024 • 10 km • Hybryda • 150 KM</p>
+            {featuredCars.map((car) => (
+              <Link key={car.id} href={`/car/${car.id}`}>
+                <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 cursor-pointer">
+                  <div className="h-56 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center relative overflow-hidden">
+                    {car.imageUrl ? (
+                      <Image 
+                        src={car.imageUrl}
+                        alt={`${car.brand} ${car.model}`}
+                        width={400}
+                        height={300}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <CarIcon className="h-32 w-32 text-blue-600" />
+                    )}
+                    <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                      {car.type === 'new' ? 'Nowy' : 'Używany'}
+                    </div>
+                  </div>
+                  <div className="p-8">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">{car.brand} {car.model}</h3>
+                        <p className="text-gray-600 text-lg">{car.year} • {car.mileage} km • {car.fuel} • {car.power} KM</p>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center mb-6">
+                      <span className="text-3xl font-bold text-gray-900">{car.price.toLocaleString()} zł</span>
+                      <span className="text-lg text-gray-500 font-medium">{(car.price / 100).toLocaleString()} zł/mies.</span>
+                    </div>
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 py-4 text-lg font-semibold rounded-xl">
+                      Zobacz szczegóły
+                      <ChevronRight className="ml-2 h-5 w-5" />
+                    </Button>
                   </div>
                 </div>
-                <div className="flex justify-between items-center mb-6">
-                  <span className="text-3xl font-bold text-gray-900">129 900 zł</span>
-                  <span className="text-lg text-gray-500 font-medium">1 299 zł/mies.</span>
-                </div>
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 py-4 text-lg font-semibold rounded-xl">
-                  Zobacz szczegóły
-                  <ChevronRight className="ml-2 h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-
-            {/* Car Card 2 - Volkswagen Passat */}
-            <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-              <div className="h-56 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center relative overflow-hidden">
-                <Image 
-                  src="/images/Passat_SE.webp"
-                  alt="Volkswagen Passat"
-                  width={400}
-                  height={300}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                  Nowy
-                </div>
-              </div>
-              <div className="p-8">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Volkswagen Passat</h3>
-                    <p className="text-gray-600 text-lg">2024 • 5 km • Diesel • 150 KM</p>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center mb-6">
-                  <span className="text-3xl font-bold text-gray-900">189 900 zł</span>
-                  <span className="text-lg text-gray-500 font-medium">1 899 zł/mies.</span>
-                </div>
-                <Button className="w-full bg-green-600 hover:bg-green-700 py-4 text-lg font-semibold rounded-xl">
-                  Zobacz szczegóły
-                  <ChevronRight className="ml-2 h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-
-            {/* Car Card 3 - Volkswagen Tiguan */}
-            <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
-              <div className="h-56 bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center relative overflow-hidden">
-                <Image 
-                  src="/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp"
-                  alt="Volkswagen Tiguan"
-                  width={400}
-                  height={300}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-4 right-4 bg-purple-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                  Używany
-                </div>
-              </div>
-              <div className="p-8">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Volkswagen Tiguan</h3>
-                    <p className="text-gray-600 text-lg">2023 • 45 000 km • Benzyna • 184 KM</p>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center mb-6">
-                  <span className="text-3xl font-bold text-gray-900">89 900 zł</span>
-                  <span className="text-lg text-gray-500 font-medium">899 zł/mies.</span>
-                </div>
-                <Button className="w-full bg-orange-600 hover:bg-orange-700 py-4 text-lg font-semibold rounded-xl">
-                  Zobacz szczegóły
-                  <ChevronRight className="ml-2 h-5 w-5" />
-                </Button>
-              </div>
-            </div>
+              </Link>
+            ))}
           </div>
 
           <div className="text-center mt-12">
