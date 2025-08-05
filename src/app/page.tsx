@@ -2,45 +2,14 @@ import { Button } from '@/components/ui/button'
 import { Car, Wrench, Phone, MapPin, Clock, Users, Shield, Star, ArrowRight, CheckCircle, Award, Zap, Search, Filter, Calendar, CreditCard, Truck, Car as CarIcon, ChevronRight, Play } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { getFeaturedCars } from '@/lib/car-data'
+import { carDatabase } from '@/lib/database'
+import Layout from '@/components/layout'
 
-export default function HomePage() {
-  const featuredCars = getFeaturedCars()
+export default async function HomePage() {
+  const featuredCars = await carDatabase.getFeaturedCars()
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header - Volkswagen Style */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-50 backdrop-blur-md bg-white/95">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center">
-              <div className="relative w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center mr-4 shadow-lg">
-                <Car className="h-7 w-7 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">WĄTARSKI</h1>
-                <p className="text-sm text-gray-600 font-medium">Włocławek</p>
-              </div>
-            </div>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/" className="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1 transition-colors">Strona główna</Link>
-              <Link href="/inventory" className="text-gray-900 hover:text-blue-600 transition-colors font-medium">Samochody</Link>
-              <Link href="/service" className="text-gray-900 hover:text-blue-600 transition-colors font-medium">Serwis</Link>
-              <Link href="/contact" className="text-gray-900 hover:text-blue-600 transition-colors font-medium">Kontakt</Link>
-            </nav>
-            <div className="flex items-center space-x-4">
-              <div className="hidden lg:flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-full">
-                <Phone className="h-4 w-4 text-blue-600" />
-                <span className="text-sm font-semibold text-blue-900">54 230 60 66</span>
-              </div>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 shadow-lg font-semibold">
-                Umów wizytę
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <Layout>
       {/* Hero Section - Volkswagen Style */}
       <section className="relative bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white overflow-hidden min-h-[80vh] flex items-center">
         {/* Background with overlay */}
@@ -101,37 +70,21 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-            
+
+            {/* Right side - Car showcase */}
             <div className="relative">
-              <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-2xl">
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="text-center group">
-                    <div className="bg-white/20 rounded-2xl w-20 h-20 flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-all transform group-hover:scale-110">
-                      <Car className="h-10 w-10 text-white" />
-                    </div>
-                    <h3 className="font-semibold mb-2 text-white">Samochody osobowe</h3>
-                    <p className="text-sm text-blue-100">Nowe i używane</p>
-                  </div>
-                  <div className="text-center group">
-                    <div className="bg-white/20 rounded-2xl w-20 h-20 flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-all transform group-hover:scale-110">
-                      <Shield className="h-10 w-10 text-white" />
-                    </div>
-                    <h3 className="font-semibold mb-2 text-white">Autoryzowany serwis</h3>
-                    <p className="text-sm text-blue-100">Gwarancja marki</p>
-                  </div>
-                  <div className="text-center group">
-                    <div className="bg-white/20 rounded-2xl w-20 h-20 flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-all transform group-hover:scale-110">
-                      <Truck className="h-10 w-10 text-white" />
-                    </div>
-                    <h3 className="font-semibold mb-2 text-white">Samochody dostawcze</h3>
-                    <p className="text-sm text-blue-100">Dla firm</p>
-                  </div>
-                  <div className="text-center group">
-                    <div className="bg-white/20 rounded-2xl w-20 h-20 flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-all transform group-hover:scale-110">
-                      <CreditCard className="h-10 w-10 text-white" />
-                    </div>
-                    <h3 className="font-semibold mb-2 text-white">Finansowanie</h3>
-                    <p className="text-sm text-blue-100">Dogodne warunki</p>
+              <div className="relative z-10">
+                <Image
+                  src="/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"
+                  alt="Volkswagen T-Roc"
+                  width={600}
+                  height={400}
+                  className="rounded-2xl shadow-2xl"
+                />
+                <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-xl">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-blue-600">129 900 zł</p>
+                    <p className="text-sm text-gray-600">Volkswagen T-Roc</p>
                   </div>
                 </div>
               </div>
@@ -478,6 +431,6 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
-    </div>
+    </Layout>
   )
 } 

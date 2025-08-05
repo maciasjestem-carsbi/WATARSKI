@@ -1,183 +1,256 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Car, Search, Filter, Star } from 'lucide-react'
+import { Car, Star, Search, Filter, ChevronDown, ChevronUp } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { getAllCars, type CarData } from '@/lib/car-data'
+import { carDatabase, type CarData } from '@/lib/database'
+import Layout from '@/components/layout'
 
 export default function InventoryPage() {
-  const [cars] = useState<CarData[]>(getAllCars())
+  const [cars, setCars] = useState<CarData[]>([])
+  const [filteredCars, setFilteredCars] = useState<CarData[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedType, setSelectedType] = useState<string>('all')
   const [selectedBrand, setSelectedBrand] = useState<string>('all')
   const [priceRange, setPriceRange] = useState<string>('all')
+  const [showFilters, setShowFilters] = useState(false)
 
-  // Get unique brands for filter
+  useEffect(() => {
+    const loadCars = async () => {
+      try {
+        const allCars = await carDatabase.getAllCars()
+        setCars(allCars)
+        setFilteredCars(allCars)
+      } catch (error) {
+        console.error('Error loading cars:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadCars()
+  }, [])
+
+  useEffect(() => {
+    let filtered = cars
+
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(car =>
+        car.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        car.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        car.description.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
+
+    // Type filter
+    if (selectedType !== 'all') {
+      filtered = filtered.filter(car => car.type === selectedType)
+    }
+
+    // Brand filter
+    if (selectedBrand !== 'all') {
+      filtered = filtered.filter(car => car.brand === selectedBrand)
+    }
+
+    // Price range filter
+    if (priceRange !== 'all') {
+      const [min, max] = priceRange.split('-').map(Number)
+      filtered = filtered.filter(car => {
+        if (max) {
+          return car.price >= min && car.price <= max
+        } else {
+          return car.price >= min
+        }
+      })
+    }
+
+    setFilteredCars(filtered)
+  }, [cars, searchTerm, selectedType, selectedBrand, priceRange])
+
   const brands = Array.from(new Set(cars.map(car => car.brand)))
 
-  // Filter cars based on search and filters
-  const filteredCars = cars.filter(car => {
-    const matchesSearch = car.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         car.model.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesType = selectedType === 'all' || car.type === selectedType
-    const matchesBrand = selectedBrand === 'all' || car.brand === selectedBrand
-    const matchesPrice = priceRange === 'all' || 
-                        (priceRange === 'under50k' && car.price < 50000) ||
-                        (priceRange === '50k-100k' && car.price >= 50000 && car.price < 100000) ||
-                        (priceRange === '100k-200k' && car.price >= 100000 && car.price < 200000) ||
-                        (priceRange === 'over200k' && car.price >= 200000)
-
-    return matchesSearch && matchesType && matchesBrand && matchesPrice
-  })
+  if (loading) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="text-center">
+            <Car className="h-12 w-12 text-blue-600 mx-auto mb-4 animate-pulse" />
+            <p className="text-lg text-gray-700">Ładowanie samochodów...</p>
+          </div>
+        </div>
+      </Layout>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Layout>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Car className="h-8 w-8 text-blue-600 mr-2" />
-              <h1 className="text-2xl font-bold text-gray-900">WĄTARSKI Włocławek</h1>
-            </div>
-            <nav className="hidden md:flex space-x-8">
-              <a href="/" className="text-gray-900 hover:text-blue-600">Strona główna</a>
-              <a href="/inventory" className="text-blue-600 font-medium">Samochody</a>
-              <a href="/service" className="text-gray-900 hover:text-blue-600">Serwis</a>
-              <a href="/contact" className="text-gray-900 hover:text-blue-600">Kontakt</a>
-            </nav>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search and Filters */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <input
-                  type="text"
-                  placeholder="Szukaj samochodów po modelu lub marce..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold mb-4">WĄTARSKI Włocławek</h1>
+            <p className="text-xl text-blue-100 mb-8">
+              Przeglądaj nasze samochody - nowe i używane
+            </p>
+            
+            {/* Search and Filters */}
+            <div className="max-w-4xl mx-auto">
+              <div className="flex flex-col lg:flex-row gap-4 mb-6">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <input
+                    type="text"
+                    placeholder="Szukaj samochodu..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 rounded-lg border-0 text-gray-900 focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <Button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="bg-white/20 hover:bg-white/30 border border-white/30"
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filtry
+                  {showFilters ? <ChevronUp className="h-4 w-4 ml-2" /> : <ChevronDown className="h-4 w-4 ml-2" />}
+                </Button>
               </div>
-            </div>
 
-            {/* Filters */}
-            <div className="flex flex-wrap gap-4">
-              <select
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">Wszystkie typy</option>
-                <option value="new">Nowe samochody</option>
-                <option value="used">Używane samochody</option>
-              </select>
-
-              <select
-                value={selectedBrand}
-                onChange={(e) => setSelectedBrand(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">Wszystkie marki</option>
-                {brands.map((brand) => (
-                  <option key={brand} value={brand}>{brand}</option>
-                ))}
-              </select>
-
-              <select
-                value={priceRange}
-                onChange={(e) => setPriceRange(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="all">Wszystkie ceny</option>
-                <option value="under50k">Do 50 000 PLN</option>
-                <option value="50k-100k">50 000 - 100 000 PLN</option>
-                <option value="100k-200k">100 000 - 200 000 PLN</option>
-                <option value="over200k">Powyżej 200 000 PLN</option>
-              </select>
+              {/* Filters */}
+              {showFilters && (
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Typ samochodu</label>
+                      <select
+                        value={selectedType}
+                        onChange={(e) => setSelectedType(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg border-0 text-gray-900"
+                      >
+                        <option value="all">Wszystkie</option>
+                        <option value="new">Nowe</option>
+                        <option value="used">Używane</option>
+                        <option value="delivery">Dostawcze</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Marka</label>
+                      <select
+                        value={selectedBrand}
+                        onChange={(e) => setSelectedBrand(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg border-0 text-gray-900"
+                      >
+                        <option value="all">Wszystkie marki</option>
+                        {brands.map(brand => (
+                          <option key={brand} value={brand}>{brand}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Cena</label>
+                      <select
+                        value={priceRange}
+                        onChange={(e) => setPriceRange(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg border-0 text-gray-900"
+                      >
+                        <option value="all">Wszystkie ceny</option>
+                        <option value="0-50000">Do 50 000 zł</option>
+                        <option value="50000-100000">50 000 - 100 000 zł</option>
+                        <option value="100000-200000">100 000 - 200 000 zł</option>
+                        <option value="200000-">Powyżej 200 000 zł</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Results Count */}
-        <div className="mb-6">
+      {/* Cars Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Znalezione samochody ({filteredCars.length})
+          </h2>
           <p className="text-gray-600">
-            Pokazano {filteredCars.length} z {cars.length} samochodów
+            {filteredCars.length === 0 ? 'Nie znaleziono samochodów spełniających kryteria' : 'Przeglądaj nasze oferty'}
           </p>
         </div>
 
-        {/* Cars Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCars.map((car, index) => (
-            <Link key={car.id} href={`/car/${car.id}`}>
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer h-full flex flex-col">
-                <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative overflow-hidden">
-                  {car.imageUrl ? (
-                    <Image
-                      src={car.imageUrl}
-                      alt={car.model}
-                      width={400}
-                      height={300}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <Image
-                      src={`/api/placeholder/400/300`}
-                      alt="Placeholder"
-                      width={400}
-                      height={300}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                  <div className="absolute top-2 right-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      car.type === 'new' ? 'bg-green-100 text-green-800' :
-                      car.type === 'used' ? 'bg-purple-100 text-purple-800' :
-                      'bg-blue-100 text-blue-800'
-                    }`}>
-                      {car.type === 'new' ? 'Nowy' : car.type === 'used' ? 'Używany' : 'Dostawczy'}
-                    </span>
-                  </div>
-                  {car.featured && (
-                    <div className="absolute top-2 left-2">
-                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                    </div>
-                  )}
-                </div>
-                <div className="p-6 flex-1 flex flex-col">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{car.brand} {car.model}</h3>
-                    <p className="text-gray-600 mb-4">{car.year} • {car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} km • {car.fuel} • {car.power} KM</p>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-2xl font-bold text-gray-900">{car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł</span>
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                      Zobacz szczegóły
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        {filteredCars.length === 0 && (
+        {filteredCars.length === 0 ? (
           <div className="text-center py-12">
-            <Car className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Nie znaleziono samochodów</h3>
-            <p className="text-gray-600">Spróbuj zmienić kryteria wyszukiwania lub filtry.</p>
+            <Car className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Brak wyników</h3>
+            <p className="text-gray-600">Spróbuj zmienić kryteria wyszukiwania</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredCars.map((car) => (
+              <Link key={car.id} href={`/car/${car.id}`} className="group">
+                <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+                  <div className="relative">
+                    <Image
+                      src={car.imageUrl || '/api/placeholder/400/300'}
+                      alt={`${car.brand} ${car.model}`}
+                      width={400}
+                      height={300}
+                      className="w-full h-48 object-cover rounded-t-xl"
+                    />
+                    {car.featured && (
+                      <div className="absolute top-3 right-3 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
+                        <Star className="h-3 w-3 mr-1" />
+                        Polecane
+                      </div>
+                    )}
+                    <div className="absolute bottom-3 left-3 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                      {car.type === 'new' ? 'Nowy' : car.type === 'used' ? 'Używany' : 'Dostawczy'}
+                    </div>
+                  </div>
+                  
+                  <div className="p-6 flex-1 flex flex-col">
+                    <div className="mb-4">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                        {car.brand} {car.model}
+                      </h3>
+                      <p className="text-gray-600 text-sm mb-3">{car.description}</p>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                      <div>
+                        <span className="text-gray-500">Rok:</span>
+                        <p className="font-medium">{car.year}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Przebieg:</span>
+                        <p className="font-medium">{car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} km</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Paliwo:</span>
+                        <p className="font-medium">{car.fuel}</p>
+                      </div>
+                      <div>
+                        <span className="text-gray-500">Moc:</span>
+                        <p className="font-medium">{car.power} KM</p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-auto">
+                      <p className="text-2xl font-bold text-blue-600">
+                        {car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
         )}
       </div>
-    </div>
+    </Layout>
   )
 } 
