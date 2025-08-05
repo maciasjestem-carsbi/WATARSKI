@@ -1,7 +1,15 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
+export async function GET() {
+  return await populateDatabase()
+}
+
 export async function POST() {
+  return await populateDatabase()
+}
+
+async function populateDatabase() {
   try {
     console.log('Populating database with sample cars...')
 
