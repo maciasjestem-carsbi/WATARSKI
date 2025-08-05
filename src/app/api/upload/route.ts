@@ -33,16 +33,43 @@ export async function POST(request: NextRequest) {
     const extension = file.name.split('.').pop()
     const filename = `car-${timestamp}.${extension}`
 
-    // For now, return a placeholder image
-    // In production, you would configure Vercel Blob with proper environment variables
-    console.log('File upload received:', filename, file.size, 'bytes')
+    // Check if Vercel Blob is configured
+    const blobStoreToken = process.env.WATARSKI_READ_WRITE_TOKEN
     
-    return NextResponse.json({
-      url: '/api/placeholder/400/300',
-      filename,
-      size: file.size,
-      message: 'File upload successful - using placeholder image. Configure Vercel Blob for production image storage.'
-    })
+    if (!blobStoreToken) {
+      // Fallback to placeholder image if Vercel Blob is not configured
+      console.log('Vercel Blob not configured, using placeholder image')
+      return NextResponse.json({
+        url: '/api/placeholder/400/300',
+        filename,
+        size: file.size,
+        message: 'Vercel Blob not configured - using placeholder image'
+      })
+    }
+
+    // Try to use Vercel Blob if configured
+    try {
+      const { put } = await import('@vercel/blob')
+      const { url } = await put(filename, file, {
+        access: 'public',
+      })
+
+      return NextResponse.json({
+        url,
+        filename,
+        size: file.size
+      })
+    } catch (blobError) {
+      console.error('Vercel Blob error:', blobError)
+      
+      // Fallback to placeholder if Blob fails
+      return NextResponse.json({
+        url: '/api/placeholder/400/300',
+        filename,
+        size: file.size,
+        message: 'Vercel Blob failed - using placeholder image'
+      })
+    }
 
   } catch (error) {
     console.error('Upload error:', error)
@@ -51,11 +78,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
-
-// Note: To enable Vercel Blob storage in production:
-// 1. Go to your Vercel project dashboard
-// 2. Navigate to Storage > Blob
-// 3. Create a new Blob store
-// 4. Add the BLOB_READ_WRITE_TOKEN environment variable
-// 5. Update this endpoint to use the actual Blob storage 
+} 
