@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Car, Plus, Trash2, Edit, Star, Upload, Download, Link, Loader2 } from 'lucide-react'
 import ImageUpload from '@/components/ui/image-upload'
-import { carDatabase, type CarData } from '@/lib/database'
+import type { CarData } from '@/lib/database'
 
 export default function AdminPage() {
   const [cars, setCars] = useState<CarData[]>([])
@@ -29,10 +29,14 @@ export default function AdminPage() {
   })
 
   // Load cars on component mount
-  useState(() => {
+  useEffect(() => {
     const loadCars = async () => {
       try {
-        const allCars = await carDatabase.getAllCars()
+        const response = await fetch('/api/cars')
+        if (!response.ok) {
+          throw new Error('Failed to fetch cars')
+        }
+        const allCars = await response.json()
         setCars(allCars)
       } catch (error) {
         console.error('Error loading cars:', error)
@@ -41,7 +45,7 @@ export default function AdminPage() {
       }
     }
     loadCars()
-  })
+  }, [])
 
   const handleScrapeOtomotoUrl = async () => {
     if (!otomotoUrl.trim()) {
@@ -109,7 +113,19 @@ export default function AdminPage() {
           source: newCar.source || 'manual'
         }
         
-        const addedCar = await carDatabase.addCar(carData)
+        const response = await fetch('/api/cars', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(carData)
+        })
+
+        if (!response.ok) {
+          throw new Error('Failed to add car')
+        }
+
+        const addedCar = await response.json()
         setCars(prev => [addedCar, ...prev])
         
         setNewCar({
@@ -134,10 +150,15 @@ export default function AdminPage() {
 
   const handleDeleteCar = async (id: string) => {
     try {
-      const success = await carDatabase.deleteCar(id)
-      if (success) {
-        setCars(prev => prev.filter(car => car.id !== id))
+      const response = await fetch(`/api/cars/${id}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to delete car')
       }
+
+      setCars(prev => prev.filter(car => car.id !== id))
     } catch (error) {
       console.error('Error deleting car:', error)
       alert('Błąd podczas usuwania samochodu')
@@ -146,12 +167,18 @@ export default function AdminPage() {
 
   const handleToggleFeatured = async (id: string) => {
     try {
-      const updatedCar = await carDatabase.toggleFeatured(id)
-      if (updatedCar) {
-        setCars(prev => prev.map(car => 
-          car.id === id ? updatedCar : car
-        ))
+      const response = await fetch(`/api/cars/${id}/featured`, {
+        method: 'PUT',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to toggle featured status')
       }
+
+      const updatedCar = await response.json()
+      setCars(prev => prev.map(car => 
+        car.id === id ? updatedCar : car
+      ))
     } catch (error) {
       console.error('Error toggling featured status:', error)
       alert('Błąd podczas zmiany statusu polecanych')
