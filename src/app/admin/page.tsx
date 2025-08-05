@@ -2,16 +2,18 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Car, Plus, Trash2, Edit, Star, Upload, Download } from 'lucide-react'
+import { Car, Plus, Trash2, Edit, Star, Upload, Download, Link, Loader2 } from 'lucide-react'
 import ImageUpload from '@/components/ui/image-upload'
-import { sharedCars, type CarData } from '@/lib/car-data'
+import { carDatabase, type CarData } from '@/lib/database'
 
 export default function AdminPage() {
-  const [cars, setCars] = useState<CarData[]>(sharedCars)
+  const [cars, setCars] = useState<CarData[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const [isScraping, setIsScraping] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingCar, setEditingCar] = useState<CarData | null>(null)
+  const [otomotoUrl, setOtomotoUrl] = useState('')
 
   const [newCar, setNewCar] = useState<Partial<CarData>>({
     brand: '',
@@ -26,98 +28,134 @@ export default function AdminPage() {
     featured: false
   })
 
-  const handleScrapeOtomoto = async () => {
+  // Load cars on component mount
+  useState(() => {
+    const loadCars = async () => {
+      try {
+        const allCars = await carDatabase.getAllCars()
+        setCars(allCars)
+      } catch (error) {
+        console.error('Error loading cars:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadCars()
+  })
+
+  const handleScrapeOtomotoUrl = async () => {
+    if (!otomotoUrl.trim()) {
+      alert('Proszę wprowadzić link do Otomoto')
+      return
+    }
+
     setIsScraping(true)
     try {
-      const response = await fetch('/api/scrape-otomoto')
+      const response = await fetch('/api/scrape-otomoto-car', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: otomotoUrl })
+      })
+
       const data = await response.json()
-      
-      if (data.cars) {
-        const scrapedCars = data.cars.map((car: any, index: number) => ({
-          id: `otomoto-${Date.now()}-${index}`,
-          brand: car.brand || 'Nieznana',
-          model: car.model || 'Nieznany',
-          year: car.year || 2020,
-          mileage: car.mileage || 0,
-          fuel: car.fuel || 'Benzyna',
-          power: car.power || 100,
-          price: car.price || 50000,
+
+      if (data.success && data.car) {
+        const scrapedCar = data.car
+        setNewCar({
+          brand: scrapedCar.brand,
+          model: scrapedCar.model,
+          year: scrapedCar.year,
+          mileage: scrapedCar.mileage,
+          fuel: scrapedCar.fuel,
+          power: scrapedCar.power,
+          price: scrapedCar.price,
           type: 'used' as const,
-          description: car.description || 'Samochód z Otomoto',
-          imageUrl: car.imageUrl,
+          description: scrapedCar.description,
+          imageUrl: scrapedCar.imageUrl,
           featured: false,
           source: 'otomoto' as const
-        }))
-        
-        setCars(prev => [...prev, ...scrapedCars])
+        })
+        setShowAddForm(true)
+        setOtomotoUrl('')
+        alert('Dane samochodu zostały pobrane! Sprawdź i zapisz.')
+      } else {
+        alert('Błąd podczas pobierania danych: ' + (data.error || 'Nieznany błąd'))
       }
     } catch (error) {
       console.error('Błąd podczas scrapowania:', error)
+      alert('Błąd podczas pobierania danych z Otomoto')
     } finally {
       setIsScraping(false)
     }
   }
 
-  const handleAddCar = () => {
+  const handleAddCar = async () => {
     if (newCar.brand && newCar.model && newCar.price && newCar.price > 0) {
-      const car: CarData = {
-        id: Date.now().toString(),
-        brand: newCar.brand!,
-        model: newCar.model!,
-        year: newCar.year!,
-        mileage: newCar.mileage!,
-        fuel: newCar.fuel!,
-        power: newCar.power!,
-        price: newCar.price!,
-        type: newCar.type!,
-        description: newCar.description!,
-        imageUrl: newCar.imageUrl,
-        featured: newCar.featured!,
-        source: 'manual'
+      try {
+        const carData = {
+          brand: newCar.brand!,
+          model: newCar.model!,
+          year: newCar.year!,
+          mileage: newCar.mileage!,
+          fuel: newCar.fuel!,
+          power: newCar.power!,
+          price: newCar.price!,
+          type: newCar.type!,
+          description: newCar.description!,
+          imageUrl: newCar.imageUrl,
+          featured: newCar.featured!,
+          source: newCar.source || 'manual'
+        }
+        
+        const addedCar = await carDatabase.addCar(carData)
+        setCars(prev => [addedCar, ...prev])
+        
+        setNewCar({
+          brand: '',
+          model: '',
+          year: 2024,
+          mileage: 0,
+          fuel: 'Benzyna',
+          power: 100,
+          price: 0,
+          type: 'new',
+          description: '',
+          featured: false
+        })
+        setShowAddForm(false)
+      } catch (error) {
+        console.error('Error adding car:', error)
+        alert('Błąd podczas dodawania samochodu')
       }
-      
-      setCars(prev => [...prev, car])
-      setNewCar({
-        brand: '',
-        model: '',
-        year: 2024,
-        mileage: 0,
-        fuel: 'Benzyna',
-        power: 100,
-        price: 0,
-        type: 'new',
-        description: '',
-        featured: false
-      })
-      setShowAddForm(false)
     }
   }
 
-  const handleDeleteCar = (id: string) => {
-    setCars(prev => prev.filter(car => car.id !== id))
+  const handleDeleteCar = async (id: string) => {
+    try {
+      const success = await carDatabase.deleteCar(id)
+      if (success) {
+        setCars(prev => prev.filter(car => car.id !== id))
+      }
+    } catch (error) {
+      console.error('Error deleting car:', error)
+      alert('Błąd podczas usuwania samochodu')
+    }
   }
 
-  const handleToggleFeatured = (id: string) => {
-    setCars(prev => {
-      const updatedCars = prev.map(car => 
-        car.id === id ? { ...car, featured: !car.featured } : car
-      )
-      
-      // Ensure only 3 cars are featured
-      const featuredCount = updatedCars.filter(car => car.featured).length
-      if (featuredCount > 3) {
-        // Remove featured flag from the oldest non-featured car
-        const nonFeatured = updatedCars.filter(car => !car.featured)
-        if (nonFeatured.length > 0) {
-          const oldestNonFeatured = nonFeatured[0]
-          return updatedCars.map(car => 
-            car.id === oldestNonFeatured.id ? { ...car, featured: false } : car
-          )
-        }
+  const handleToggleFeatured = async (id: string) => {
+    try {
+      const updatedCar = await carDatabase.toggleFeatured(id)
+      if (updatedCar) {
+        setCars(prev => prev.map(car => 
+          car.id === id ? updatedCar : car
+        ))
       }
-      
-      return updatedCars
-    })
+    } catch (error) {
+      console.error('Error toggling featured status:', error)
+      alert('Błąd podczas zmiany statusu polecanych')
+    }
   }
 
   const handleImageUpload = (imageUrl: string) => {
@@ -134,6 +172,15 @@ export default function AdminPage() {
   const featuredCars = cars.filter(car => car.featured)
   const otomotoCars = cars.filter(car => car.source === 'otomoto')
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loader2 className="h-12 w-12 text-blue-600 animate-spin" />
+        <p className="ml-4 text-lg text-gray-700">Ładowanie samochodów...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -145,14 +192,6 @@ export default function AdminPage() {
               <h1 className="text-2xl font-bold text-gray-900">WĄTARSKI - Panel Admin</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <Button 
-                onClick={handleScrapeOtomoto} 
-                disabled={isScraping}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                <Download className="h-4 w-4 mr-2" />
-                {isScraping ? 'Importowanie...' : 'Import z Otomoto'}
-              </Button>
               <Button onClick={() => setShowAddForm(true)} className="bg-blue-600 hover:bg-blue-700">
                 <Plus className="h-4 w-4 mr-2" />
                 Dodaj samochód
@@ -161,6 +200,46 @@ export default function AdminPage() {
           </div>
         </div>
       </header>
+
+      {/* Otomoto Import Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="bg-white rounded-lg p-6 shadow">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
+            <Link className="h-5 w-5 mr-2 text-green-600" />
+            Import z Otomoto
+          </h2>
+          <p className="text-gray-600 mb-4">
+            Wklej link do samochodu z Otomoto, aby automatycznie pobrać dane
+          </p>
+          <div className="flex items-center space-x-4">
+            <input
+              type="text"
+              placeholder="https://www.otomoto.pl/osobowe/oferta/skoda-kodiaq-ID6HstBA.html"
+              value={otomotoUrl}
+              onChange={(e) => setOtomotoUrl(e.target.value)}
+              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              disabled={isScraping}
+            />
+            <Button 
+              onClick={handleScrapeOtomotoUrl} 
+              disabled={isScraping || !otomotoUrl.trim()}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {isScraping ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Pobieranie...
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4 mr-2" />
+                  Pobierz dane
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* Stats */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
