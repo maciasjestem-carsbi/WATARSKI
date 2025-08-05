@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Car, Star, Search, Filter, ChevronDown, ChevronUp } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { carDatabase, type CarData } from '@/lib/database'
+import type { CarData } from '@/lib/database'
 import Layout from '@/components/layout'
 
 export default function InventoryPage() {
@@ -21,7 +21,12 @@ export default function InventoryPage() {
   useEffect(() => {
     const loadCars = async () => {
       try {
-        const allCars = await carDatabase.getAllCars()
+        // Use the API endpoint instead of direct database access
+        const response = await fetch('/api/cars')
+        if (!response.ok) {
+          throw new Error('Failed to fetch cars')
+        }
+        const allCars = await response.json()
         setCars(allCars)
         setFilteredCars(allCars)
       } catch (error) {

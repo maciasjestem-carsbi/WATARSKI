@@ -2,11 +2,22 @@ import { Button } from '@/components/ui/button'
 import { Car, Wrench, Phone, MapPin, Clock, Users, Shield, Star, ArrowRight, CheckCircle, Award, Zap, Search, Filter, Calendar, CreditCard, Truck, Car as CarIcon, ChevronRight, Play } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { carDatabase } from '@/lib/database'
 import Layout from '@/components/layout'
+import type { CarData } from '@/lib/database'
 
 export default async function HomePage() {
-  const featuredCars = await carDatabase.getFeaturedCars()
+  // Fetch featured cars from API
+  let featuredCars: CarData[] = []
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/cars/featured`, {
+      cache: 'no-store'
+    })
+    if (response.ok) {
+      featuredCars = await response.json()
+    }
+  } catch (error) {
+    console.error('Error fetching featured cars:', error)
+  }
 
   return (
     <Layout>
