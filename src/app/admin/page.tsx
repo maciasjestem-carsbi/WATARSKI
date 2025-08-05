@@ -342,12 +342,12 @@ export default function AdminPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <div className="text-sm text-gray-900">{car.year}</div>
-                        <div className="text-sm text-gray-500">{car.mileage.toLocaleString()} km</div>
+                        <div className="text-sm text-gray-500">{car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} km</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {car.price.toLocaleString()} zł
+                        {car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

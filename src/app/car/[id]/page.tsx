@@ -142,7 +142,7 @@ export default function CarDetailsPage() {
                 )}
               </div>
               <h1 className="text-4xl font-bold text-gray-900 mb-2">{car.brand} {car.model}</h1>
-              <p className="text-2xl font-bold text-blue-600">{car.price.toLocaleString()} zł</p>
+              <p className="text-2xl font-bold text-blue-600">{car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł</p>
             </div>
 
             {/* Key Specs */}
@@ -160,7 +160,7 @@ export default function CarDetailsPage() {
                   <Gauge className="h-5 w-5 text-green-600" />
                   <span className="text-sm text-gray-600">Przebieg</span>
                 </div>
-                <p className="text-xl font-semibold text-gray-900">{car.mileage.toLocaleString()} km</p>
+                <p className="text-xl font-semibold text-gray-900">{car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} km</p>
               </div>
               
               <div className="bg-white rounded-xl p-6 shadow-sm">

@@ -119,7 +119,7 @@ export default function InventoryPage() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCars.map((car, index) => (
             <Link key={car.id} href={`/car/${car.id}`}>
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer">
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer h-full flex flex-col">
                 <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative overflow-hidden">
                   {car.imageUrl ? (
                     <Image
@@ -153,11 +153,13 @@ export default function InventoryPage() {
                     </div>
                   )}
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{car.brand} {car.model}</h3>
-                  <p className="text-gray-600 mb-4">{car.year} • {car.mileage.toLocaleString()} km • {car.fuel} • {car.power} KM</p>
+                <div className="p-6 flex-1 flex flex-col">
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">{car.brand} {car.model}</h3>
+                    <p className="text-gray-600 mb-4">{car.year} • {car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} km • {car.fuel} • {car.power} KM</p>
+                  </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-2xl font-bold text-gray-900">{car.price.toLocaleString()} zł</span>
+                    <span className="text-2xl font-bold text-gray-900">{car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł</span>
                     <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                       Zobacz szczegóły
                     </Button>

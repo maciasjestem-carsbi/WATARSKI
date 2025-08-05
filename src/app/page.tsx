@@ -190,7 +190,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-8">
             {featuredCars.map((car) => (
               <Link key={car.id} href={`/car/${car.id}`}>
-                <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 cursor-pointer">
+                <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 cursor-pointer h-full flex flex-col">
                   <div className="h-56 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center relative overflow-hidden">
                     {car.imageUrl ? (
                       <Image 
@@ -207,16 +207,18 @@ export default function HomePage() {
                       {car.type === 'new' ? 'Nowy' : 'Używany'}
                     </div>
                   </div>
-                  <div className="p-8">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2">{car.brand} {car.model}</h3>
-                        <p className="text-gray-600 text-lg">{car.year} • {car.mileage} km • {car.fuel} • {car.power} KM</p>
+                  <div className="p-8 flex-1 flex flex-col">
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-2">{car.brand} {car.model}</h3>
+                          <p className="text-gray-600 text-lg">{car.year} • {car.mileage} km • {car.fuel} • {car.power} KM</p>
+                        </div>
                       </div>
                     </div>
                     <div className="flex justify-between items-center mb-6">
-                      <span className="text-3xl font-bold text-gray-900">{car.price.toLocaleString()} zł</span>
-                      <span className="text-lg text-gray-500 font-medium">{(car.price / 100).toLocaleString()} zł/mies.</span>
+                      <span className="text-3xl font-bold text-gray-900">{car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł</span>
+                      <span className="text-lg text-gray-500 font-medium">{(car.price / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł/mies.</span>
                     </div>
                     <Button className="w-full bg-blue-600 hover:bg-blue-700 py-4 text-lg font-semibold rounded-xl">
                       Zobacz szczegóły
