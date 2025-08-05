@@ -407,6 +407,6 @@ export const supabaseCarDatabase = new SupabaseCarDatabase()
 // 1. Create a Supabase project at https://supabase.com
 // 2. Get your project URL and anon key
 // 3. Add environment variables:
-//    NEXT_PUBLIC_SUPABASE_URL=your_project_url
-//    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+//    WATARSKI_VERCEL_URL=your_project_url
+//    WATARSKI_VERCEL_ANON_KEY=your_anon_key
 // 4. Replace carDatabase with supabaseCarDatabase in your API routes 
