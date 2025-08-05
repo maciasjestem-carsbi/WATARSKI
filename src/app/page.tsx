@@ -41,7 +41,7 @@ export default function HomePage() {
       {/* Hero Section - Volkswagen Style */}
       <section className="relative bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white overflow-hidden min-h-[80vh] flex items-center">
         {/* Background with overlay */}
-        <div className="absolute inset-0 bg-[url('/images/hero/dealership-bg.jpg')] bg-cover bg-center opacity-20"></div>
+        <div className="absolute inset-0 bg-[url('/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp')] bg-cover bg-center opacity-30"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-gray-900/80"></div>
         
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -185,10 +185,16 @@ export default function HomePage() {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Car Card 1 - Volkswagen Style */}
+            {/* Car Card 1 - Volkswagen T-Roc */}
             <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
               <div className="h-56 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center relative overflow-hidden">
-                <CarIcon className="h-32 w-32 text-blue-600" />
+                <Image 
+                  src="/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"
+                  alt="Volkswagen T-Roc"
+                  width={400}
+                  height={300}
+                  className="w-full h-full object-cover"
+                />
                 <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                   Nowy
                 </div>
@@ -196,7 +202,7 @@ export default function HomePage() {
               <div className="p-8">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Volkswagen Golf</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Volkswagen T-Roc</h3>
                     <p className="text-gray-600 text-lg">2024 • 10 km • Hybryda • 150 KM</p>
                   </div>
                 </div>
@@ -211,10 +217,16 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Car Card 2 - Volkswagen Style */}
+            {/* Car Card 2 - Volkswagen Passat */}
             <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
               <div className="h-56 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center relative overflow-hidden">
-                <CarIcon className="h-32 w-32 text-green-600" />
+                <Image 
+                  src="/images/Passat_SE.webp"
+                  alt="Volkswagen Passat"
+                  width={400}
+                  height={300}
+                  className="w-full h-full object-cover"
+                />
                 <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                   Nowy
                 </div>
@@ -222,13 +234,13 @@ export default function HomePage() {
               <div className="p-8">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Skoda Octavia</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Volkswagen Passat</h3>
                     <p className="text-gray-600 text-lg">2024 • 5 km • Diesel • 150 KM</p>
                   </div>
                 </div>
                 <div className="flex justify-between items-center mb-6">
-                  <span className="text-3xl font-bold text-gray-900">119 900 zł</span>
-                  <span className="text-lg text-gray-500 font-medium">1 199 zł/mies.</span>
+                  <span className="text-3xl font-bold text-gray-900">189 900 zł</span>
+                  <span className="text-lg text-gray-500 font-medium">1 899 zł/mies.</span>
                 </div>
                 <Button className="w-full bg-green-600 hover:bg-green-700 py-4 text-lg font-semibold rounded-xl">
                   Zobacz szczegóły
@@ -237,10 +249,16 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Car Card 3 - Volkswagen Style */}
+            {/* Car Card 3 - Volkswagen Tiguan */}
             <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
               <div className="h-56 bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center relative overflow-hidden">
-                <CarIcon className="h-32 w-32 text-orange-600" />
+                <Image 
+                  src="/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp"
+                  alt="Volkswagen Tiguan"
+                  width={400}
+                  height={300}
+                  className="w-full h-full object-cover"
+                />
                 <div className="absolute top-4 right-4 bg-purple-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                   Używany
                 </div>
@@ -248,7 +266,7 @@ export default function HomePage() {
               <div className="p-8">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">BMW 3 Series</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Volkswagen Tiguan</h3>
                     <p className="text-gray-600 text-lg">2023 • 45 000 km • Benzyna • 184 KM</p>
                   </div>
                 </div>

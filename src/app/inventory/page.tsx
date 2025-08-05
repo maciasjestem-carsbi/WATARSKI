@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Car, Filter, Search, Star } from 'lucide-react'
+import Image from 'next/image'
 
 interface CarData {
   id: string
@@ -260,21 +261,36 @@ export default function InventoryPage() {
         </div>
 
         {/* Cars Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredCars.map((car) => (
-            <div key={car.id} className="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="aspect-w-16 aspect-h-9 bg-gray-200">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredCars.map((car, index) => (
+            <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+              <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative overflow-hidden">
                 {car.imageUrl ? (
-                  <img
+                  <Image 
                     src={car.imageUrl}
-                    alt={`${car.brand} ${car.model}`}
-                    className="w-full h-48 object-cover"
+                    alt={car.model}
+                    width={400}
+                    height={300}
+                    className="w-full h-full object-cover"
                   />
                 ) : (
-                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                    <Car className="h-12 w-12 text-gray-400" />
-                  </div>
+                  <Image 
+                    src={`/api/placeholder/400/300`}
+                    alt="Placeholder"
+                    width={400}
+                    height={300}
+                    className="w-full h-full object-cover"
+                  />
                 )}
+                <div className="absolute top-2 right-2">
+                  <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                    car.type === 'new' ? 'bg-green-100 text-green-800' :
+                    car.type === 'used' ? 'bg-purple-100 text-purple-800' :
+                    'bg-blue-100 text-blue-800'
+                  }`}>
+                    {car.type === 'new' ? 'Nowy' : car.type === 'used' ? 'Używany' : 'Dostawczy'}
+                  </span>
+                </div>
               </div>
               
               <div className="p-6">
