@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Car, Plus, Trash2, Edit, Star, Upload, Download, Link, Loader2 } from 'lucide-react'
+import { Car, Plus, Trash2, Edit, Star, Upload, Download, Link, Loader2, Home, AlertCircle } from 'lucide-react'
 import ImageUpload from '@/components/ui/image-upload'
 import type { CarData } from '@/lib/database'
 
 export default function AdminPage() {
   const [cars, setCars] = useState<CarData[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [showFeaturedAlert, setShowFeaturedAlert] = useState(false)
 
   const [isScraping, setIsScraping] = useState(false)
   const [showAddForm, setShowAddForm] = useState(false)
@@ -167,6 +168,18 @@ export default function AdminPage() {
 
   const handleToggleFeatured = async (id: string) => {
     try {
+      const currentCar = cars.find(car => car.id === id)
+      if (!currentCar) return
+
+      const featuredCars = cars.filter(car => car.featured)
+      
+      // If trying to add a 4th featured car, show alert
+      if (!currentCar.featured && featuredCars.length >= 3) {
+        setShowFeaturedAlert(true)
+        setTimeout(() => setShowFeaturedAlert(false), 5000)
+        return
+      }
+
       const response = await fetch(`/api/cars/${id}/featured`, {
         method: 'PUT',
       })
@@ -219,6 +232,10 @@ export default function AdminPage() {
               <h1 className="text-2xl font-bold text-gray-900">WĄTARSKI - Panel Admin</h1>
             </div>
             <div className="flex items-center space-x-4">
+              <a href="/" className="flex items-center text-blue-600 hover:text-blue-700 font-medium">
+                <Home className="h-4 w-4 mr-2" />
+                Powrót do strony głównej
+              </a>
               <Button onClick={() => setShowAddForm(true)} className="bg-blue-600 hover:bg-blue-700">
                 <Plus className="h-4 w-4 mr-2" />
                 Dodaj samochód
@@ -227,6 +244,21 @@ export default function AdminPage() {
           </div>
         </div>
       </header>
+
+      {/* Featured Cars Alert */}
+      {showFeaturedAlert && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center">
+            <AlertCircle className="h-5 w-5 text-yellow-600 mr-3" />
+            <div>
+              <h3 className="text-sm font-medium text-yellow-800">Maksymalnie 3 polecane samochody</h3>
+              <p className="text-sm text-yellow-700 mt-1">
+                Możesz mieć maksymalnie 3 polecane samochody. Odznacz jedno z już polecanych, aby dodać nowe.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Otomoto Import Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
