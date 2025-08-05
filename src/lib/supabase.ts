@@ -1,11 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.WATARSKI_VERCEL_URL
-const supabaseAnonKey = process.env.WATARSKI_VERCEL_ANON_KEY
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables')
-}
+const supabaseUrl = 'https://spwyjrykkqoezyzigxdg.supabase.co'
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwd3lqcnlra3FvZXp5emlneGRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0MzExMjEsImV4cCI6MjA3MDAwNzEyMX0.SEPwNyLe8_ID-ZYFxMq0Nyds64L0yZzLoPvc5YS194I'
 
 // Create Supabase client for server-side usage
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {

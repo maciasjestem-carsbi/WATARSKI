@@ -5,13 +5,46 @@ export async function GET() {
   try {
     console.log('Testing Supabase connection...')
     
-    // Test 1: Basic connection
+    // Test 1: Basic connection - try to access cars table
     const { data: connectionTest, error: connectionError } = await supabase
       .from('cars')
       .select('count', { count: 'exact', head: true })
 
     if (connectionError) {
       console.error('Connection error:', connectionError)
+      
+      // If cars table doesn't exist, try to create it
+      if (connectionError.message.includes('relation "cars" does not exist')) {
+        console.log('Cars table does not exist, creating it...')
+        
+        // For now, return a helpful message
+        return NextResponse.json({
+          success: false,
+          test: 'connection',
+          error: 'Cars table does not exist',
+          message: 'Please create the cars table in your Supabase dashboard',
+          sql: `
+CREATE TABLE IF NOT EXISTS cars (
+  id VARCHAR(255) PRIMARY KEY,
+  brand VARCHAR(255) NOT NULL,
+  model VARCHAR(255) NOT NULL,
+  year INTEGER NOT NULL,
+  mileage INTEGER NOT NULL,
+  fuel VARCHAR(255) NOT NULL,
+  power INTEGER NOT NULL,
+  price INTEGER NOT NULL,
+  type VARCHAR(50) NOT NULL,
+  description TEXT NOT NULL,
+  image_url TEXT,
+  featured BOOLEAN DEFAULT FALSE,
+  source VARCHAR(50) DEFAULT 'manual',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+          `
+        }, { status: 500 })
+      }
+      
       return NextResponse.json({
         success: false,
         test: 'connection',
@@ -85,11 +118,7 @@ export async function GET() {
         count: countError ? '❌ Failed' : '✅ Passed'
       },
       carCount: cars?.length || 0,
-      environment: {
-        hasUrl: !!process.env.WATARSKI_VERCEL_URL,
-        hasKey: !!process.env.WATARSKI_VERCEL_ANON_KEY,
-        urlLength: process.env.WATARSKI_VERCEL_URL?.length || 0
-      }
+      supabaseUrl: 'https://spwyjrykkqoezyzigxdg.supabase.co'
     })
 
   } catch (error) {
