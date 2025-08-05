@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Upload, X, Image as ImageIcon } from 'lucide-react'
+import { uploadImage } from '@/lib/image-upload'
 
 interface ImageUploadProps {
   value?: string
@@ -14,20 +15,22 @@ export default function ImageUpload({ value, onChange, placeholder = "Upload car
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
     setIsUploading(true)
     
-    // Simulate file upload - in a real app, you'd upload to your server or cloud storage
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const result = e.target?.result as string
-      onChange(result)
+    try {
+      // Upload to Vercel Blob
+      const result = await uploadImage(file)
+      onChange(result.url)
+    } catch (error) {
+      console.error('Upload failed:', error)
+      alert('Failed to upload image. Please try again.')
+    } finally {
       setIsUploading(false)
     }
-    reader.readAsDataURL(file)
   }
 
   const handleRemoveImage = () => {
@@ -92,7 +95,8 @@ export default function ImageUpload({ value, onChange, placeholder = "Upload car
 
       <div className="text-sm text-gray-500">
         <p>Supported formats: JPG, PNG, WebP</p>
-        <p>Maximum file size: 5MB</p>
+        <p>Maximum file size: 10MB</p>
+        <p className="text-blue-600">Images are stored securely on Vercel Blob</p>
       </div>
     </div>
   )

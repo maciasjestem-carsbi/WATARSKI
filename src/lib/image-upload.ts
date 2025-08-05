@@ -1,5 +1,5 @@
 // Image upload utility for WĄTARSKI website
-// This handles image uploads and storage
+// This handles image uploads and storage using Vercel Blob
 
 export interface ImageUploadResult {
   url: string
@@ -7,14 +7,33 @@ export interface ImageUploadResult {
   size: number
 }
 
-// Current implementation uses base64 for demo
-// In production, you would use:
-// 1. Vercel Blob: npm install @vercel/blob
-// 2. Cloudinary: npm install cloudinary
-// 3. AWS S3: npm install @aws-sdk/client-s3
-// 4. Local storage: public/images/ folder
-
+// Production implementation using Vercel Blob via API route
 export async function uploadImage(file: File): Promise<ImageUploadResult> {
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.error || 'Upload failed')
+    }
+
+    const result = await response.json()
+    return result
+  } catch (error) {
+    console.error('Error uploading image:', error)
+    throw new Error('Failed to upload image')
+  }
+}
+
+// Fallback for development (base64) - uncomment if needed
+/*
+export async function uploadImageBase64(file: File): Promise<ImageUploadResult> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     
@@ -33,48 +52,5 @@ export async function uploadImage(file: File): Promise<ImageUploadResult> {
     
     reader.readAsDataURL(file)
   })
-}
-
-// Production-ready upload functions (uncomment when ready)
-
-/*
-// Vercel Blob implementation
-import { put } from '@vercel/blob'
-
-export async function uploadImageVercel(file: File): Promise<ImageUploadResult> {
-  const { url } = await put(file.name, file, {
-    access: 'public',
-  })
-  
-  return {
-    url,
-    filename: file.name,
-    size: file.size
-  }
-}
-
-// Cloudinary implementation
-import { v2 as cloudinary } from 'cloudinary'
-
-export async function uploadImageCloudinary(file: File): Promise<ImageUploadResult> {
-  const formData = new FormData()
-  formData.append('file', file)
-  formData.append('upload_preset', 'your_preset')
-  
-  const response = await fetch(
-    `https://api.cloudinary.com/v1_1/your_cloud_name/image/upload`,
-    {
-      method: 'POST',
-      body: formData,
-    }
-  )
-  
-  const data = await response.json()
-  
-  return {
-    url: data.secure_url,
-    filename: file.name,
-    size: file.size
-  }
 }
 */ 
