@@ -1,7 +1,7 @@
 import { Car, Phone, MapPin, Clock, Mail, Facebook, Instagram, Linkedin } from 'lucide-react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { ReactNode } from 'react'
+import Logo from './logo'
 
 interface LayoutProps {
   children: ReactNode
@@ -16,18 +16,8 @@ export default function Layout({ children }: LayoutProps) {
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center">
               <Link href="/" className="flex items-center">
-                <div className="relative w-12 h-12 mr-4">
-                  <Image
-                    src="/images/LOGO.png"
-                    alt="WĄTARSKI Logo"
-                    width={48}
-                    height={48}
-                    className="rounded-lg"
-                  />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900 tracking-tight">WĄTARSKI</h1>
-                  <p className="text-sm text-gray-600 font-medium">Włocławek</p>
+                <div className="mr-4">
+                  <Logo size="md" />
                 </div>
               </Link>
             </div>
@@ -59,18 +49,8 @@ export default function Layout({ children }: LayoutProps) {
             {/* Company Info */}
             <div className="space-y-4">
               <div className="flex items-center">
-                <div className="relative w-10 h-10 mr-3">
-                  <Image
-                    src="/images/LOGO.png"
-                    alt="WĄTARSKI Logo"
-                    width={40}
-                    height={40}
-                    className="rounded-lg"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold">WĄTARSKI</h3>
-                  <p className="text-sm text-gray-400">Włocławek</p>
+                <div className="mr-3">
+                  <Logo size="sm" />
                 </div>
               </div>
               <p className="text-gray-400 text-sm">

@@ -75,7 +75,7 @@ export default function HomePage() {
       {/* Hero Section - Volkswagen Style */}
       <section className="relative bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white overflow-hidden min-h-[80vh] flex items-center">
         {/* Background with overlay */}
-        <div className="absolute inset-0 bg-[url('/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp')] bg-cover bg-center opacity-30"></div>
+        <div className="absolute inset-0 bg-[url('/images/515255155_1371526357899288_6404303245651664116_n.jpg')] bg-cover bg-center opacity-30"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-gray-900/80"></div>
         
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
