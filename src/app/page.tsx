@@ -104,7 +104,7 @@ export default function HomePage() {
                   </Button>
                 </Link>
                 <Link href="/contact">
-                  <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600 shadow-xl font-semibold px-8 py-4 text-lg">
+                  <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-blue-600 shadow-xl font-semibold px-8 py-4 text-lg">
                     Skontaktuj się
                   </Button>
                 </Link>
@@ -113,20 +113,20 @@ export default function HomePage() {
               {/* Trust indicators - Volkswagen style */}
               <div className="grid grid-cols-3 gap-6 pt-8">
                 <div className="text-center">
-                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
-                    <CheckCircle className="h-8 w-8 text-green-400 mx-auto mb-2" />
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 h-full flex flex-col items-center justify-center">
+                    <CheckCircle className="h-8 w-8 text-green-400 mb-2" />
                     <span className="text-white text-sm font-medium">30+ lat doświadczenia</span>
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
-                    <Shield className="h-8 w-8 text-blue-300 mx-auto mb-2" />
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 h-full flex flex-col items-center justify-center">
+                    <Shield className="h-8 w-8 text-blue-300 mb-2" />
                     <span className="text-white text-sm font-medium">Gwarancja marki</span>
                   </div>
                 </div>
                 <div className="text-center">
-                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
-                    <Star className="h-8 w-8 text-yellow-400 mx-auto mb-2" />
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20 h-full flex flex-col items-center justify-center">
+                    <Star className="h-8 w-8 text-yellow-400 mb-2" />
                     <span className="text-white text-sm font-medium">1000+ klientów</span>
                   </div>
                 </div>
@@ -143,13 +143,13 @@ export default function HomePage() {
                       <>
                         <button
                           onClick={() => setCurrentCarIndex((prev) => (prev - 1 + featuredCars.length) % featuredCars.length)}
-                          className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full p-3 transition-all duration-300 hover:scale-110"
+                          className="absolute -left-6 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full p-3 transition-all duration-300 hover:scale-110"
                         >
                           <ChevronRight className="h-6 w-6 rotate-180" />
                         </button>
                         <button
                           onClick={() => setCurrentCarIndex((prev) => (prev + 1) % featuredCars.length)}
-                          className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full p-3 transition-all duration-300 hover:scale-110"
+                          className="absolute -right-6 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full p-3 transition-all duration-300 hover:scale-110"
                         >
                           <ChevronRight className="h-6 w-6" />
                         </button>
@@ -422,78 +422,6 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Wsparcie techniczne</h3>
               <p className="text-gray-600">Zawsze dostępni</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section - Volkswagen Style */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Skontaktuj się z nami</h2>
-            <p className="text-xl text-gray-600">Jesteśmy tutaj, aby Ci pomóc w wyborze idealnego samochodu</p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-12">
-            <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
-              <h3 className="text-2xl font-bold text-gray-900 mb-8">Dane kontaktowe</h3>
-              <div className="space-y-6">
-                <div className="flex items-center space-x-6">
-                  <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center">
-                    <Phone className="h-8 w-8 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-gray-900 text-lg">Telefon</p>
-                    <p className="text-gray-600 text-lg">54 230 60 66</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-6">
-                  <div className="w-16 h-16 bg-green-600 rounded-2xl flex items-center justify-center">
-                    <MapPin className="h-8 w-8 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-gray-900 text-lg">Adres</p>
-                    <p className="text-gray-600 text-lg">ul. Toruńska 123, 87-800 Włocławek</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-6">
-                  <div className="w-16 h-16 bg-orange-600 rounded-2xl flex items-center justify-center">
-                    <Clock className="h-8 w-8 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-gray-900 text-lg">Godziny otwarcia</p>
-                    <p className="text-gray-600 text-lg">Pon-Pt: 8:00-17:00, Sob: 9:00-14:00</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
-              <h3 className="text-2xl font-bold text-gray-900 mb-8">Godziny otwarcia</h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-6 bg-gray-50 rounded-2xl">
-                  <span className="font-semibold text-lg">Poniedziałek - Piątek</span>
-                  <span className="text-blue-600 font-bold text-lg">08:00 - 17:00</span>
-                </div>
-                <div className="flex justify-between items-center p-6 bg-gray-50 rounded-2xl">
-                  <span className="font-semibold text-lg">Sobota</span>
-                  <span className="text-green-600 font-bold text-lg">09:00 - 14:00</span>
-                </div>
-                <div className="flex justify-between items-center p-6 bg-gray-50 rounded-2xl">
-                  <span className="font-semibold text-lg">Niedziela</span>
-                  <span className="text-red-600 font-bold text-lg">Nieczynne</span>
-                </div>
-              </div>
-              
-              <div className="mt-8">
-                <Link href="/contact">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 shadow-lg py-4 text-lg font-semibold rounded-xl">
-                    Skontaktuj się z nami
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-              </div>
             </div>
           </div>
         </div>
