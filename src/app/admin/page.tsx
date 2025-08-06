@@ -177,106 +177,20 @@ export default function AdminPage() {
       if (!currentCar.featured && featuredCars.length >= 3) {
         setShowFeaturedAlert(true)
         setTimeout(() => setShowFeaturedAlert(false), 5000)
-        return
+        return // Prevent API call
       }
 
-      const response = await fetch(`/api/cars/${id}/featured`, {
-        method: 'PUT',
-      })
-
+      const response = await fetch(`/api/cars/${id}/featured`, { method: 'PUT' })
       if (!response.ok) {
         throw new Error('Failed to toggle featured status')
       }
-
       const updatedCar = await response.json()
-      setCars(prev => prev.map(car => 
-        car.id === id ? updatedCar : car
-      ))
+      setCars(prev => prev.map(car => car.id === id ? updatedCar : car))
     } catch (error) {
       console.error('Error toggling featured status:', error)
       alert('Błąd podczas zmiany statusu polecanych')
     }
   }
-
-  const handleMoveUp = async (id: string) => {
-    const currentIndex = cars.findIndex(car => car.id === id);
-    if (currentIndex === -1 || currentIndex === 0) return;
-
-    const [carToMove] = cars.splice(currentIndex, 1);
-    cars.splice(currentIndex - 1, 0, carToMove);
-
-    setCars(prev => prev.map((car, index) => 
-      car.id === id ? { ...car, featuredOrder: index + 1 } : car
-    ));
-
-    try {
-      const response = await fetch(`/api/cars/${id}/featured-order`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ newOrder: currentIndex }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to move featured car up');
-      }
-      const updatedCar = await response.json();
-      setCars(prev => prev.map(car => 
-        car.id === id ? updatedCar : car
-      ));
-    } catch (error) {
-      console.error('Error moving featured car up:', error);
-      alert('Błąd podczas przenoszenia samochodu w górę');
-      // Revert the local state if API call fails
-      setCars(prev => {
-        const newCars = [...prev];
-        newCars.splice(currentIndex - 1, 0, carToMove);
-        newCars.splice(currentIndex + 1, 1);
-        return newCars;
-      });
-    }
-  };
-
-  const handleMoveDown = async (id: string) => {
-    const currentIndex = cars.findIndex(car => car.id === id);
-    if (currentIndex === -1 || currentIndex === cars.length - 1) return;
-
-    const [carToMove] = cars.splice(currentIndex, 1);
-    cars.splice(currentIndex + 1, 0, carToMove);
-
-    setCars(prev => prev.map((car, index) => 
-      car.id === id ? { ...car, featuredOrder: index + 1 } : car
-    ));
-
-    try {
-      const response = await fetch(`/api/cars/${id}/featured-order`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ newOrder: currentIndex + 2 }), // +2 because the new order is 1-based
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to move featured car down');
-      }
-      const updatedCar = await response.json();
-      setCars(prev => prev.map(car => 
-        car.id === id ? updatedCar : car
-      ));
-    } catch (error) {
-      console.error('Error moving featured car down:', error);
-      alert('Błąd podczas przenoszenia samochodu w dół');
-      // Revert the local state if API call fails
-      setCars(prev => {
-        const newCars = [...prev];
-        newCars.splice(currentIndex + 1, 0, carToMove);
-        newCars.splice(currentIndex, 1);
-        return newCars;
-      });
-    }
-  };
 
   const handleImageUpload = (imageUrl: string) => {
     if (editingCar) {
@@ -592,27 +506,9 @@ export default function AdminPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {car.featured && car.featuredOrder ? (
-                        <div className="flex items-center space-x-2">
-                          <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-600 text-white text-xs font-bold rounded-full">
-                            {car.featuredOrder}
-                          </span>
-                          <div className="flex flex-col space-y-1">
-                            <button
-                              onClick={() => handleMoveUp(car.id)}
-                              disabled={car.featuredOrder === 1}
-                              className="w-4 h-4 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded text-xs"
-                            >
-                              ↑
-                            </button>
-                            <button
-                              onClick={() => handleMoveDown(car.id)}
-                              disabled={car.featuredOrder === 3}
-                              className="w-4 h-4 bg-gray-200 hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed rounded text-xs"
-                            >
-                              ↓
-                            </button>
-                          </div>
-                        </div>
+                        <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-600 text-white text-xs font-bold rounded-full">
+                          {car.featuredOrder}
+                        </span>
                       ) : (
                         <span className="text-gray-400 text-xs">-</span>
                       )}
