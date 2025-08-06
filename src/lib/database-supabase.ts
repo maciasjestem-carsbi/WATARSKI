@@ -150,14 +150,15 @@ class SupabaseCarDatabase {
         .from('cars')
         .select('*')
         .eq('featured', true)
-        .order('featured_order', { ascending: true })
+        .order('created_at', { ascending: false })
 
       if (error) {
         console.error('Error fetching featured cars:', error)
         return []
       }
 
-      return data?.map(row => ({
+      // Add visual order numbers based on array position
+      return data?.map((row, index) => ({
         id: row.id,
         brand: row.brand,
         model: row.model,
@@ -170,7 +171,7 @@ class SupabaseCarDatabase {
         description: row.description,
         imageUrl: row.image_url,
         featured: row.featured,
-        featuredOrder: row.featured_order,
+        featuredOrder: index + 1, // Visual order based on array position
         source: row.source as 'manual' | 'otomoto',
         createdAt: new Date(row.created_at),
         updatedAt: new Date(row.updated_at)
@@ -343,117 +344,44 @@ class SupabaseCarDatabase {
           // Cannot add more featured cars
           return null
         }
+      }
 
-        // Get the next available order number
-        const { data: maxOrder } = await supabase
-          .from('cars')
-          .select('featured_order')
-          .eq('featured', true)
-          .not('featured_order', 'is', null)
-          .order('featured_order', { ascending: false })
-          .limit(1)
-          .single()
+      // Update featured status
+      const { data, error } = await supabase
+        .from('cars')
+        .update({ 
+          featured: newFeatured,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        .select()
+        .single()
 
-        const nextOrder = (maxOrder?.featured_order || 0) + 1
+      if (error || !data) {
+        return null
+      }
 
-        // Update featured status with order
-        const { data, error } = await supabase
-          .from('cars')
-          .update({ 
-            featured: newFeatured,
-            featured_order: nextOrder,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', id)
-          .select()
-          .single()
-
-        if (error || !data) {
-          return null
-        }
-
-        return {
-          id: data.id,
-          brand: data.brand,
-          model: data.model,
-          year: data.year,
-          mileage: data.mileage,
-          fuel: data.fuel,
-          power: data.power,
-          price: data.price,
-          type: data.type as 'new' | 'used' | 'delivery',
-          description: data.description,
-          imageUrl: data.image_url,
-          featured: data.featured,
-          featuredOrder: data.featured_order,
-          source: data.source as 'manual' | 'otomoto',
-          createdAt: new Date(data.created_at),
-          updatedAt: new Date(data.updated_at)
-        }
-      } else {
-        // Remove featured status
-        const { data, error } = await supabase
-          .from('cars')
-          .update({ 
-            featured: newFeatured,
-            featured_order: null,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', id)
-          .select()
-          .single()
-
-        if (error || !data) {
-          return null
-        }
-
-        // Reorder remaining featured cars
-        await this.reorderFeaturedCars()
-
-        return {
-          id: data.id,
-          brand: data.brand,
-          model: data.model,
-          year: data.year,
-          mileage: data.mileage,
-          fuel: data.fuel,
-          power: data.power,
-          price: data.price,
-          type: data.type as 'new' | 'used' | 'delivery',
-          description: data.description,
-          imageUrl: data.image_url,
-          featured: data.featured,
-          featuredOrder: data.featured_order,
-          source: data.source as 'manual' | 'otomoto',
-          createdAt: new Date(data.created_at),
-          updatedAt: new Date(data.updated_at)
-        }
+      return {
+        id: data.id,
+        brand: data.brand,
+        model: data.model,
+        year: data.year,
+        mileage: data.mileage,
+        fuel: data.fuel,
+        power: data.power,
+        price: data.price,
+        type: data.type as 'new' | 'used' | 'delivery',
+        description: data.description,
+        imageUrl: data.image_url,
+        featured: data.featured,
+        featuredOrder: newFeatured ? 1 : undefined, // Will be calculated in getFeaturedCars
+        source: data.source as 'manual' | 'otomoto',
+        createdAt: new Date(data.created_at),
+        updatedAt: new Date(data.updated_at)
       }
     } catch (error) {
       console.error('Error toggling featured status:', error)
       return null
-    }
-  }
-
-  // Reorder featured cars after removing one
-  private async reorderFeaturedCars() {
-    try {
-      const { data: featuredCars } = await supabase
-        .from('cars')
-        .select('id')
-        .eq('featured', true)
-        .order('featured_order', { ascending: true })
-
-      if (featuredCars) {
-        for (let i = 0; i < featuredCars.length; i++) {
-          await supabase
-            .from('cars')
-            .update({ featured_order: i + 1 })
-            .eq('id', featuredCars[i].id)
-        }
-      }
-    } catch (error) {
-      console.error('Error reordering featured cars:', error)
     }
   }
 }
