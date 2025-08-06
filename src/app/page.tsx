@@ -11,6 +11,7 @@ import type { CarData } from '@/lib/database'
 export default function HomePage() {
   const [featuredCars, setFeaturedCars] = useState<CarData[]>([])
   const [loading, setLoading] = useState(true)
+  const [currentCarIndex, setCurrentCarIndex] = useState(0)
 
   useEffect(() => {
     const fetchFeaturedCars = async () => {
@@ -32,6 +33,17 @@ export default function HomePage() {
     fetchFeaturedCars()
   }, [])
 
+  // Rotate featured cars every 5 seconds
+  useEffect(() => {
+    if (featuredCars.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentCarIndex((prev) => (prev + 1) % featuredCars.length)
+      }, 5000)
+
+      return () => clearInterval(interval)
+    }
+  }, [featuredCars.length])
+
   if (loading) {
     return (
       <Layout>
@@ -44,6 +56,8 @@ export default function HomePage() {
       </Layout>
     )
   }
+
+  const currentCar = featuredCars[currentCarIndex] || featuredCars[0]
 
   return (
     <Layout>
@@ -111,19 +125,57 @@ export default function HomePage() {
             {/* Right side - Car showcase */}
             <div className="relative">
               <div className="relative z-10">
-                <Image
-                  src="/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"
-                  alt="Volkswagen T-Roc"
-                  width={600}
-                  height={400}
-                  className="rounded-2xl shadow-2xl"
-                />
-                <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-xl">
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-blue-600">129 900 zł</p>
-                    <p className="text-sm text-gray-600">Volkswagen T-Roc</p>
-                  </div>
-                </div>
+                {currentCar ? (
+                  <>
+                    <Image
+                      src={currentCar.imageUrl || "/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"}
+                      alt={`${currentCar.brand} ${currentCar.model}`}
+                      width={600}
+                      height={400}
+                      className="rounded-2xl shadow-2xl"
+                    />
+                    <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-xl">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-blue-600">
+                          {currentCar.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł
+                        </p>
+                        <p className="text-sm text-gray-600">{currentCar.brand} {currentCar.model}</p>
+                      </div>
+                    </div>
+                    {/* Car indicator dots */}
+                    {featuredCars.length > 1 && (
+                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                        {featuredCars.map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setCurrentCarIndex(index)}
+                            className={`w-3 h-3 rounded-full transition-all ${
+                              index === currentCarIndex 
+                                ? 'bg-white shadow-lg' 
+                                : 'bg-white/50 hover:bg-white/75'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <Image
+                      src="/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"
+                      alt="Volkswagen T-Roc"
+                      width={600}
+                      height={400}
+                      className="rounded-2xl shadow-2xl"
+                    />
+                    <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-xl">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-blue-600">129 900 zł</p>
+                        <p className="text-sm text-gray-600">Volkswagen T-Roc</p>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -165,68 +217,6 @@ export default function HomePage() {
                 Szukaj
               </Button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Cars Section - Volkswagen Style */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Polecane samochody</h2>
-            <p className="text-xl text-gray-600">Sprawdź nasze najnowsze oferty</p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {featuredCars.map((car) => (
-              <Link key={car.id} href={`/car/${car.id}`}>
-                <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 cursor-pointer h-full flex flex-col">
-                  <div className="h-56 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center relative overflow-hidden">
-                    {car.imageUrl ? (
-                      <Image 
-                        src={car.imageUrl}
-                        alt={`${car.brand} ${car.model}`}
-                        width={400}
-                        height={300}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <CarIcon className="h-32 w-32 text-blue-600" />
-                    )}
-                    <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                      {car.type === 'new' ? 'Nowy' : 'Używany'}
-                    </div>
-                  </div>
-                  <div className="p-8 flex-1 flex flex-col">
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex-1">
-                          <h3 className="text-2xl font-bold text-gray-900 mb-2">{car.brand} {car.model}</h3>
-                          <p className="text-gray-600 text-lg">{car.year} • {car.mileage} km • {car.fuel} • {car.power} KM</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center mb-6">
-                      <span className="text-3xl font-bold text-gray-900">{car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł</span>
-                      <span className="text-lg text-gray-500 font-medium">{(car.price / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł/mies.</span>
-                    </div>
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 py-4 text-lg font-semibold rounded-xl">
-                      Zobacz szczegóły
-                      <ChevronRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link href="/inventory">
-              <Button size="lg" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 text-lg font-semibold rounded-xl">
-                Zobacz wszystkie samochody
-                <ArrowRight className="ml-2 h-6 w-6" />
-              </Button>
-            </Link>
           </div>
         </div>
       </section>
