@@ -138,13 +138,36 @@ export default function HomePage() {
               <div className="relative z-10">
                 {currentCar ? (
                   <>
-                    <Image
-                      src={currentCar.imageUrl || "/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"}
-                      alt={`${currentCar.brand} ${currentCar.model}`}
-                      width={600}
-                      height={400}
-                      className="rounded-2xl shadow-2xl"
-                    />
+                    {/* Navigation arrows */}
+                    {featuredCars.length > 1 && (
+                      <>
+                        <button
+                          onClick={() => setCurrentCarIndex((prev) => (prev - 1 + featuredCars.length) % featuredCars.length)}
+                          className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full p-3 transition-all duration-300 hover:scale-110"
+                        >
+                          <ChevronRight className="h-6 w-6 rotate-180" />
+                        </button>
+                        <button
+                          onClick={() => setCurrentCarIndex((prev) => (prev + 1) % featuredCars.length)}
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white rounded-full p-3 transition-all duration-300 hover:scale-110"
+                        >
+                          <ChevronRight className="h-6 w-6" />
+                        </button>
+                      </>
+                    )}
+                    
+                    <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+                      <Image
+                        src={currentCar.imageUrl || "/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"}
+                        alt={`${currentCar.brand} ${currentCar.model}`}
+                        width={600}
+                        height={600}
+                        className="w-full h-[400px] object-cover object-center"
+                      />
+                      {/* Gradient overlay for better text readability */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+                    </div>
+                    
                     <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-xl">
                       <div className="text-center">
                         <p className="text-2xl font-bold text-blue-600">
@@ -153,6 +176,7 @@ export default function HomePage() {
                         <p className="text-sm text-gray-600">{currentCar.brand} {currentCar.model}</p>
                       </div>
                     </div>
+                    
                     {/* Car indicator dots */}
                     {featuredCars.length > 1 && (
                       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
@@ -172,13 +196,17 @@ export default function HomePage() {
                   </>
                 ) : (
                   <>
-                    <Image
-                      src="/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"
-                      alt="Volkswagen T-Roc"
-                      width={600}
-                      height={400}
-                      className="rounded-2xl shadow-2xl"
-                    />
+                    <div className="relative overflow-hidden rounded-2xl shadow-2xl">
+                      <Image
+                        src="/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"
+                        alt="Volkswagen T-Roc"
+                        width={600}
+                        height={600}
+                        className="w-full h-[400px] object-cover object-center"
+                      />
+                      {/* Gradient overlay for better text readability */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+                    </div>
                     <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-xl">
                       <div className="text-center">
                         <p className="text-2xl font-bold text-blue-600">129 900 zł</p>
@@ -246,13 +274,17 @@ export default function HomePage() {
                 <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 cursor-pointer h-full flex flex-col">
                   <div className="h-56 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center relative overflow-hidden">
                     {car.imageUrl ? (
-                      <Image 
-                        src={car.imageUrl}
-                        alt={`${car.brand} ${car.model}`}
-                        width={400}
-                        height={300}
-                        className="w-full h-full object-cover"
-                      />
+                      <div className="relative w-full h-full">
+                        <Image 
+                          src={car.imageUrl}
+                          alt={`${car.brand} ${car.model}`}
+                          width={400}
+                          height={400}
+                          className="w-full h-full object-cover object-center"
+                        />
+                        {/* Gradient overlay for better text readability */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+                      </div>
                     ) : (
                       <CarIcon className="h-32 w-32 text-blue-600" />
                     )}
