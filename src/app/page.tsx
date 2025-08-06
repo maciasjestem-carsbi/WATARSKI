@@ -104,7 +104,7 @@ export default function HomePage() {
                   </Button>
                 </Link>
                 <Link href="/contact">
-                  <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-blue-600 shadow-xl font-semibold px-8 py-4 text-lg">
+                  <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 shadow-xl transform hover:scale-105 transition-all font-semibold px-8 py-4 text-lg">
                     Skontaktuj się
                   </Button>
                 </Link>
@@ -426,71 +426,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Footer - Volkswagen Style */}
-      <footer className="bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center mb-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center mr-4">
-                  <Car className="h-8 w-8 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold">WĄTARSKI</h3>
-                  <p className="text-sm text-gray-400">Włocławek</p>
-                </div>
-              </div>
-              <p className="text-gray-400 mb-8 text-lg leading-relaxed">
-                Autoryzowany salon Volkswagen i Skoda z wieloletnim doświadczeniem w sprzedaży i serwisie samochodów.
-              </p>
-              <div className="flex space-x-4 items-center">
-                <Phone className="h-6 w-6 text-blue-400" />
-                <span className="text-gray-400 text-lg font-semibold">54 230 60 66</span>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="text-xl font-bold mb-8">Samochody</h4>
-              <ul className="space-y-4 text-gray-400">
-                <li><Link href="/inventory" className="hover:text-white transition-colors text-lg">Nowe samochody</Link></li>
-                <li><Link href="/inventory" className="hover:text-white transition-colors text-lg">Używane samochody</Link></li>
-                <li><Link href="/inventory" className="hover:text-white transition-colors text-lg">Samochody dostawcze</Link></li>
-                <li><Link href="/inventory" className="hover:text-white transition-colors text-lg">Finansowanie</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="text-xl font-bold mb-8">Serwis</h4>
-              <ul className="space-y-4 text-gray-400">
-                <li><Link href="/service" className="hover:text-white transition-colors text-lg">Umów serwis</Link></li>
-                <li><Link href="/service" className="hover:text-white transition-colors text-lg">Gwarancja</Link></li>
-                <li><Link href="/service" className="hover:text-white transition-colors text-lg">Części zamienne</Link></li>
-                <li><Link href="/service" className="hover:text-white transition-colors text-lg">Diagnostyka</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="text-xl font-bold mb-8">Kontakt</h4>
-              <ul className="space-y-4 text-gray-400">
-                <li><Link href="/contact" className="hover:text-white transition-colors text-lg">Formularz kontaktowy</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition-colors text-lg">Dojazd</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition-colors text-lg">Zespół</Link></li>
-                <li><Link href="/contact" className="hover:text-white transition-colors text-lg">Opinie klientów</Link></li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="border-t border-gray-800 mt-12 pt-8 text-center">
-            <p className="text-gray-400 text-lg">&copy; 2025 WĄTARSKI Włocławek. Wszystkie prawa zastrzeżone.</p>
-            <div className="mt-4">
-              <Link href="/admin" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">
-                Panel administracyjny
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
     </Layout>
   )
 } 

@@ -133,7 +133,7 @@ export default function Layout({ children }: LayoutProps) {
           <div className="border-t border-gray-800 mt-8 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <p className="text-sm text-gray-400">
-                © 2024 WĄTARSKI Włocławek. Wszystkie prawa zastrzeżone.
+                © 2025 WĄTARSKI Włocławek. Wszystkie prawa zastrzeżone.
               </p>
               <div className="flex space-x-4 mt-4 md:mt-0">
                 <a href="#" className="text-gray-400 hover:text-white transition-colors">
@@ -145,6 +145,9 @@ export default function Layout({ children }: LayoutProps) {
                 <a href="#" className="text-gray-400 hover:text-white transition-colors">
                   <Linkedin className="h-5 w-5" />
                 </a>
+                <Link href="/admin" className="text-gray-400 hover:text-white transition-colors">
+                  Panel admin
+                </Link>
               </div>
             </div>
           </div>
