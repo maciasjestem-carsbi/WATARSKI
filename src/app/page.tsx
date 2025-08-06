@@ -10,27 +10,38 @@ import type { CarData } from '@/lib/database'
 
 export default function HomePage() {
   const [featuredCars, setFeaturedCars] = useState<CarData[]>([])
+  const [latestCars, setLatestCars] = useState<CarData[]>([])
   const [loading, setLoading] = useState(true)
   const [currentCarIndex, setCurrentCarIndex] = useState(0)
 
   useEffect(() => {
-    const fetchFeaturedCars = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch('/api/cars/featured')
-        if (response.ok) {
-          const cars = await response.json()
-          setFeaturedCars(cars)
+        // Fetch featured cars for rotation
+        const featuredResponse = await fetch('/api/cars/featured')
+        if (featuredResponse.ok) {
+          const featured = await featuredResponse.json()
+          setFeaturedCars(featured)
         } else {
-          console.error('Failed to fetch featured cars:', response.status)
+          console.error('Failed to fetch featured cars:', featuredResponse.status)
+        }
+
+        // Fetch latest cars for the section
+        const latestResponse = await fetch('/api/cars/latest')
+        if (latestResponse.ok) {
+          const latest = await latestResponse.json()
+          setLatestCars(latest)
+        } else {
+          console.error('Failed to fetch latest cars:', latestResponse.status)
         }
       } catch (error) {
-        console.error('Error fetching featured cars:', error)
+        console.error('Error fetching cars:', error)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchFeaturedCars()
+    fetchData()
   }, [])
 
   // Rotate featured cars every 5 seconds
@@ -217,6 +228,68 @@ export default function HomePage() {
                 Szukaj
               </Button>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Latest Cars Section - Volkswagen Style */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">Najnowsze samochody</h2>
+            <p className="text-xl text-gray-600">Sprawdź nasze najnowsze oferty</p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {latestCars.slice(0, 3).map((car) => (
+              <Link key={car.id} href={`/car/${car.id}`}>
+                <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 cursor-pointer h-full flex flex-col">
+                  <div className="h-56 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center relative overflow-hidden">
+                    {car.imageUrl ? (
+                      <Image 
+                        src={car.imageUrl}
+                        alt={`${car.brand} ${car.model}`}
+                        width={400}
+                        height={300}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <CarIcon className="h-32 w-32 text-blue-600" />
+                    )}
+                    <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                      {car.type === 'new' ? 'Nowy' : 'Używany'}
+                    </div>
+                  </div>
+                  <div className="p-8 flex-1 flex flex-col">
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-2">{car.brand} {car.model}</h3>
+                          <p className="text-gray-600 text-lg">{car.year} • {car.mileage} km • {car.fuel} • {car.power} KM</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center mb-6">
+                      <span className="text-3xl font-bold text-gray-900">{car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł</span>
+                      <span className="text-lg text-gray-500 font-medium">{(car.price / 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł/mies.</span>
+                    </div>
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700 py-4 text-lg font-semibold rounded-xl">
+                      Zobacz szczegóły
+                      <ChevronRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Link href="/inventory">
+              <Button size="lg" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 text-lg font-semibold rounded-xl">
+                Zobacz wszystkie samochody
+                <ArrowRight className="ml-2 h-6 w-6" />
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
