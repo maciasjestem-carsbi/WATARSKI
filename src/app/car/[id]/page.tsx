@@ -142,6 +142,9 @@ export default function CarDetailsPage() {
                 )}
               </div>
               <h1 className="text-4xl font-bold text-gray-900 mb-2">{car.brand} {car.model}</h1>
+              {car.version && (
+                <p className="text-xl text-blue-600 font-medium mb-2">{car.version}</p>
+              )}
               <p className="text-2xl font-bold text-blue-600">{car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł</p>
             </div>
 

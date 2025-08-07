@@ -222,6 +222,9 @@ export default function InventoryPage() {
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                         {car.brand} {car.model}
                       </h3>
+                      {car.version && (
+                        <p className="text-blue-600 text-sm font-medium mb-2">{car.version}</p>
+                      )}
                       <p className="text-gray-600 text-sm mb-3">{car.description}</p>
                     </div>
                     
