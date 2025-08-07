@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Car, Phone, MapPin, Calendar, Zap, Fuel, Gauge, Star, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { getCarById, type CarData } from '@/lib/car-data'
+import type { CarData } from '@/lib/database'
 
 export default function CarDetailsPage() {
   const params = useParams()
@@ -14,10 +14,26 @@ export default function CarDetailsPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const carId = params.id as string
-    const foundCar = getCarById(carId)
-    setCar(foundCar || null)
-    setLoading(false)
+    const fetchCar = async () => {
+      try {
+        const carId = params.id as string
+        const response = await fetch(`/api/cars/${carId}`)
+        
+        if (!response.ok) {
+          throw new Error('Car not found')
+        }
+        
+        const carData = await response.json()
+        setCar(carData)
+      } catch (error) {
+        console.error('Error fetching car:', error)
+        setCar(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCar()
   }, [params.id])
 
   if (loading) {
