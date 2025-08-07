@@ -101,18 +101,38 @@ async function parseOtomotoPage(html: string, url: string): Promise<ScrapedCarDe
 
   // Extract power - improved pattern to avoid confusion with mileage
   let power = 100
-  const powerMatch = html.match(/Moc[^>]*>([^<]+)</i) || 
-                    html.match(/(\d+)\s*KM/i) ||
-                    html.match(/data-power="(\d+)"/i) ||
-                    html.match(/power["\s]*:["\s]*(\d+)/i) ||
-                    html.match(/"power"["\s]*:["\s]*(\d+)/i) ||
-                    html.match(/KM["\s]*:["\s]*(\d+)/i)
   
-  if (powerMatch) {
-    const powerValue = parseInt(powerMatch[1])
-    // Only use if it's a reasonable power value (not mileage)
-    if (powerValue >= 50 && powerValue <= 1000) {
-      power = powerValue
+  // Look for power in various formats, prioritizing specific power patterns
+  const powerPatterns = [
+    /Moc[^>]*>([^<]+)</i,  // Moc: 150 KM
+    /(\d+)\s*KM/i,  // 150 KM
+    /data-power="(\d+)"/i,  // data-power="150"
+    /power["\s]*:["\s]*(\d+)/i,  // "power": 150
+    /"power"["\s]*:["\s]*(\d+)/i,  // "power": 150
+    /KM["\s]*:["\s]*(\d+)/i,  // "KM": 150
+  ]
+  
+  for (const pattern of powerPatterns) {
+    const powerMatch = html.match(pattern)
+    if (powerMatch) {
+      const powerValue = parseInt(powerMatch[1])
+      // Only use if it's a reasonable power value (not mileage)
+      if (powerValue >= 50 && powerValue <= 1000) {
+        power = powerValue
+        break
+      }
+    }
+  }
+  
+  // If no power found, try to extract from title or description
+  if (power === 100) {
+    // Look for power in title
+    const titlePowerMatch = title.match(/(\d+)\s*KM/i)
+    if (titlePowerMatch) {
+      const powerValue = parseInt(titlePowerMatch[1])
+      if (powerValue >= 50 && powerValue <= 1000) {
+        power = powerValue
+      }
     }
   }
 
@@ -173,7 +193,7 @@ async function parseOtomotoPage(html: string, url: string): Promise<ScrapedCarDe
         if (foundModel) {
           model = foundModel
           
-          // Extract version from the remaining text
+          // Extract version from the remaining text - take everything after model
           const modelIndex = fullModelText.toLowerCase().indexOf(foundModel.toLowerCase())
           const afterModel = fullModelText.substring(modelIndex + foundModel.length).trim()
           
@@ -193,49 +213,9 @@ async function parseOtomotoPage(html: string, url: string): Promise<ScrapedCarDe
             // Remove mileage patterns
             cleanAfterModel = cleanAfterModel.replace(/\d+\s*km/i, '').trim()
             
-            // Look for specific version patterns
-            const specificVersionPatterns = [
-              /\d+\.\d+\s*(TSI|TDI|TFSI|GDI|HDI|CDI)/i,  // 1.5 TSI, 2.0 TDI, etc.
-              /(RS|GTI|R|S|SE|SEL|Sport|Comfort|Ambition|Style|Elegance|Laurin|Klement|Sportline|Scout)/i,  // Trim levels
-              /(DSG|S-Tronic|Tiptronic|Manual|Automatic)/i,  // Transmission types
-              /\d+\.\d+\s*(L|T|GDI|HDI)/i,  // Engine sizes
-              /(Hybrid|PHEV|EV|Electric)/i,  // Fuel types
-            ]
-            
-            let extractedVersion = ''
-            for (const pattern of specificVersionPatterns) {
-              const versionMatch = cleanAfterModel.match(pattern)
-              if (versionMatch) {
-                extractedVersion = versionMatch[0].trim()
-                break
-              }
-            }
-            
-            // If no specific pattern found, try to extract meaningful version info
-            if (!extractedVersion) {
-              // Look for engine codes and trim levels in the cleaned text
-              const enginePatterns = [
-                /\d+\.\d+\s*(TSI|TDI|TFSI)/i,
-                /(Sportline|Scout|Style|Ambition|Elegance|Laurin|Klement)/i,
-                /(DSG|Manual|Automatic)/i
-              ]
-              
-              for (const pattern of enginePatterns) {
-                const match = cleanAfterModel.match(pattern)
-                if (match) {
-                  extractedVersion = match[0].trim()
-                  break
-                }
-              }
-              
-              // If still no version found, use the cleaned text if it's not empty and doesn't contain price info
-              if (!extractedVersion && cleanAfterModel.length > 0 && !cleanAfterModel.match(/zł|PLN/i)) {
-                extractedVersion = cleanAfterModel
-              }
-            }
-            
-            if (extractedVersion) {
-              version = extractedVersion
+            // Use the cleaned text as version if it's not empty
+            if (cleanAfterModel.length > 0 && !cleanAfterModel.match(/zł|PLN/i)) {
+              version = cleanAfterModel
             }
           }
         } else {

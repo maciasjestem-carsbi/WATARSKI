@@ -84,7 +84,7 @@ export default function HomePage() {
               <div className="space-y-6">
                 <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full text-white text-sm font-medium border border-white/30">
                   <Award className="h-4 w-4" />
-                  <span>Autoryzowany salon Volkswagen i Skoda</span>
+                  <span>Autoryzowany Dealer Volkswagen i Skoda</span>
                 </div>
                 <h1 className="text-6xl lg:text-7xl font-bold text-white leading-tight tracking-tight">
                   WĄTARSKI
@@ -273,7 +273,19 @@ export default function HomePage() {
               <Link key={car.id} href={`/car/${car.id}`}>
                 <div className="bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 cursor-pointer h-full flex flex-col">
                   <div className="h-56 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center relative overflow-hidden">
-                    {car.imageUrl ? (
+                    {(car.images && car.images.length > 0) ? (
+                      <div className="relative w-full h-full">
+                        <Image 
+                          src={car.images[0]}
+                          alt={`${car.brand} ${car.model}`}
+                          width={400}
+                          height={400}
+                          className="w-full h-full object-cover object-center"
+                        />
+                        {/* Gradient overlay for better text readability */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
+                      </div>
+                    ) : car.imageUrl ? (
                       <div className="relative w-full h-full">
                         <Image 
                           src={car.imageUrl}

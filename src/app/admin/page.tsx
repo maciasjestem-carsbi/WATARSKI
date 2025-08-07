@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Car, Plus, Trash2, Edit, Star, Upload, Download, Link, Loader2, Home, AlertCircle } from 'lucide-react'
 import ImageUpload from '@/components/ui/image-upload'
+import MultipleImageUpload from '@/components/ui/multiple-image-upload'
 import type { CarData } from '@/lib/database'
 
 export default function AdminPage() {
@@ -27,7 +28,8 @@ export default function AdminPage() {
     price: 0,
     type: 'new',
     description: '',
-    featured: false
+    featured: false,
+    images: []
   })
 
   // Load cars on component mount
@@ -81,6 +83,7 @@ export default function AdminPage() {
           type: 'used' as const,
           description: scrapedCar.description,
           imageUrl: scrapedCar.imageUrl,
+          images: scrapedCar.imageUrl ? [scrapedCar.imageUrl] : [],
           featured: false,
           source: 'otomoto' as const
         })
@@ -113,6 +116,7 @@ export default function AdminPage() {
           type: newCar.type!,
           description: newCar.description!,
           imageUrl: newCar.imageUrl,
+          images: newCar.images || [],
           featured: newCar.featured!,
           source: newCar.source || 'manual'
         }
@@ -143,7 +147,8 @@ export default function AdminPage() {
           price: 0,
           type: 'new',
           description: '',
-          featured: false
+          featured: false,
+          images: []
         })
         setShowAddForm(false)
       } catch (error) {
@@ -410,10 +415,10 @@ export default function AdminPage() {
               rows={3}
             />
             <div className="mt-4">
-              <ImageUpload 
-                value={newCar.imageUrl} 
-                onChange={handleImageUpload}
-                placeholder="Dodaj zdjęcie samochodu"
+              <MultipleImageUpload 
+                value={newCar.images} 
+                onChange={(images) => setNewCar(prev => ({ ...prev, images }))}
+                placeholder="Dodaj zdjęcia samochodu"
               />
             </div>
             <div className="flex space-x-4 mt-4">
@@ -472,8 +477,17 @@ export default function AdminPage() {
                 {cars.map((car) => (
                   <tr key={car.id}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="w-16 h-12 bg-gray-200 rounded overflow-hidden">
-                        {car.imageUrl ? (
+                      <div className="w-16 h-12 bg-gray-200 rounded overflow-hidden relative">
+                        {(car.images && car.images.length > 0) ? (
+                          <>
+                            <img src={car.images[0]} alt={car.model} className="w-full h-full object-cover" />
+                            {car.images.length > 1 && (
+                              <div className="absolute top-1 right-1 bg-black/70 text-white text-xs px-1 py-0.5 rounded">
+                                +{car.images.length - 1}
+                              </div>
+                            )}
+                          </>
+                        ) : car.imageUrl ? (
                           <img src={car.imageUrl} alt={car.model} className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">

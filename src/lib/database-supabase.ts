@@ -22,6 +22,7 @@ class SupabaseCarDatabase {
             type VARCHAR(50) NOT NULL,
             description TEXT NOT NULL,
             image_url TEXT,
+            images JSONB DEFAULT '[]',
             featured BOOLEAN DEFAULT FALSE,
             source VARCHAR(50) DEFAULT 'manual',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -65,6 +66,11 @@ class SupabaseCarDatabase {
         type: 'new',
         description: 'Nowy Volkswagen T-Roc w doskonałym stanie. Samochód wyposażony w najnowsze technologie bezpieczeństwa i komfortu. Idealny do jazdy miejskiej i dalekich podróży.',
         image_url: '/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp',
+        images: [
+          '/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp',
+          '/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp',
+          '/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp'
+        ],
         featured: true,
         source: 'manual'
       },
@@ -81,6 +87,10 @@ class SupabaseCarDatabase {
         type: 'new',
         description: 'Elegancki Volkswagen Passat - flagowy sedan marki. Luksusowe wnętrze, zaawansowane systemy bezpieczeństwa i doskonałe osiągi.',
         image_url: '/images/Passat_SE.webp',
+        images: [
+          '/images/Passat_SE.webp',
+          '/images/Passat_SE.webp'
+        ],
         featured: true,
         source: 'manual'
       },
@@ -97,6 +107,12 @@ class SupabaseCarDatabase {
         type: 'used',
         description: 'Używany Volkswagen Tiguan w świetnym stanie. Samochód z pełną historią serwisową, idealny dla rodzin.',
         image_url: '/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp',
+        images: [
+          '/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp',
+          '/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp',
+          '/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp',
+          '/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp'
+        ],
         featured: true,
         source: 'manual'
       }
@@ -137,6 +153,7 @@ class SupabaseCarDatabase {
         type: row.type as 'new' | 'used' | 'delivery',
         description: row.description,
         imageUrl: row.image_url,
+        images: row.images || [],
         featured: row.featured,
         source: row.source as 'manual' | 'otomoto',
         createdAt: new Date(row.created_at),
@@ -176,6 +193,7 @@ class SupabaseCarDatabase {
         type: row.type as 'new' | 'used' | 'delivery',
         description: row.description,
         imageUrl: row.image_url,
+        images: row.images || [],
         featured: row.featured,
         featuredOrder: index + 1, // Visual order based on array position
         source: row.source as 'manual' | 'otomoto',
@@ -214,6 +232,7 @@ class SupabaseCarDatabase {
         type: data.type as 'new' | 'used' | 'delivery',
         description: data.description,
         imageUrl: data.image_url,
+        images: data.images || [],
         featured: data.featured,
         source: data.source as 'manual' | 'otomoto',
         createdAt: new Date(data.created_at),
@@ -232,6 +251,7 @@ class SupabaseCarDatabase {
         ...carData,
         id: Date.now().toString(),
         image_url: carData.imageUrl,
+        images: carData.images || [],
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }
@@ -259,6 +279,7 @@ class SupabaseCarDatabase {
         type: data.type as 'new' | 'used' | 'delivery',
         description: data.description,
         imageUrl: data.image_url,
+        images: data.images || [],
         featured: data.featured,
         source: data.source as 'manual' | 'otomoto',
         createdAt: new Date(data.created_at),
@@ -281,6 +302,10 @@ class SupabaseCarDatabase {
       if (carData.imageUrl !== undefined) {
         updateData.image_url = carData.imageUrl
         delete updateData.imageUrl
+      }
+
+      if (carData.images !== undefined) {
+        updateData.images = carData.images
       }
 
       const { data, error } = await supabase
@@ -307,6 +332,7 @@ class SupabaseCarDatabase {
         type: data.type as 'new' | 'used' | 'delivery',
         description: data.description,
         imageUrl: data.image_url,
+        images: data.images || [],
         featured: data.featured,
         source: data.source as 'manual' | 'otomoto',
         createdAt: new Date(data.created_at),

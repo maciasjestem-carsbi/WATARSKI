@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Car, Phone, MapPin, Calendar, Zap, Fuel, Gauge, Star, ArrowLeft } from 'lucide-react'
+import { Car, Phone, MapPin, Calendar, Zap, Fuel, Gauge, Star, ArrowLeft, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { CarData } from '@/lib/database'
@@ -12,6 +12,8 @@ export default function CarDetailsPage() {
   const params = useParams()
   const [car, setCar] = useState<CarData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [showImageModal, setShowImageModal] = useState(false)
 
   useEffect(() => {
     const fetchCar = async () => {
@@ -35,6 +37,22 @@ export default function CarDetailsPage() {
 
     fetchCar()
   }, [params.id])
+
+  const getImages = () => {
+    if (!car) return []
+    return (car.images && car.images.length > 0) ? car.images : (car.imageUrl ? [car.imageUrl] : [])
+  }
+
+  const images = getImages()
+  const currentImage = images[selectedImageIndex]
+
+  const nextImage = () => {
+    setSelectedImageIndex((prev) => (prev + 1) % images.length)
+  }
+
+  const prevImage = () => {
+    setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length)
+  }
 
   if (loading) {
     return (
@@ -122,20 +140,65 @@ export default function CarDetailsPage() {
           {/* Car Images */}
           <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-              {car.imageUrl ? (
-                <Image 
-                  src={car.imageUrl}
-                  alt={`${car.brand} ${car.model}`}
-                  width={600}
-                  height={400}
-                  className="w-full h-96 object-cover"
-                />
+              {currentImage ? (
+                <div className="relative">
+                  <Image 
+                    src={currentImage}
+                    alt={`${car.brand} ${car.model}`}
+                    width={600}
+                    height={400}
+                    className="w-full h-96 object-cover cursor-pointer"
+                    onClick={() => setShowImageModal(true)}
+                  />
+                  {images.length > 1 && (
+                    <>
+                      <button
+                        onClick={prevImage}
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+                      >
+                        <ChevronLeft className="h-6 w-6" />
+                      </button>
+                      <button
+                        onClick={nextImage}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+                      >
+                        <ChevronRight className="h-6 w-6" />
+                      </button>
+                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                        {selectedImageIndex + 1} / {images.length}
+                      </div>
+                    </>
+                  )}
+                </div>
               ) : (
                 <div className="w-full h-96 bg-gray-200 flex items-center justify-center">
                   <Car className="h-24 w-24 text-gray-400" />
                 </div>
               )}
             </div>
+
+            {/* Thumbnail Gallery */}
+            {images.length > 1 && (
+              <div className="grid grid-cols-5 gap-2">
+                {images.map((image, index) => (
+                  <div
+                    key={index}
+                    className={`relative cursor-pointer rounded-lg overflow-hidden border-2 ${
+                      index === selectedImageIndex ? 'border-blue-500' : 'border-gray-200'
+                    }`}
+                    onClick={() => setSelectedImageIndex(index)}
+                  >
+                    <Image
+                      src={image}
+                      alt={`${car.brand} ${car.model} - zdjęcie ${index + 1}`}
+                      width={120}
+                      height={80}
+                      className="w-full h-20 object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Car Details */}
@@ -241,6 +304,46 @@ export default function CarDetailsPage() {
           </div>
         </div>
       </div>
+
+      {/* Image Modal */}
+      {showImageModal && currentImage && (
+        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
+          <div className="relative max-w-4xl max-h-full">
+            <button
+              onClick={() => setShowImageModal(false)}
+              className="absolute top-4 right-4 text-white hover:text-gray-300 z-10"
+            >
+              <X className="h-8 w-8" />
+            </button>
+            <Image
+              src={currentImage}
+              alt={`${car.brand} ${car.model}`}
+              width={800}
+              height={600}
+              className="max-w-full max-h-full object-contain"
+            />
+            {images.length > 1 && (
+              <>
+                <button
+                  onClick={prevImage}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition-colors"
+                >
+                  <ChevronLeft className="h-8 w-8" />
+                </button>
+                <button
+                  onClick={nextImage}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition-colors"
+                >
+                  <ChevronRight className="h-8 w-8" />
+                </button>
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full">
+                  {selectedImageIndex + 1} / {images.length}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 } 

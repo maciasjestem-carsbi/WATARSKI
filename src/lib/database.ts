@@ -13,7 +13,8 @@ export interface CarData {
   price: number
   type: 'new' | 'used' | 'delivery'
   description: string
-  imageUrl?: string
+  imageUrl?: string // Keep for backward compatibility
+  images?: string[] // New field for multiple images (max 20)
   featured: boolean
   featuredOrder?: number
   source?: 'manual' | 'otomoto'
@@ -42,6 +43,11 @@ class CarDatabase {
         type: 'new',
         description: 'Nowy Volkswagen T-Roc w doskonałym stanie. Samochód wyposażony w najnowsze technologie bezpieczeństwa i komfortu. Idealny do jazdy miejskiej i dalekich podróży.',
         imageUrl: '/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp',
+        images: [
+          '/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp',
+          '/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp',
+          '/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp'
+        ],
         featured: true,
         source: 'manual',
         createdAt: new Date(),
@@ -60,6 +66,10 @@ class CarDatabase {
         type: 'new',
         description: 'Elegancki Volkswagen Passat - flagowy sedan marki. Luksusowe wnętrze, zaawansowane systemy bezpieczeństwa i doskonałe osiągi.',
         imageUrl: '/images/Passat_SE.webp',
+        images: [
+          '/images/Passat_SE.webp',
+          '/images/Passat_SE.webp'
+        ],
         featured: true,
         source: 'manual',
         createdAt: new Date(),
@@ -78,6 +88,12 @@ class CarDatabase {
         type: 'used',
         description: 'Używany Volkswagen Tiguan w świetnym stanie. Samochód z pełną historią serwisową, idealny dla rodzin.',
         imageUrl: '/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp',
+        images: [
+          '/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp',
+          '/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp',
+          '/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp',
+          '/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp'
+        ],
         featured: true,
         source: 'manual',
         createdAt: new Date(),

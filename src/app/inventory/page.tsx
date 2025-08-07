@@ -200,7 +200,7 @@ export default function InventoryPage() {
                 <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
                   <div className="relative">
                     <Image
-                      src={car.imageUrl || '/api/placeholder/400/300'}
+                      src={(car.images && car.images.length > 0) ? car.images[0] : (car.imageUrl || '/api/placeholder/400/300')}
                       alt={`${car.brand} ${car.model}`}
                       width={400}
                       height={300}
