@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Car, Plus, Trash2, Edit, Star, Upload, Download, Link, Loader2, Home, AlertCircle } from 'lucide-react'
 import ImageUpload from '@/components/ui/image-upload'
 import MultipleImageUpload from '@/components/ui/multiple-image-upload'
+import Logo from '@/components/logo'
 import type { CarData } from '@/lib/database'
 
 export default function AdminPage() {
@@ -231,8 +232,14 @@ export default function AdminPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center">
-              <Car className="h-8 w-8 text-blue-600 mr-2" />
-              <h1 className="text-2xl font-bold text-gray-900">WĄTARSKI - Panel Admin</h1>
+              <div className="mr-6">
+                <Logo size="md" />
+              </div>
+              <div className="border-l border-gray-300 h-8 mx-4"></div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Panel Administracyjny</h1>
+                <p className="text-sm text-gray-600">Zarządzanie samochodami</p>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <a href="/" className="flex items-center text-blue-600 hover:text-blue-700 font-medium">
@@ -263,47 +270,7 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* Otomoto Import Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="bg-white rounded-lg p-6 shadow">
-          <h2 className="text-xl font-semibold mb-4 flex items-center">
-            <Link className="h-5 w-5 mr-2 text-green-600" />
-            Import z Otomoto
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Wklej link do samochodu z Otomoto, aby automatycznie pobrać dane
-          </p>
-          <div className="flex items-center space-x-4">
-            <input
-              type="text"
-              placeholder="https://www.otomoto.pl/osobowe/oferta/skoda-kodiaq-ID6HstBA.html"
-              value={otomotoUrl}
-              onChange={(e) => setOtomotoUrl(e.target.value)}
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              disabled={isScraping}
-            />
-            <Button 
-              onClick={handleScrapeOtomotoUrl} 
-              disabled={isScraping || !otomotoUrl.trim()}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              {isScraping ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Pobieranie...
-                </>
-              ) : (
-                <>
-                  <Download className="h-4 w-4 mr-2" />
-                  Pobierz dane
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats */}
+      {/* Stats Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg p-6 shadow">
@@ -328,6 +295,45 @@ export default function AdminPage() {
         {showAddForm && (
           <div className="bg-white rounded-lg p-6 shadow mb-8">
             <h2 className="text-xl font-semibold mb-4">Dodaj nowy samochód</h2>
+            
+            {/* Otomoto Import Section */}
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              <h3 className="text-lg font-medium mb-3 flex items-center">
+                <Link className="h-5 w-5 mr-2 text-green-600" />
+                Import z Otomoto
+              </h3>
+              <p className="text-gray-600 mb-4 text-sm">
+                Wklej link do samochodu z Otomoto, aby automatycznie pobrać dane
+              </p>
+              <div className="flex items-center space-x-4">
+                <input
+                  type="text"
+                  placeholder="https://www.otomoto.pl/osobowe/oferta/skoda-kodiaq-ID6HstBA.html"
+                  value={otomotoUrl}
+                  onChange={(e) => setOtomotoUrl(e.target.value)}
+                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  disabled={isScraping}
+                />
+                <Button 
+                  onClick={handleScrapeOtomotoUrl} 
+                  disabled={isScraping || !otomotoUrl.trim()}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  {isScraping ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Pobieranie...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4 mr-2" />
+                      Pobierz dane
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <input
                 type="text"

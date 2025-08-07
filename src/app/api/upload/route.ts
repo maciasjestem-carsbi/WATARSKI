@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     
     if (!file) {
       return NextResponse.json(
-        { error: 'No file provided' },
+        { error: 'Nie podano pliku' },
         { status: 400 }
       )
     }
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     // Validate file type
     if (!file.type.startsWith('image/')) {
       return NextResponse.json(
-        { error: 'File must be an image' },
+        { error: 'Plik musi być obrazem' },
         { status: 400 }
       )
     }
@@ -23,14 +23,14 @@ export async function POST(request: NextRequest) {
     // Validate file size (10MB limit)
     if (file.size > 10 * 1024 * 1024) {
       return NextResponse.json(
-        { error: 'File size must be less than 10MB' },
+        { error: 'Rozmiar pliku musi być mniejszy niż 10MB' },
         { status: 400 }
       )
     }
 
     // Generate unique filename
     const timestamp = Date.now()
-    const extension = file.name.split('.').pop()
+    const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg'
     const filename = `car-${timestamp}.${extension}`
 
     // Use Vercel Blob with the provided token
@@ -38,13 +38,14 @@ export async function POST(request: NextRequest) {
       const { put } = await import('@vercel/blob')
       const { url } = await put(filename, file, {
         access: 'public',
+        addRandomSuffix: false,
       })
 
       return NextResponse.json({
         url,
         filename,
         size: file.size,
-        message: 'Image uploaded successfully to Vercel Blob'
+        message: 'Zdjęcie zostało pomyślnie przesłane do Vercel Blob'
       })
     } catch (blobError) {
       console.error('Vercel Blob error:', blobError)
@@ -54,14 +55,14 @@ export async function POST(request: NextRequest) {
         url: '/api/placeholder/400/300',
         filename,
         size: file.size,
-        message: 'Vercel Blob failed - using placeholder image'
+        message: 'Vercel Blob nie działa - używam obrazu zastępczego'
       })
     }
 
   } catch (error) {
     console.error('Upload error:', error)
     return NextResponse.json(
-      { error: 'Failed to upload file' },
+      { error: 'Błąd podczas przesyłania pliku' },
       { status: 500 }
     )
   }

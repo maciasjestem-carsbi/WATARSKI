@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { Button } from '@/components/ui/button'
-import { Upload, X, Image as ImageIcon, Plus, Trash2 } from 'lucide-react'
+import { Upload, X, Image as ImageIcon, Plus, Trash2, AlertCircle } from 'lucide-react'
 import { uploadImage } from '@/lib/image-upload'
 
 interface MultipleImageUploadProps {
@@ -19,6 +19,7 @@ export default function MultipleImageUpload({
   maxImages = 20 
 }: MultipleImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -27,21 +28,35 @@ export default function MultipleImageUpload({
 
     // Check if adding these files would exceed the limit
     if (value.length + files.length > maxImages) {
-      alert(`You can only upload a maximum of ${maxImages} images. You currently have ${value.length} images.`)
+      setUploadError(`Możesz dodać maksymalnie ${maxImages} zdjęć. Obecnie masz ${value.length} zdjęć.`)
       return
     }
 
     setIsUploading(true)
+    setUploadError(null)
     
     try {
-      const uploadPromises = files.map(file => uploadImage(file))
+      const uploadPromises = files.map(async (file) => {
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          throw new Error(`Plik ${file.name} nie jest obrazem`)
+        }
+
+        // Validate file size (10MB limit)
+        if (file.size > 10 * 1024 * 1024) {
+          throw new Error(`Plik ${file.name} jest za duży (maksymalnie 10MB)`)
+        }
+
+        return await uploadImage(file)
+      })
+
       const results = await Promise.all(uploadPromises)
       const newUrls = results.map(result => result.url)
       
       onChange([...value, ...newUrls])
     } catch (error) {
       console.error('Upload failed:', error)
-      alert('Failed to upload images. Please try again.')
+      setUploadError(error instanceof Error ? error.message : 'Błąd podczas przesyłania zdjęć. Spróbuj ponownie.')
     } finally {
       setIsUploading(false)
       if (fileInputRef.current) {
@@ -76,7 +91,7 @@ export default function MultipleImageUpload({
             className="flex items-center space-x-2"
           >
             <Upload className="h-4 w-4" />
-            <span>{isUploading ? 'Uploading...' : 'Upload Images'}</span>
+            <span>{isUploading ? 'Przesyłanie...' : 'Dodaj zdjęcia'}</span>
           </Button>
           
           {value.length > 0 && (
@@ -87,15 +102,23 @@ export default function MultipleImageUpload({
               className="text-red-600 hover:text-red-800"
             >
               <Trash2 className="h-4 w-4" />
-              <span>Remove All</span>
+              <span>Usuń wszystkie</span>
             </Button>
           )}
         </div>
         
         <div className="text-sm text-gray-500">
-          {value.length} / {maxImages} images
+          {value.length} / {maxImages} zdjęć
         </div>
       </div>
+
+      {/* Error message */}
+      {uploadError && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center">
+          <AlertCircle className="h-4 w-4 text-red-600 mr-2" />
+          <span className="text-sm text-red-700">{uploadError}</span>
+        </div>
+      )}
 
       <input
         ref={fileInputRef}
@@ -110,17 +133,32 @@ export default function MultipleImageUpload({
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {value.map((imageUrl, index) => (
             <div key={index} className="relative group">
-              <img
-                src={imageUrl}
-                alt={`Car image ${index + 1}`}
-                className="w-full h-32 object-cover rounded-lg border"
-              />
+              <div className="w-full h-32 bg-gray-100 rounded-lg border overflow-hidden">
+                <img
+                  src={imageUrl}
+                  alt={`Zdjęcie samochodu ${index + 1}`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Fallback for broken images
+                    const target = e.target as HTMLImageElement
+                    target.style.display = 'none'
+                    target.parentElement!.innerHTML = `
+                      <div class="w-full h-full flex items-center justify-center bg-gray-200">
+                        <div class="text-center">
+                          <ImageIcon class="h-8 w-8 text-gray-400 mx-auto mb-1" />
+                          <p class="text-xs text-gray-500">Błąd ładowania</p>
+                        </div>
+                      </div>
+                    `
+                  }}
+                />
+              </div>
               <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={() => handleRemoveImage(index)}
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-white"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 hover:bg-white shadow-sm"
               >
                 <X className="h-3 w-3" />
               </Button>
@@ -137,7 +175,7 @@ export default function MultipleImageUpload({
             >
               <div className="text-center">
                 <Plus className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500 text-sm">Add more</p>
+                <p className="text-gray-500 text-sm">Dodaj więcej</p>
               </div>
             </div>
           )}
@@ -147,17 +185,18 @@ export default function MultipleImageUpload({
           <div className="text-center">
             <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-2" />
             <p className="text-gray-500">{placeholder}</p>
-            <p className="text-sm text-gray-400">Click upload to add images (max {maxImages})</p>
+            <p className="text-sm text-gray-400">Kliknij aby dodać zdjęcia (maksymalnie {maxImages})</p>
           </div>
         </div>
       )}
 
       <div className="text-sm text-gray-500">
-        <p>Supported formats: JPG, PNG, WebP</p>
-        <p>Maximum file size: 10MB per image</p>
-        <p>Maximum images: {maxImages}</p>
-        <p className="text-blue-600">Images are stored securely on Vercel Blob</p>
+        <p>Obsługiwane formaty: JPG, PNG, WebP</p>
+        <p>Maksymalny rozmiar pliku: 10MB na zdjęcie</p>
+        <p>Maksymalna liczba zdjęć: {maxImages}</p>
+        <p className="text-blue-600">Zdjęcia są bezpiecznie przechowywane na Vercel Blob</p>
       </div>
     </div>
   )
 }
+
