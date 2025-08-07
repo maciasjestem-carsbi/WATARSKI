@@ -14,10 +14,10 @@ export default function Logo({ size = 'md', className = '' }: LogoProps) {
 
   return (
     <div className={`font-bold text-blue-900 ${sizeClasses[size]} ${className}`}>
-      <div className="leading-tight">
+      <div className="flex flex-col items-center leading-tight">
         <div className="text-2xl font-extrabold tracking-wide">WĄTARSKI</div>
-        <div className="h-0.5 bg-blue-900 my-1"></div>
-        <div className="text-lg font-semibold tracking-wide">WŁOCŁAWEK</div>
+        <div className="h-0.5 bg-blue-900 my-1 w-16"></div>
+        <div className="text-sm font-semibold tracking-wide">WŁOCŁAWEK</div>
       </div>
     </div>
   )
