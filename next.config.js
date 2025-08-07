@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
+  // Remove experimental.appDir as it's now default in Next.js 13+
+  images: {
+    domains: ['localhost'],
   },
 }
 

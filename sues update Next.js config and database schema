@@ -1,0 +1,3 @@
+[33m034c8ec[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix database schema: add version field to Supabase table and all CarData objects
+[33mdb2978c[m Add version field to car data and improve Otomoto scraper to extract model variants
+[33m490e72f[m Implement real Otomoto scraper with HTML parsing and data extraction
