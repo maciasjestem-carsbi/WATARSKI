@@ -36,6 +36,7 @@ export async function GET() {
       const testCar = {
         brand: 'Test',
         model: 'Production Car',
+        version: 'Test Version',
         year: 2024,
         mileage: 0,
         fuel: 'Test',
