@@ -28,8 +28,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('Starting scraping for URL:', url)
-
     // Fetch the page content
     const response = await fetch(url, {
       headers: {
@@ -50,8 +48,6 @@ export async function POST(request: NextRequest) {
     
     // Parse the HTML to extract car details
     const carData = await parseOtomotoPage(html, url)
-
-    console.log('Scraped car data:', carData)
 
     return NextResponse.json({
       success: true,
@@ -76,36 +72,49 @@ async function parseOtomotoPage(html: string, url: string): Promise<ScrapedCarDe
   // Extract price - look for price in various formats
   const priceMatch = html.match(/(\d{1,3}(?:\s\d{3})*)\s*zł/i) || 
                     html.match(/data-price="(\d+)"/i) ||
-                    html.match(/price["\s]*:["\s]*(\d+)/i)
+                    html.match(/price["\s]*:["\s]*(\d+)/i) ||
+                    html.match(/"price"["\s]*:["\s]*(\d+)/i)
   const price = priceMatch ? parseInt(priceMatch[1].replace(/\s/g, '')) : 0
 
   // Extract year - look for year in various formats
   const yearMatch = html.match(/Rok produkcji[^>]*>([^<]+)</i) || 
                    html.match(/(\d{4})\s*r\./i) ||
                    html.match(/data-year="(\d+)"/i) ||
-                   html.match(/year["\s]*:["\s]*(\d{4})/i)
+                   html.match(/year["\s]*:["\s]*(\d{4})/i) ||
+                   html.match(/"year"["\s]*:["\s]*(\d{4})/i)
   const year = yearMatch ? parseInt(yearMatch[1]) : new Date().getFullYear()
 
   // Extract mileage - look for mileage in various formats
   const mileageMatch = html.match(/Przebieg[^>]*>([^<]+)</i) || 
                       html.match(/(\d{1,3}(?:\s\d{3})*)\s*km/i) ||
                       html.match(/data-mileage="(\d+)"/i) ||
-                      html.match(/mileage["\s]*:["\s]*(\d+)/i)
+                      html.match(/mileage["\s]*:["\s]*(\d+)/i) ||
+                      html.match(/"mileage"["\s]*:["\s]*(\d+)/i)
   const mileage = mileageMatch ? parseInt(mileageMatch[1].replace(/\s/g, '')) : 0
 
   // Extract fuel type - look for fuel in various formats
   const fuelMatch = html.match(/Rodzaj paliwa[^>]*>([^<]+)</i) || 
                    html.match(/(Benzyna|Diesel|Hybryda|Elektryczny)/i) ||
-                   html.match(/data-fuel="([^"]+)"/i)
+                   html.match(/data-fuel="([^"]+)"/i) ||
+                   html.match(/"fuel"["\s]*:["\s]*"([^"]+)"/i)
   const fuel = fuelMatch ? fuelMatch[1] : 'Benzyna'
 
-  // Extract power - look for power specifically, not mileage
+  // Extract power - improved pattern to avoid confusion with mileage
+  let power = 100
   const powerMatch = html.match(/Moc[^>]*>([^<]+)</i) || 
                     html.match(/(\d+)\s*KM/i) ||
                     html.match(/data-power="(\d+)"/i) ||
                     html.match(/power["\s]*:["\s]*(\d+)/i) ||
+                    html.match(/"power"["\s]*:["\s]*(\d+)/i) ||
                     html.match(/KM["\s]*:["\s]*(\d+)/i)
-  const power = powerMatch ? parseInt(powerMatch[1]) : 100
+  
+  if (powerMatch) {
+    const powerValue = parseInt(powerMatch[1])
+    // Only use if it's a reasonable power value (not mileage)
+    if (powerValue >= 50 && powerValue <= 1000) {
+      power = powerValue
+    }
+  }
 
   // Extract brand and model - improved parsing
   let brand = 'Nieznana'
@@ -149,59 +158,128 @@ async function parseOtomotoPage(html: string, url: string): Promise<ScrapedCarDe
       if (modelMatch) {
         const fullModelText = modelMatch[1].trim()
         
-        // Try to separate model from version
-        // Look for common version patterns like engine size, trim levels, etc.
-        const versionPatterns = [
-          /\d+\.\d+\s*(TSI|TDI|TFSI|TDI|GDI|HDI|CDI)/i,  // 2.0 TSI, 1.6 TDI, etc.
-          /(RS|GTI|R|S|SE|SEL|Sport|Comfort|Ambition|Style|Elegance|Laurin|Klement)/i,  // Trim levels
-          /(DSG|S-Tronic|Tiptronic|Manual|Automatic)/i,  // Transmission types
-          /\d+\.\d+\s*(L|T|GDI|HDI)/i,  // Engine sizes
-          /(Hybrid|PHEV|EV|Electric)/i,  // Fuel types
-        ]
+        // Common Skoda models to look for specifically
+        const skodaModels = ['Octavia', 'Superb', 'Fabia', 'Rapid', 'Kamiq', 'Karoq', 'Kodiaq', 'Scala', 'Enyaq', 'Citigo', 'Roomster', 'Yeti', 'Praktik']
         
-        let extractedVersion = ''
-        let cleanModel = fullModelText
-        
-        // Try to find version patterns
-        for (const pattern of versionPatterns) {
-          const versionMatch = fullModelText.match(pattern)
-          if (versionMatch) {
-            extractedVersion = versionMatch[0].trim()
-            // Remove version from model text
-            cleanModel = fullModelText.replace(pattern, '').trim()
+        // Try to find exact model match first
+        let foundModel = ''
+        for (const modelName of skodaModels) {
+          if (fullModelText.toLowerCase().includes(modelName.toLowerCase())) {
+            foundModel = modelName
             break
           }
         }
         
-        // If no specific version pattern found, try to extract after model name
-        if (!extractedVersion) {
-          // Common model names to identify where model ends and version begins
-          const commonModels = ['Octavia', 'Superb', 'Fabia', 'Rapid', 'Kamiq', 'Karoq', 'Kodiaq', 'Scala', 'Enyaq']
+        if (foundModel) {
+          model = foundModel
           
-          for (const modelName of commonModels) {
-            if (fullModelText.toLowerCase().includes(modelName.toLowerCase())) {
-              const modelIndex = fullModelText.toLowerCase().indexOf(modelName.toLowerCase())
-              const afterModel = fullModelText.substring(modelIndex + modelName.length).trim()
+          // Extract version from the remaining text
+          const modelIndex = fullModelText.toLowerCase().indexOf(foundModel.toLowerCase())
+          const afterModel = fullModelText.substring(modelIndex + foundModel.length).trim()
+          
+          if (afterModel) {
+            // Remove price information from version first - improved regex
+            let cleanAfterModel = afterModel
+            
+            // Remove price patterns more aggressively
+            cleanAfterModel = cleanAfterModel.replace(/\d{1,3}(?:\s\d{3})*\s*zł/i, '').trim()
+            cleanAfterModel = cleanAfterModel.replace(/\d{1,3}(?:\s\d{3})*\s*PLN/i, '').trim()
+            cleanAfterModel = cleanAfterModel.replace(/\d{1,3}(?:\s\d{3})*\s*-\s*\d{1,3}(?:\s\d{3})*\s*zł/i, '').trim()
+            cleanAfterModel = cleanAfterModel.replace(/\d{1,3}(?:\s\d{3})*\s*-\s*\d{1,3}(?:\s\d{3})*\s*PLN/i, '').trim()
+            
+            // Remove year patterns that might be confused with version
+            cleanAfterModel = cleanAfterModel.replace(/\d{4}/g, '').trim()
+            
+            // Remove mileage patterns
+            cleanAfterModel = cleanAfterModel.replace(/\d+\s*km/i, '').trim()
+            
+            // Look for specific version patterns
+            const specificVersionPatterns = [
+              /\d+\.\d+\s*(TSI|TDI|TFSI|GDI|HDI|CDI)/i,  // 1.5 TSI, 2.0 TDI, etc.
+              /(RS|GTI|R|S|SE|SEL|Sport|Comfort|Ambition|Style|Elegance|Laurin|Klement|Sportline|Scout)/i,  // Trim levels
+              /(DSG|S-Tronic|Tiptronic|Manual|Automatic)/i,  // Transmission types
+              /\d+\.\d+\s*(L|T|GDI|HDI)/i,  // Engine sizes
+              /(Hybrid|PHEV|EV|Electric)/i,  // Fuel types
+            ]
+            
+            let extractedVersion = ''
+            for (const pattern of specificVersionPatterns) {
+              const versionMatch = cleanAfterModel.match(pattern)
+              if (versionMatch) {
+                extractedVersion = versionMatch[0].trim()
+                break
+              }
+            }
+            
+            // If no specific pattern found, try to extract meaningful version info
+            if (!extractedVersion) {
+              // Look for engine codes and trim levels in the cleaned text
+              const enginePatterns = [
+                /\d+\.\d+\s*(TSI|TDI|TFSI)/i,
+                /(Sportline|Scout|Style|Ambition|Elegance|Laurin|Klement)/i,
+                /(DSG|Manual|Automatic)/i
+              ]
               
-              if (afterModel) {
-                // Check if what comes after looks like a version (has numbers, engine codes, etc.)
-                if (afterModel.match(/\d+\.\d+/) || afterModel.match(/(TSI|TDI|RS|GTI|DSG)/i)) {
-                  cleanModel = modelName
-                  extractedVersion = afterModel
+              for (const pattern of enginePatterns) {
+                const match = cleanAfterModel.match(pattern)
+                if (match) {
+                  extractedVersion = match[0].trim()
+                  break
                 }
               }
-              break
+              
+              // If still no version found, use the cleaned text if it's not empty and doesn't contain price info
+              if (!extractedVersion && cleanAfterModel.length > 0 && !cleanAfterModel.match(/zł|PLN/i)) {
+                extractedVersion = cleanAfterModel
+              }
+            }
+            
+            if (extractedVersion) {
+              version = extractedVersion
             }
           }
+        } else {
+          // If no exact model match, try to extract from the full text
+          model = fullModelText.replace(/\d{4}/g, '').replace(/\s+/g, ' ').trim()
         }
-        
-        model = cleanModel
-        if (extractedVersion) {
-          version = extractedVersion
+      }
+    }
+  }
+
+  // If version is still unknown, try to extract from page content
+  if (version === 'Nieznana' || version === '-') {
+    
+    // Look for engine version patterns in the entire HTML
+    const engineVersionPatterns = [
+      /\d+\.\d+\s*(TSI|TDI|TFSI|GDI|HDI|CDI)/i,  // 1.5 TSI, 2.0 TDI, etc.
+      /(Sportline|Scout|Style|Ambition|Elegance|Laurin|Klement)/i,  // Trim levels
+      /(DSG|S-Tronic|Tiptronic|Manual|Automatic)/i,  // Transmission types
+    ]
+    
+    for (const pattern of engineVersionPatterns) {
+      const match = html.match(pattern)
+      if (match) {
+        version = match[0].trim()
+        break
+      }
+    }
+    
+    // If still no version found, try to extract from specific HTML elements
+    if (version === 'Nieznana' || version === '-') {
+      // Look for version in specific HTML elements
+      const versionElements = [
+        /<span[^>]*class="[^"]*version[^"]*"[^>]*>([^<]+)</i,
+        /<div[^>]*class="[^"]*version[^"]*"[^>]*>([^<]+)</i,
+        /<td[^>]*>Wersja[^<]*<\/td>[^<]*<td[^>]*>([^<]+)</i,
+        /<span[^>]*>Wersja[^<]*<\/span>[^<]*<span[^>]*>([^<]+)</i,
+      ]
+      
+      for (const pattern of versionElements) {
+        const match = html.match(pattern)
+        if (match) {
+          version = match[1].trim()
+          break
         }
-        
-        // Clean up model - remove year and other details
-        model = model.replace(/\d{4}/g, '').replace(/\s+/g, ' ').trim()
       }
     }
   }
@@ -233,8 +311,6 @@ async function parseOtomotoPage(html: string, url: string): Promise<ScrapedCarDe
   const carIdMatch = url.match(/ID([A-Za-z0-9]+)/)
   const carId = carIdMatch ? carIdMatch[1] : 'demo'
   const vin = `TMBJN7NS8N${carId}`
-
-  console.log('Parsed data:', { brand, model, year, mileage, fuel, power, price, title })
 
   return {
     brand,
