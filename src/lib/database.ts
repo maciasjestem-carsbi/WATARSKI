@@ -5,6 +5,7 @@ export interface CarData {
   id: string
   brand: string
   model: string
+  version: string
   year: number
   mileage: number
   fuel: string
@@ -32,6 +33,7 @@ class CarDatabase {
         id: '1',
         brand: 'Volkswagen',
         model: 'T-Roc',
+        version: 'R-Line',
         year: 2024,
         mileage: 10,
         fuel: 'Hybryda',
@@ -49,6 +51,7 @@ class CarDatabase {
         id: '2',
         brand: 'Volkswagen',
         model: 'Passat',
+        version: 'SE',
         year: 2024,
         mileage: 5,
         fuel: 'Diesel',
@@ -66,6 +69,7 @@ class CarDatabase {
         id: '3',
         brand: 'Volkswagen',
         model: 'Tiguan',
+        version: '2023',
         year: 2023,
         mileage: 45000,
         fuel: 'Benzyna',

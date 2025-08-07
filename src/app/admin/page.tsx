@@ -19,6 +19,7 @@ export default function AdminPage() {
   const [newCar, setNewCar] = useState<Partial<CarData>>({
     brand: '',
     model: '',
+    version: '',
     year: 2024,
     mileage: 0,
     fuel: 'Benzyna',
@@ -71,6 +72,7 @@ export default function AdminPage() {
         setNewCar({
           brand: scrapedCar.brand,
           model: scrapedCar.model,
+          version: scrapedCar.version,
           year: scrapedCar.year,
           mileage: scrapedCar.mileage,
           fuel: scrapedCar.fuel,
@@ -102,6 +104,7 @@ export default function AdminPage() {
         const carData = {
           brand: newCar.brand!,
           model: newCar.model!,
+          version: newCar.version!,
           year: newCar.year!,
           mileage: newCar.mileage!,
           fuel: newCar.fuel!,
@@ -132,6 +135,7 @@ export default function AdminPage() {
         setNewCar({
           brand: '',
           model: '',
+          version: '',
           year: 2024,
           mileage: 0,
           fuel: 'Benzyna',
@@ -335,6 +339,13 @@ export default function AdminPage() {
                 className="border border-gray-300 rounded-lg px-3 py-2"
               />
               <input
+                type="text"
+                placeholder="Wersja"
+                value={newCar.version}
+                onChange={(e) => setNewCar(prev => ({ ...prev, version: e.target.value }))}
+                className="border border-gray-300 rounded-lg px-3 py-2"
+              />
+              <input
                 type="number"
                 placeholder="Rok"
                 value={newCar.year}
@@ -432,6 +443,9 @@ export default function AdminPage() {
                     Marka/Model
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Wersja
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Rok/Przebieg
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -473,6 +487,9 @@ export default function AdminPage() {
                         <div className="text-sm font-medium text-gray-900">{car.brand}</div>
                         <div className="text-sm text-gray-500">{car.model}</div>
                       </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{car.version}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
