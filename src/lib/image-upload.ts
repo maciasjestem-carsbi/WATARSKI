@@ -1,5 +1,5 @@
 // Image upload utility for WĄTARSKI website
-// This handles image uploads and storage using Vercel Blob
+// This handles image uploads and storage using Supabase Storage
 
 export interface ImageUploadResult {
   url: string
@@ -7,7 +7,7 @@ export interface ImageUploadResult {
   size: number
 }
 
-// Production implementation using Vercel Blob via API route
+// Production implementation using Supabase Storage via API route
 export async function uploadImage(file: File): Promise<ImageUploadResult> {
   try {
     const formData = new FormData()

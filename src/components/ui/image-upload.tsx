@@ -134,7 +134,7 @@ export default function ImageUpload({ value, onChange, placeholder = "Dodaj zdj�
       <div className="text-sm text-gray-500">
         <p>Obsługiwane formaty: JPG, PNG, WebP</p>
         <p>Maksymalny rozmiar pliku: 10MB</p>
-        <p className="text-blue-600">Zdjęcia są bezpiecznie przechowywane na Vercel Blob</p>
+        <p className="text-blue-600">Zdjęcia są bezpiecznie przechowywane na Supabase Storage</p>
       </div>
     </div>
   )
