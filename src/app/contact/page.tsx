@@ -59,7 +59,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">Adres</h3>
-                    <p className="text-gray-600">ul. Toruńska 123</p>
+                    <p className="text-gray-600">ul. Toruńska 169</p>
                     <p className="text-gray-600">87-800 Włocławek</p>
                     <p className="text-sm text-gray-500">Województwo kujawsko-pomorskie</p>
                   </div>
@@ -164,11 +164,30 @@ export default function ContactPage() {
           </div>
           
           <div className="bg-white rounded-xl shadow-lg p-8">
-            <div className="aspect-w-16 aspect-h-9 bg-gray-200 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">Mapa będzie tutaj wyświetlana</p>
-                <p className="text-sm text-gray-500">ul. Toruńska 123, 87-800 Włocławek</p>
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Nasza lokalizacja</h3>
+              <p className="text-gray-600">ul. Toruńska 169, 87-800 Włocławek</p>
+            </div>
+            <div className="bg-gray-200 rounded-lg overflow-hidden">
+                             <iframe
+                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2418.3740097564764!2d18.985806774502677!3d52.6893410986077!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471c987b332f7e4b%3A0x5648f8df0a8d8647!2zVm9sa3N3YWdlbiBXxIV0YXJza2kgV8WCb2PFgmF3ZWs!5e0!3m2!1sen!2spl!4v1755120554044!5m2!1sen!2spl"
+                 width="100%"
+                 height="400"
+                 style={{ border: 0 }}
+                 allowFullScreen
+                 loading="lazy"
+                 referrerPolicy="no-referrer-when-downgrade"
+                 title="WĄTARSKI Włocławek - ul. Toruńska 169"
+                 className="w-full h-96"
+               ></iframe>
+            </div>
+            <div className="mt-6 bg-blue-50 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">Jak do nas trafić?</h4>
+              <div className="text-sm text-gray-600 space-y-1">
+                <p>• Z centrum Włocławka: ul. Toruńska w kierunku północnym</p>
+                <p>• Z drogi krajowej A1: zjazd Włocławek-Centrum</p>
+                <p>• Parking dla klientów dostępny na miejscu</p>
+                <p>• Dogodny dojazd komunikacją miejską</p>
               </div>
             </div>
           </div>

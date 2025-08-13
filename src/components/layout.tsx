@@ -72,7 +72,7 @@ export default function Layout({ children }: LayoutProps) {
                 </div>
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-4 w-4 text-blue-400" />
-                  <span className="text-sm">ul. Toruńska 123, 87-800 Włocławek</span>
+                  <span className="text-sm">ul. Toruńska 169, 87-800 Włocławek</span>
                 </div>
               </div>
             </div>

@@ -293,7 +293,7 @@ export default function CarDetailsPage() {
                 </div>
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-5 w-5 text-blue-600" />
-                  <span className="text-gray-700">ul. Toruńska 123, 87-800 Włocławek</span>
+                  <span className="text-gray-700">ul. Toruńska 169, 87-800 Włocławek</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Calendar className="h-5 w-5 text-blue-600" />
