@@ -194,7 +194,7 @@ export default function MultipleImageUpload({
         <p>Obsługiwane formaty: JPG, PNG, WebP</p>
         <p>Maksymalny rozmiar pliku: 10MB na zdjęcie</p>
         <p>Maksymalna liczba zdjęć: {maxImages}</p>
-        <p className="text-blue-600">Zdjęcia są bezpiecznie przechowywane na Vercel Blob</p>
+        <p className="text-blue-600">Zdjęcia są bezpiecznie przechowywane na Supabase Storage</p>
       </div>
     </div>
   )

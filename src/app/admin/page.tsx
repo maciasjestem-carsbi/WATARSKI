@@ -17,6 +17,8 @@ export default function AdminPage() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingCar, setEditingCar] = useState<CarData | null>(null)
   const [otomotoUrl, setOtomotoUrl] = useState('')
+  const [formError, setFormError] = useState<string | null>(null)
+  const [formSuccess, setFormSuccess] = useState<string | null>(null)
 
   const [newCar, setNewCar] = useState<Partial<CarData>>({
     brand: '',
@@ -54,11 +56,14 @@ export default function AdminPage() {
 
   const handleScrapeOtomotoUrl = async () => {
     if (!otomotoUrl.trim()) {
-      alert('Proszę wprowadzić link do Otomoto')
+      setFormError('Proszę wprowadzić link do Otomoto')
       return
     }
 
     setIsScraping(true)
+    setFormError(null)
+    setFormSuccess(null)
+    
     try {
       const response = await fetch('/api/scrape-otomoto-car', {
         method: 'POST',
@@ -90,30 +95,35 @@ export default function AdminPage() {
         })
         setShowAddForm(true)
         setOtomotoUrl('')
-        alert('Dane samochodu zostały pobrane! Sprawdź i zapisz.')
+        setFormSuccess('Dane samochodu zostały pobrane! Sprawdź i zapisz.')
+        setTimeout(() => setFormSuccess(null), 5000)
       } else {
-        alert('Błąd podczas pobierania danych: ' + (data.error || 'Nieznany błąd'))
+        setFormError('Błąd podczas pobierania danych: ' + (data.error || 'Nieznany błąd'))
       }
     } catch (error) {
       console.error('Błąd podczas scrapowania:', error)
-      alert('Błąd podczas pobierania danych z Otomoto')
+      setFormError('Błąd podczas pobierania danych z Otomoto')
     } finally {
       setIsScraping(false)
     }
   }
 
   const handleAddCar = async () => {
+    // Clear previous messages
+    setFormError(null)
+    setFormSuccess(null)
+    
     // Validate required fields
     if (!newCar.brand?.trim()) {
-      alert('Proszę wprowadzić markę samochodu')
+      setFormError('Proszę wprowadzić markę samochodu')
       return
     }
     if (!newCar.model?.trim()) {
-      alert('Proszę wprowadzić model samochodu')
+      setFormError('Proszę wprowadzić model samochodu')
       return
     }
     if (!newCar.price || newCar.price <= 0) {
-      alert('Proszę wprowadzić poprawną cenę (większą od 0)')
+      setFormError('Proszę wprowadzić poprawną cenę (większą od 0)')
       return
     }
 
@@ -168,10 +178,11 @@ export default function AdminPage() {
       })
       setShowAddForm(false)
       
-      alert('Samochód został pomyślnie dodany!')
+      setFormSuccess('Samochód został pomyślnie dodany!')
+      setTimeout(() => setFormSuccess(null), 5000)
     } catch (error) {
       console.error('Error adding car:', error)
-      alert(`Błąd podczas dodawania samochodu: ${error instanceof Error ? error.message : 'Nieznany błąd'}`)
+      setFormError(`Błąd podczas dodawania samochodu: ${error instanceof Error ? error.message : 'Nieznany błąd'}`)
     }
   }
 
@@ -353,7 +364,7 @@ export default function AdminPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <input
                 type="text"
-                placeholder="np. Volkswagen"
+                placeholder="Marka"
                 value={newCar.brand || ''}
                 onChange={(e) => setNewCar(prev => ({ ...prev, brand: e.target.value }))}
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -361,7 +372,7 @@ export default function AdminPage() {
               />
               <input
                 type="text"
-                placeholder="np. Passat"
+                placeholder="Model"
                 value={newCar.model || ''}
                 onChange={(e) => setNewCar(prev => ({ ...prev, model: e.target.value }))}
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -369,14 +380,14 @@ export default function AdminPage() {
               />
               <input
                 type="text"
-                placeholder="np. 2.0 TDI"
+                placeholder="Wersja"
                 value={newCar.version || ''}
                 onChange={(e) => setNewCar(prev => ({ ...prev, version: e.target.value }))}
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               <input
                 type="number"
-                placeholder="np. 2020"
+                placeholder="Rok produkcji"
                 value={newCar.year || ''}
                 onChange={(e) => setNewCar(prev => ({ ...prev, year: e.target.value ? parseInt(e.target.value) : undefined }))}
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -385,7 +396,7 @@ export default function AdminPage() {
               />
               <input
                 type="number"
-                placeholder="np. 50000"
+                placeholder="Przebieg (km)"
                 value={newCar.mileage || ''}
                 onChange={(e) => setNewCar(prev => ({ ...prev, mileage: e.target.value ? parseInt(e.target.value) : undefined }))}
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -403,7 +414,7 @@ export default function AdminPage() {
               </select>
               <input
                 type="number"
-                placeholder="np. 150"
+                placeholder="Moc (KM)"
                 value={newCar.power || ''}
                 onChange={(e) => setNewCar(prev => ({ ...prev, power: e.target.value ? parseInt(e.target.value) : undefined }))}
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -411,7 +422,7 @@ export default function AdminPage() {
               />
               <input
                 type="number"
-                placeholder="np. 129900"
+                placeholder="Cena (PLN)"
                 value={newCar.price || ''}
                 onChange={(e) => setNewCar(prev => ({ ...prev, price: e.target.value ? parseInt(e.target.value) : undefined }))}
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -433,8 +444,16 @@ export default function AdminPage() {
                   checked={newCar.featured || false}
                   onChange={(e) => setNewCar(prev => ({ ...prev, featured: e.target.checked }))}
                   className="rounded"
+                  disabled={featuredCars.length >= 3 && !newCar.featured}
                 />
-                <label className="text-sm text-gray-700">Polecany (na stronie głównej)</label>
+                <label className={`text-sm ${featuredCars.length >= 3 && !newCar.featured ? 'text-gray-400' : 'text-gray-700'}`}>
+                  Polecany (na stronie głównej)
+                  {featuredCars.length >= 3 && !newCar.featured && (
+                    <span className="block text-xs text-red-500 mt-1">
+                      Maksymalnie 3 polecane samochody ({featuredCars.length}/3)
+                    </span>
+                  )}
+                </label>
               </div>
             </div>
             <textarea
@@ -451,6 +470,22 @@ export default function AdminPage() {
                 placeholder="Dodaj zdjęcia samochodu"
               />
             </div>
+            
+            {/* Error and Success Messages */}
+            {formError && (
+              <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center">
+                <AlertCircle className="h-5 w-5 text-red-600 mr-3" />
+                <span className="text-sm text-red-700">{formError}</span>
+              </div>
+            )}
+            
+            {formSuccess && (
+              <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center">
+                <div className="h-5 w-5 text-green-600 mr-3">✓</div>
+                <span className="text-sm text-green-700">{formSuccess}</span>
+              </div>
+            )}
+            
             <div className="flex space-x-4 mt-4">
               <Button onClick={handleAddCar} className="bg-blue-600 hover:bg-blue-700">
                 Dodaj samochód
@@ -537,8 +572,10 @@ export default function AdminPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm text-gray-900">{car.year}</div>
-                        <div className="text-sm text-gray-500">{car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} km</div>
+                        <div className="text-sm text-gray-900">{car.year || '-'}</div>
+                        <div className="text-sm text-gray-500">
+                          {car.mileage ? car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' km' : '-'}
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

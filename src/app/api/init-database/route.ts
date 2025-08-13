@@ -1,56 +1,43 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
+import { supabaseCarDatabase } from '@/lib/database-supabase'
 import { supabase } from '@/lib/supabase'
 
-export async function POST() {
+export async function GET() {
   try {
     console.log('Initializing database...')
     
-    // Create cars table if it doesn't exist
-    const { error: createError } = await supabase.rpc('exec_sql', {
-      sql: `
-        CREATE TABLE IF NOT EXISTS cars (
-          id VARCHAR(255) PRIMARY KEY,
-          brand VARCHAR(255) NOT NULL,
-          model VARCHAR(255) NOT NULL,
-          year INTEGER NOT NULL,
-          mileage INTEGER NOT NULL,
-          fuel VARCHAR(255) NOT NULL,
-          power INTEGER NOT NULL,
-          price INTEGER NOT NULL,
-          type VARCHAR(50) NOT NULL,
-          description TEXT NOT NULL,
-          image_url TEXT,
-          featured BOOLEAN DEFAULT FALSE,
-          featured_order INTEGER DEFAULT NULL,
-          source VARCHAR(50) DEFAULT 'manual',
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-      `
-    })
-
-    if (createError) {
-      console.error('Error creating table:', createError)
-      return NextResponse.json({ success: false, error: createError.message }, { status: 500 })
+    // Initialize the database with new schema
+    await supabaseCarDatabase.init()
+    
+    // Update existing table to allow NULL values for year, mileage, and power
+    try {
+      const { error: alterError } = await supabase.rpc('exec_sql', {
+        sql: `
+          ALTER TABLE cars 
+          ALTER COLUMN year DROP NOT NULL,
+          ALTER COLUMN mileage DROP NOT NULL,
+          ALTER COLUMN power DROP NOT NULL;
+        `
+      })
+      
+      if (alterError) {
+        console.log('Table already updated or error:', alterError)
+      } else {
+        console.log('Table schema updated successfully')
+      }
+    } catch (alterError) {
+      console.log('Could not alter table (might already be correct):', alterError)
     }
-
-    // Add featured_order column if it doesn't exist
-    const { error: alterError } = await supabase.rpc('exec_sql', {
-      sql: `
-        ALTER TABLE cars 
-        ADD COLUMN IF NOT EXISTS featured_order INTEGER DEFAULT NULL;
-      `
+    
+    return NextResponse.json({
+      success: true,
+      message: 'Database initialized successfully'
     })
-
-    if (alterError) {
-      console.error('Error adding featured_order column:', alterError)
-      // Don't return error here as column might already exist
-    }
-
-    console.log('Database initialized successfully')
-    return NextResponse.json({ success: true, message: 'Database initialized successfully' })
   } catch (error) {
-    console.error('Error initializing database:', error)
-    return NextResponse.json({ success: false, error: 'Failed to initialize database' }, { status: 500 })
+    console.error('Database initialization error:', error)
+    return NextResponse.json(
+      { error: 'Failed to initialize database' },
+      { status: 500 }
+    )
   }
 } 

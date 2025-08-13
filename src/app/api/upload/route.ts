@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { supabase } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,29 +34,40 @@ export async function POST(request: NextRequest) {
     const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg'
     const filename = `car-${timestamp}.${extension}`
 
-    // Use Vercel Blob with the provided token
     try {
-      const { put } = await import('@vercel/blob')
-      const { url } = await put(filename, file, {
-        access: 'public',
-        addRandomSuffix: false,
-      })
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('car-images')
+        .upload(filename, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (error) {
+        console.error('Supabase Storage error:', error)
+        throw new Error('Błąd podczas przesyłania do Supabase Storage')
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('car-images')
+        .getPublicUrl(filename)
 
       return NextResponse.json({
-        url,
+        url: urlData.publicUrl,
         filename,
         size: file.size,
-        message: 'Zdjęcie zostało pomyślnie przesłane do Vercel Blob'
+        message: 'Zdjęcie zostało pomyślnie przesłane do Supabase Storage'
       })
-    } catch (blobError) {
-      console.error('Vercel Blob error:', blobError)
+    } catch (storageError) {
+      console.error('Storage error:', storageError)
       
-      // Fallback to placeholder if Blob fails
+      // Fallback to placeholder if storage fails
       return NextResponse.json({
         url: '/api/placeholder/400/300',
         filename,
         size: file.size,
-        message: 'Vercel Blob nie działa - używam obrazu zastępczego'
+        message: 'Supabase Storage nie działa - używam obrazu zastępczego'
       })
     }
 
