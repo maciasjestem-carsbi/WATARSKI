@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Car, Wrench, Phone, MapPin, Clock, Users, Shield, Star, ArrowRight, CheckCircle, Award, Zap, Search, Filter, Calendar, CreditCard, Truck, Car as CarIcon, ChevronRight, Play } from 'lucide-react'
+import { Car, Wrench, Phone, MapPin, Clock, Users, Shield, Star, ArrowRight, CheckCircle, Award, Zap, Search, Filter, Calendar, CreditCard, Truck, Car as CarIcon, ChevronRight, Play, WrenchIcon } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Layout from '@/components/layout'
@@ -338,58 +338,61 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Services Section - Volkswagen Style */}
-      <section className="py-20 bg-gray-50">
+      {/* Services Section - Professional Design */}
+      <section className="py-24 bg-gradient-to-br from-slate-50 to-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Nasze usługi</h2>
-            <p className="text-xl text-gray-600">Kompleksowa obsługa motoryzacyjna w jednym miejscu</p>
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
+              <Star className="h-8 w-8 text-blue-600" />
+            </div>
+            <h2 className="text-5xl font-bold text-gray-900 mb-6">Nasze usługi</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">Kompleksowa obsługa motoryzacyjna w jednym miejscu - od sprzedaży po serwis</p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-10">
             <Link href="/inventory" className="group">
-              <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 cursor-pointer border border-gray-100">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform">
-                  <Car className="h-12 w-12 text-white" />
+              <div className="bg-white rounded-2xl p-10 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 cursor-pointer border border-gray-100/50 backdrop-blur-sm">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <Car className="h-10 w-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">Samochody osobowe</h3>
-                <p className="text-gray-600 text-center mb-8 text-lg">Nowe Volkswagen i Skoda oraz używane samochody różnych marek</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center group-hover:text-blue-600 transition-colors">Samochody osobowe</h3>
+                <p className="text-gray-600 text-center mb-8 text-lg leading-relaxed">Nowe Volkswagen i Skoda oraz używane samochody różnych marek</p>
                 <div className="text-center">
-                  <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg group-hover:shadow-xl py-4 px-6 text-lg font-semibold rounded-xl">
+                  <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg group-hover:shadow-xl py-4 px-8 text-lg font-semibold rounded-xl transition-all duration-300">
                     Przeglądaj ofertę
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
               </div>
             </Link>
 
             <Link href="/inventory" className="group">
-              <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 cursor-pointer border border-gray-100">
-                <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-green-600 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform">
-                  <Truck className="h-12 w-12 text-white" />
+              <div className="bg-white rounded-2xl p-10 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 cursor-pointer border border-gray-100/50 backdrop-blur-sm">
+                <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <Truck className="h-10 w-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">Samochody dostawcze</h3>
-                <p className="text-gray-600 text-center mb-8 text-lg">Transporter i inne modele dostawcze dla Twojej firmy</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center group-hover:text-emerald-600 transition-colors">Samochody dostawcze</h3>
+                <p className="text-gray-600 text-center mb-8 text-lg leading-relaxed">Transporter i inne modele dostawcze dla Twojej firmy</p>
                 <div className="text-center">
-                  <Button className="bg-green-600 hover:bg-green-700 shadow-lg group-hover:shadow-xl py-4 px-6 text-lg font-semibold rounded-xl">
+                  <Button className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 shadow-lg group-hover:shadow-xl py-4 px-8 text-lg font-semibold rounded-xl transition-all duration-300">
                     Zobacz dostawcze
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
               </div>
             </Link>
 
             <Link href="/service" className="group">
-              <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 cursor-pointer border border-gray-100">
-                <div className="w-24 h-24 bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform">
-                  <Wrench className="h-12 w-12 text-white" />
+              <div className="bg-white rounded-2xl p-10 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 cursor-pointer border border-gray-100/50 backdrop-blur-sm">
+                <div className="w-20 h-20 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <Wrench className="h-10 w-10 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">Autoryzowany serwis</h3>
-                <p className="text-gray-600 text-center mb-8 text-lg">Profesjonalny serwis z gwarancją marki</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center group-hover:text-amber-600 transition-colors">Autoryzowany serwis</h3>
+                <p className="text-gray-600 text-center mb-8 text-lg leading-relaxed">Profesjonalny serwis z gwarancją marki</p>
                 <div className="text-center">
-                  <Button className="bg-orange-600 hover:bg-orange-700 shadow-lg group-hover:shadow-xl py-4 px-6 text-lg font-semibold rounded-xl">
+                  <Button className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 shadow-lg group-hover:shadow-xl py-4 px-8 text-lg font-semibold rounded-xl transition-all duration-300">
                     Umów serwis
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
               </div>
@@ -398,42 +401,45 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Stats Section - Volkswagen Style */}
-      <section className="py-20 bg-white">
+      {/* Stats Section - Professional Design */}
+      <section className="py-24 bg-gradient-to-br from-white to-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Dlaczego WĄTARSKI?</h2>
-            <p className="text-xl text-gray-600">Ponad 30 lat doświadczenia w branży motoryzacyjnej</p>
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
+              <Award className="h-8 w-8 text-blue-600" />
+            </div>
+            <h2 className="text-5xl font-bold text-gray-900 mb-6">Dlaczego WĄTARSKI?</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">Ponad 30 lat doświadczenia w branży motoryzacyjnej</p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
             <div className="text-center group">
-              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-3xl w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all transform group-hover:scale-110">
-                <span className="text-3xl font-bold text-white">30+</span>
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl w-20 h-20 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110">
+                <span className="text-2xl font-bold text-white">30+</span>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Lat doświadczenia</h3>
-              <p className="text-gray-600">W branży motoryzacyjnej</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">Lat doświadczenia</h3>
+              <p className="text-gray-600 leading-relaxed">W branży motoryzacyjnej</p>
             </div>
             <div className="text-center group">
-              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-3xl w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all transform group-hover:scale-110">
-                <span className="text-3xl font-bold text-white">1000+</span>
+              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl w-20 h-20 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110">
+                <span className="text-2xl font-bold text-white">1000+</span>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Zadowolonych klientów</h3>
-              <p className="text-gray-600">Zaufali nam</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-emerald-600 transition-colors">Zadowolonych klientów</h3>
+              <p className="text-gray-600 leading-relaxed">Zaufali nam</p>
             </div>
             <div className="text-center group">
-              <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all transform group-hover:scale-110">
-                <span className="text-3xl font-bold text-white">50+</span>
+              <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl w-20 h-20 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110">
+                <span className="text-2xl font-bold text-white">50+</span>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Samochodów w ofercie</h3>
-              <p className="text-gray-600">Nowe i używane</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-amber-600 transition-colors">Samochodów w ofercie</h3>
+              <p className="text-gray-600 leading-relaxed">Nowe i używane</p>
             </div>
             <div className="text-center group">
-              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-3xl w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all transform group-hover:scale-110">
-                <span className="text-3xl font-bold text-white">24/7</span>
+              <div className="bg-gradient-to-br from-rose-500 to-rose-600 rounded-2xl w-20 h-20 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110">
+                <Phone className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Wsparcie techniczne</h3>
-              <p className="text-gray-600">Zawsze dostępni</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-rose-600 transition-colors">Pomoc drogowa</h3>
+              <p className="text-gray-600 leading-relaxed">Zawsze dostępni</p>
             </div>
           </div>
         </div>
