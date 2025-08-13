@@ -22,11 +22,11 @@ export default function AdminPage() {
     brand: '',
     model: '',
     version: '',
-    year: 2024,
-    mileage: 0,
+    year: undefined,
+    mileage: undefined,
     fuel: 'Benzyna',
-    power: 100,
-    price: 0,
+    power: undefined,
+    price: undefined,
     type: 'new',
     description: '',
     featured: false,
@@ -103,59 +103,75 @@ export default function AdminPage() {
   }
 
   const handleAddCar = async () => {
-    if (newCar.brand && newCar.model && newCar.price && newCar.price > 0) {
-      try {
-        const carData = {
-          brand: newCar.brand!,
-          model: newCar.model!,
-          version: newCar.version!,
-          year: newCar.year!,
-          mileage: newCar.mileage!,
-          fuel: newCar.fuel!,
-          power: newCar.power!,
-          price: newCar.price!,
-          type: newCar.type!,
-          description: newCar.description!,
-          imageUrl: newCar.imageUrl,
-          images: newCar.images || [],
-          featured: newCar.featured!,
-          source: newCar.source || 'manual'
-        }
-        
-        const response = await fetch('/api/cars', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(carData)
-        })
+    // Validate required fields
+    if (!newCar.brand?.trim()) {
+      alert('Proszę wprowadzić markę samochodu')
+      return
+    }
+    if (!newCar.model?.trim()) {
+      alert('Proszę wprowadzić model samochodu')
+      return
+    }
+    if (!newCar.price || newCar.price <= 0) {
+      alert('Proszę wprowadzić poprawną cenę (większą od 0)')
+      return
+    }
 
-        if (!response.ok) {
-          throw new Error('Failed to add car')
-        }
-
-        const addedCar = await response.json()
-        setCars(prev => [addedCar, ...prev])
-        
-        setNewCar({
-          brand: '',
-          model: '',
-          version: '',
-          year: 2024,
-          mileage: 0,
-          fuel: 'Benzyna',
-          power: 100,
-          price: 0,
-          type: 'new',
-          description: '',
-          featured: false,
-          images: []
-        })
-        setShowAddForm(false)
-      } catch (error) {
-        console.error('Error adding car:', error)
-        alert('Błąd podczas dodawania samochodu')
+    try {
+      const carData = {
+        brand: newCar.brand.trim(),
+        model: newCar.model.trim(),
+        version: newCar.version?.trim() || '',
+        year: newCar.year || undefined,
+        mileage: newCar.mileage || undefined,
+        fuel: newCar.fuel || 'Benzyna',
+        power: newCar.power || undefined,
+        price: newCar.price,
+        type: newCar.type || 'new',
+        description: newCar.description?.trim() || '',
+        imageUrl: newCar.imageUrl,
+        images: newCar.images || [],
+        featured: newCar.featured || false,
+        source: newCar.source || 'manual'
       }
+      
+      const response = await fetch('/api/cars', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(carData)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to add car')
+      }
+
+      const addedCar = await response.json()
+      setCars(prev => [addedCar, ...prev])
+      
+      // Reset form
+      setNewCar({
+        brand: '',
+        model: '',
+        version: '',
+        year: undefined,
+        mileage: undefined,
+        fuel: 'Benzyna',
+        power: undefined,
+        price: undefined,
+        type: 'new',
+        description: '',
+        featured: false,
+        images: []
+      })
+      setShowAddForm(false)
+      
+      alert('Samochód został pomyślnie dodany!')
+    } catch (error) {
+      console.error('Error adding car:', error)
+      alert(`Błąd podczas dodawania samochodu: ${error instanceof Error ? error.message : 'Nieznany błąd'}`)
     }
   }
 
@@ -337,43 +353,48 @@ export default function AdminPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <input
                 type="text"
-                placeholder="Marka"
-                value={newCar.brand}
+                placeholder="np. Volkswagen"
+                value={newCar.brand || ''}
                 onChange={(e) => setNewCar(prev => ({ ...prev, brand: e.target.value }))}
-                className="border border-gray-300 rounded-lg px-3 py-2"
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                required
               />
               <input
                 type="text"
-                placeholder="Model"
-                value={newCar.model}
+                placeholder="np. Passat"
+                value={newCar.model || ''}
                 onChange={(e) => setNewCar(prev => ({ ...prev, model: e.target.value }))}
-                className="border border-gray-300 rounded-lg px-3 py-2"
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                required
               />
               <input
                 type="text"
-                placeholder="Wersja"
-                value={newCar.version}
+                placeholder="np. 2.0 TDI"
+                value={newCar.version || ''}
                 onChange={(e) => setNewCar(prev => ({ ...prev, version: e.target.value }))}
-                className="border border-gray-300 rounded-lg px-3 py-2"
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               <input
                 type="number"
-                placeholder="Rok"
-                value={newCar.year}
-                onChange={(e) => setNewCar(prev => ({ ...prev, year: parseInt(e.target.value) }))}
-                className="border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="np. 2020"
+                value={newCar.year || ''}
+                onChange={(e) => setNewCar(prev => ({ ...prev, year: e.target.value ? parseInt(e.target.value) : undefined }))}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                min="1900"
+                max="2030"
               />
               <input
                 type="number"
-                placeholder="Przebieg (km)"
-                value={newCar.mileage}
-                onChange={(e) => setNewCar(prev => ({ ...prev, mileage: parseInt(e.target.value) }))}
-                className="border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="np. 50000"
+                value={newCar.mileage || ''}
+                onChange={(e) => setNewCar(prev => ({ ...prev, mileage: e.target.value ? parseInt(e.target.value) : undefined }))}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                min="0"
               />
               <select
-                value={newCar.fuel}
+                value={newCar.fuel || 'Benzyna'}
                 onChange={(e) => setNewCar(prev => ({ ...prev, fuel: e.target.value }))}
-                className="border border-gray-300 rounded-lg px-3 py-2"
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="Benzyna">Benzyna</option>
                 <option value="Diesel">Diesel</option>
@@ -382,22 +403,25 @@ export default function AdminPage() {
               </select>
               <input
                 type="number"
-                placeholder="Moc (KM)"
-                value={newCar.power}
-                onChange={(e) => setNewCar(prev => ({ ...prev, power: parseInt(e.target.value) }))}
-                className="border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="np. 150"
+                value={newCar.power || ''}
+                onChange={(e) => setNewCar(prev => ({ ...prev, power: e.target.value ? parseInt(e.target.value) : undefined }))}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                min="0"
               />
               <input
                 type="number"
-                placeholder="Cena (PLN)"
-                value={newCar.price}
-                onChange={(e) => setNewCar(prev => ({ ...prev, price: parseInt(e.target.value) }))}
-                className="border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="np. 129900"
+                value={newCar.price || ''}
+                onChange={(e) => setNewCar(prev => ({ ...prev, price: e.target.value ? parseInt(e.target.value) : undefined }))}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                min="0"
+                required
               />
               <select
-                value={newCar.type}
+                value={newCar.type || 'new'}
                 onChange={(e) => setNewCar(prev => ({ ...prev, type: e.target.value as 'new' | 'used' | 'delivery' }))}
-                className="border border-gray-300 rounded-lg px-3 py-2"
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="new">Nowy</option>
                 <option value="used">Używany</option>
@@ -406,7 +430,7 @@ export default function AdminPage() {
               <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  checked={newCar.featured}
+                  checked={newCar.featured || false}
                   onChange={(e) => setNewCar(prev => ({ ...prev, featured: e.target.checked }))}
                   className="rounded"
                 />
@@ -414,10 +438,10 @@ export default function AdminPage() {
               </div>
             </div>
             <textarea
-              placeholder="Opis samochodu"
-              value={newCar.description}
+              placeholder="Opis samochodu (opcjonalnie)"
+              value={newCar.description || ''}
               onChange={(e) => setNewCar(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-4"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               rows={3}
             />
             <div className="mt-4">
