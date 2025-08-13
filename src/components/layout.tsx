@@ -1,4 +1,4 @@
-import { Car, Phone, MapPin, Clock, Mail, Facebook, Instagram, Linkedin } from 'lucide-react'
+import { Car, Phone, MapPin, Clock, Mail, Facebook, Instagram } from 'lucide-react'
 import Link from 'next/link'
 import { ReactNode } from 'react'
 import Logo from './logo'
@@ -116,14 +116,11 @@ export default function Layout({ children }: LayoutProps) {
                 © 2025 WĄTARSKI Włocławek. Wszystkie prawa zastrzeżone.
               </p>
               <div className="flex space-x-4 mt-4 md:mt-0">
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <a href="https://www.facebook.com/Watarski" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
                   <Facebook className="h-5 w-5" />
                 </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <a href="https://www.instagram.com/watarski.wloclawek" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
                   <Instagram className="h-5 w-5" />
-                </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                  <Linkedin className="h-5 w-5" />
                 </a>
                 <Link href="/admin" className="text-gray-400 hover:text-white transition-colors">
                   Panel admin
