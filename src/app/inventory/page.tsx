@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Car, Star, Search, Filter, ChevronDown, ChevronUp } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import type { CarData } from '@/lib/database'
+import type { CarData } from '@/lib/database-supabase'
 import Layout from '@/components/layout'
 
 export default function InventoryPage() {

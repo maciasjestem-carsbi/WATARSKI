@@ -1,5 +1,26 @@
 import { supabase } from './supabase'
-import { CarData } from './database'
+
+// Supabase-based database types
+export interface CarData {
+  id: string
+  brand: string
+  model: string
+  version: string
+  year: number | null
+  mileage: number | null
+  fuel: string
+  power: number | null
+  price: number
+  type: 'new' | 'used' | 'delivery'
+  description: string
+  imageUrl?: string
+  images?: string[]
+  featured: boolean
+  featuredOrder?: number
+  source?: 'manual' | 'otomoto'
+  createdAt: Date
+  updatedAt: Date
+}
 
 // Supabase-based database implementation
 class SupabaseCarDatabase {

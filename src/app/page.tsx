@@ -6,7 +6,7 @@ import { Car, Wrench, Phone, MapPin, Clock, Users, Shield, Star, ArrowRight, Che
 import Link from 'next/link'
 import Image from 'next/image'
 import Layout from '@/components/layout'
-import type { CarData } from '@/lib/database'
+import type { CarData } from '@/lib/database-supabase'
 
 export default function HomePage() {
   const [featuredCars, setFeaturedCars] = useState<CarData[]>([])
