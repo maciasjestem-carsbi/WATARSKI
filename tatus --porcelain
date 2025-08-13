@@ -1,0 +1,6 @@
+[33m42f080b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Improve admin panel design and fix image upload issues - Add WĄTARSKI logo to admin panel - Move Otomoto import under 'Dodaj samochód' section - Add stats dashboard with car counts - Fix image upload thumbnails and error handling - Improve Polish translations and user experience - Add better error messages and validation for image uploads
+[33m054bef5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Revert page.tsx to previous version and remove professional design updates
+[33m4422874[m Remove LinkedIn icon and update social media links with correct Facebook and Instagram URLs
+[33m42b90a8[m Fix Toruńska addresses from 123 to 169 and add Google Maps embed
+[33m42f080b[m Improve admin panel design and fix image upload issues - Add WĄTARSKI logo to admin panel - Move Otomoto import under 'Dodaj samochód' section - Add stats dashboard with car counts - Fix image upload thumbnails and error handling - Improve Polish translations and user experience - Add better error messages and validation for image uploads
+[33m0172391[m Add support for multiple images (max 20) per car with gallery functionality

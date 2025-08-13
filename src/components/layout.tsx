@@ -50,7 +50,7 @@ export default function Layout({ children }: LayoutProps) {
             <div className="space-y-4">
               <div className="flex items-center">
                 <div className="mr-3">
-                  <Logo size="sm" />
+                  <Logo size="sm" color="white" />
                 </div>
               </div>
               <p className="text-gray-400 text-sm">
