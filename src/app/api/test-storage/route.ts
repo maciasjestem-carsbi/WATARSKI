@@ -15,8 +15,7 @@ export async function GET() {
       return NextResponse.json({
         success: false,
         error: 'Błąd podczas listowania bucketów',
-        details: listError.message,
-        code: listError.code
+        details: listError.message
       })
     }
 
@@ -50,8 +49,7 @@ export async function GET() {
       return NextResponse.json({
         success: false,
         message: `Błąd uploadu: ${uploadError.message}`,
-        bucket: carImagesBucket.name,
-        errorCode: uploadError.code
+        bucket: carImagesBucket.name
       })
     }
 

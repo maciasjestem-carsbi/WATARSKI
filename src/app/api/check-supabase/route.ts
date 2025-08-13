@@ -30,8 +30,7 @@ export async function GET() {
       return NextResponse.json({
         success: false,
         error: 'Błąd dostępu do storage',
-        details: storageError.message,
-        code: storageError.code
+        details: storageError.message
       })
     }
 
