@@ -352,13 +352,13 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-10">
             <Link href="/inventory" className="group">
               <div className="bg-white rounded-2xl p-10 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 cursor-pointer border border-gray-100/50 backdrop-blur-sm h-full flex flex-col">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <div className="w-24 h-24 bg-gradient-to-br from-blue-800 to-blue-900 rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <Car className="h-12 w-12 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center group-hover:text-blue-600 transition-colors">Samochody osobowe</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center group-hover:text-blue-800 transition-colors">Samochody osobowe</h3>
                 <p className="text-gray-600 text-center mb-8 text-lg leading-relaxed flex-1">Nowe Volkswagen i Skoda oraz używane samochody różnych marek</p>
                 <div className="text-center mt-auto">
-                  <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg group-hover:shadow-xl py-4 px-8 text-lg font-semibold rounded-xl transition-all duration-300">
+                  <Button className="bg-gradient-to-r from-blue-800 to-blue-900 hover:from-blue-900 hover:to-blue-950 shadow-lg group-hover:shadow-xl py-4 px-8 text-lg font-semibold rounded-xl transition-all duration-300">
                     Przeglądaj ofertę
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
@@ -368,13 +368,13 @@ export default function HomePage() {
 
             <Link href="/inventory" className="group">
               <div className="bg-white rounded-2xl p-10 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 cursor-pointer border border-gray-100/50 backdrop-blur-sm h-full flex flex-col">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <div className="w-24 h-24 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <Truck className="h-12 w-12 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center group-hover:text-blue-500 transition-colors">Samochody dostawcze</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center group-hover:text-indigo-600 transition-colors">Samochody dostawcze</h3>
                 <p className="text-gray-600 text-center mb-8 text-lg leading-relaxed flex-1">Transporter i inne modele dostawcze dla Twojej firmy</p>
                 <div className="text-center mt-auto">
-                  <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg group-hover:shadow-xl py-4 px-8 text-lg font-semibold rounded-xl transition-all duration-300">
+                  <Button className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 shadow-lg group-hover:shadow-xl py-4 px-8 text-lg font-semibold rounded-xl transition-all duration-300">
                     Zobacz dostawcze
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Button>
@@ -384,7 +384,7 @@ export default function HomePage() {
 
             <Link href="/service" className="group">
               <div className="bg-white rounded-2xl p-10 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 cursor-pointer border border-gray-100/50 backdrop-blur-sm h-full flex flex-col">
-                <div className="w-24 h-24 bg-gradient-to-br from-slate-500 to-slate-600 rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                <div className="w-24 h-24 bg-gradient-to-br from-slate-600 to-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                   <Wrench className="h-12 w-12 text-white" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center group-hover:text-slate-600 transition-colors">Autoryzowany serwis</h3>
@@ -414,28 +414,28 @@ export default function HomePage() {
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
             <div className="text-center group">
-              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110">
+              <div className="bg-gradient-to-br from-blue-800 to-blue-900 rounded-2xl w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110">
                 <span className="text-3xl font-bold text-white">30+</span>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">Lat doświadczenia</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-800 transition-colors">Lat doświadczenia</h3>
               <p className="text-gray-600 leading-relaxed">W branży motoryzacyjnej</p>
             </div>
             <div className="text-center group">
-              <div className="bg-gradient-to-br from-blue-400 to-blue-500 rounded-2xl w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110">
+              <div className="bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-2xl w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110">
                 <span className="text-2xl font-bold text-white">1000+</span>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-500 transition-colors">Zadowolonych klientów</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors">Zadowolonych klientów</h3>
               <p className="text-gray-600 leading-relaxed">Zaufali nam</p>
             </div>
             <div className="text-center group">
-              <div className="bg-gradient-to-br from-slate-500 to-slate-600 rounded-2xl w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110">
+              <div className="bg-gradient-to-br from-slate-600 to-slate-700 rounded-2xl w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110">
                 <span className="text-3xl font-bold text-white">50+</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-slate-600 transition-colors">Samochodów w ofercie</h3>
               <p className="text-gray-600 leading-relaxed">Nowe i używane</p>
             </div>
             <div className="text-center group">
-              <div className="bg-gradient-to-br from-slate-400 to-slate-500 rounded-2xl w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110">
+              <div className="bg-gradient-to-br from-slate-500 to-slate-600 rounded-2xl w-24 h-24 flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-110">
                 <Phone className="h-10 w-10 text-white" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-slate-500 transition-colors">Pomoc drogowa</h3>
