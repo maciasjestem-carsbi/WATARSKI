@@ -221,7 +221,7 @@ export default function CarDetailsPage() {
                 )}
               </div>
               <h1 className="text-4xl font-bold text-gray-900 mb-2">{car.brand} {car.model}</h1>
-              {car.version && (
+              {car.version && car.version.trim() && (
                 <p className="text-xl text-blue-600 font-medium mb-2">{car.version}</p>
               )}
               <p className="text-2xl font-bold text-blue-600">{car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł</p>
@@ -234,7 +234,7 @@ export default function CarDetailsPage() {
                   <Calendar className="h-5 w-5 text-blue-600" />
                   <span className="text-sm text-gray-600">Rok produkcji</span>
                 </div>
-                <p className="text-xl font-semibold text-gray-900">{car.year}</p>
+                <p className="text-xl font-semibold text-gray-900">{car.year || 'N/A'}</p>
               </div>
               
               <div className="bg-white rounded-xl p-6 shadow-sm">
@@ -242,7 +242,7 @@ export default function CarDetailsPage() {
                   <Gauge className="h-5 w-5 text-green-600" />
                   <span className="text-sm text-gray-600">Przebieg</span>
                 </div>
-                <p className="text-xl font-semibold text-gray-900">{car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} km</p>
+                <p className="text-xl font-semibold text-gray-900">{car.mileage ? car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' km' : 'N/A'}</p>
               </div>
               
               <div className="bg-white rounded-xl p-6 shadow-sm">
@@ -258,7 +258,7 @@ export default function CarDetailsPage() {
                   <Zap className="h-5 w-5 text-purple-600" />
                   <span className="text-sm text-gray-600">Moc</span>
                 </div>
-                <p className="text-xl font-semibold text-gray-900">{car.power} KM</p>
+                <p className="text-xl font-semibold text-gray-900">{car.power ? `${car.power} KM` : 'N/A'}</p>
               </div>
             </div>
 

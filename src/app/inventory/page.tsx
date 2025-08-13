@@ -231,11 +231,11 @@ export default function InventoryPage() {
                     <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
                       <div>
                         <span className="text-gray-500">Rok:</span>
-                        <p className="font-medium">{car.year}</p>
+                        <p className="font-medium">{car.year || 'N/A'}</p>
                       </div>
                       <div>
                         <span className="text-gray-500">Przebieg:</span>
-                        <p className="font-medium">{car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} km</p>
+                        <p className="font-medium">{car.mileage ? car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' km' : 'N/A'}</p>
                       </div>
                       <div>
                         <span className="text-gray-500">Paliwo:</span>
@@ -243,7 +243,7 @@ export default function InventoryPage() {
                       </div>
                       <div>
                         <span className="text-gray-500">Moc:</span>
-                        <p className="font-medium">{car.power} KM</p>
+                        <p className="font-medium">{car.power ? `${car.power} KM` : 'N/A'}</p>
                       </div>
                     </div>
                     
