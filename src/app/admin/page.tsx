@@ -24,10 +24,10 @@ export default function AdminPage() {
     brand: '',
     model: '',
     version: '',
-    year: undefined,
-    mileage: undefined,
+    year: 0,
+    mileage: 0,
     fuel: 'Benzyna',
-    power: undefined,
+    power: 0,
     price: undefined,
     type: 'new',
     description: '',
@@ -81,10 +81,10 @@ export default function AdminPage() {
           brand: scrapedCar.brand,
           model: scrapedCar.model,
           version: scrapedCar.version,
-          year: scrapedCar.year,
-          mileage: scrapedCar.mileage,
+          year: scrapedCar.year || 0,
+          mileage: scrapedCar.mileage || 0,
           fuel: scrapedCar.fuel,
-          power: scrapedCar.power,
+          power: scrapedCar.power || 0,
           price: scrapedCar.price,
           type: 'used' as const,
           description: scrapedCar.description,
@@ -132,10 +132,10 @@ export default function AdminPage() {
         brand: newCar.brand.trim(),
         model: newCar.model.trim(),
         version: newCar.version?.trim() || '',
-        year: newCar.year || undefined,
-        mileage: newCar.mileage || undefined,
+        year: newCar.year || 0,
+        mileage: newCar.mileage || 0,
         fuel: newCar.fuel || 'Benzyna',
-        power: newCar.power || undefined,
+        power: newCar.power || 0,
         price: newCar.price,
         type: newCar.type || 'new',
         description: newCar.description?.trim() || '',
@@ -166,10 +166,10 @@ export default function AdminPage() {
         brand: '',
         model: '',
         version: '',
-        year: undefined,
-        mileage: undefined,
+        year: 0,
+        mileage: 0,
         fuel: 'Benzyna',
-        power: undefined,
+        power: 0,
         price: undefined,
         type: 'new',
         description: '',
@@ -184,6 +184,78 @@ export default function AdminPage() {
       console.error('Error adding car:', error)
       setFormError(`Błąd podczas dodawania samochodu: ${error instanceof Error ? error.message : 'Nieznany błąd'}`)
     }
+  }
+
+  const handleEditCar = async () => {
+    if (!editingCar) return
+
+    // Clear previous messages
+    setFormError(null)
+    setFormSuccess(null)
+    
+    // Validate required fields
+    if (!editingCar.brand?.trim()) {
+      setFormError('Proszę wprowadzić markę samochodu')
+      return
+    }
+    if (!editingCar.model?.trim()) {
+      setFormError('Proszę wprowadzić model samochodu')
+      return
+    }
+    if (!editingCar.price || editingCar.price <= 0) {
+      setFormError('Proszę wprowadzić poprawną cenę (większą od 0)')
+      return
+    }
+
+    try {
+      const carData = {
+        brand: editingCar.brand.trim(),
+        model: editingCar.model.trim(),
+        version: editingCar.version?.trim() || '',
+        year: editingCar.year || 0,
+        mileage: editingCar.mileage || 0,
+        fuel: editingCar.fuel || 'Benzyna',
+        power: editingCar.power || 0,
+        price: editingCar.price,
+        type: editingCar.type || 'new',
+        description: editingCar.description?.trim() || '',
+        imageUrl: editingCar.imageUrl,
+        images: editingCar.images || [],
+        featured: editingCar.featured || false,
+        source: editingCar.source || 'manual'
+      }
+      
+      const response = await fetch(`/api/cars/${editingCar.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(carData)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to update car')
+      }
+
+      const updatedCar = await response.json()
+      setCars(prev => prev.map(car => car.id === editingCar.id ? updatedCar : car))
+      
+      // Reset editing state
+      setEditingCar(null)
+      
+      setFormSuccess('Samochód został pomyślnie zaktualizowany!')
+      setTimeout(() => setFormSuccess(null), 5000)
+    } catch (error) {
+      console.error('Error updating car:', error)
+      setFormError(`Błąd podczas aktualizacji samochodu: ${error instanceof Error ? error.message : 'Nieznany błąd'}`)
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setEditingCar(null)
+    setFormError(null)
+    setFormSuccess(null)
   }
 
   const handleDeleteCar = async (id: string) => {
@@ -491,6 +563,146 @@ export default function AdminPage() {
                 Dodaj samochód
               </Button>
               <Button onClick={() => setShowAddForm(false)} variant="outline">
+                Anuluj
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Edit Car Form */}
+        {editingCar && (
+          <div className="bg-white rounded-lg p-6 shadow mb-8">
+            <h2 className="text-xl font-semibold mb-4">Edytuj samochód</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <input
+                type="text"
+                placeholder="Marka"
+                value={editingCar.brand || ''}
+                onChange={(e) => setEditingCar(prev => prev ? { ...prev, brand: e.target.value } : null)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Model"
+                value={editingCar.model || ''}
+                onChange={(e) => setEditingCar(prev => prev ? { ...prev, model: e.target.value } : null)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Wersja"
+                value={editingCar.version || ''}
+                onChange={(e) => setEditingCar(prev => prev ? { ...prev, version: e.target.value } : null)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <input
+                type="number"
+                placeholder="Rok produkcji"
+                value={editingCar.year || ''}
+                onChange={(e) => setEditingCar(prev => prev ? { ...prev, year: e.target.value ? parseInt(e.target.value) : 0 } : null)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                min="1900"
+                max="2030"
+              />
+              <input
+                type="number"
+                placeholder="Przebieg (km)"
+                value={editingCar.mileage || ''}
+                onChange={(e) => setEditingCar(prev => prev ? { ...prev, mileage: e.target.value ? parseInt(e.target.value) : 0 } : null)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                min="0"
+              />
+              <select
+                value={editingCar.fuel || 'Benzyna'}
+                onChange={(e) => setEditingCar(prev => prev ? { ...prev, fuel: e.target.value } : null)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="Benzyna">Benzyna</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Hybryda">Hybryda</option>
+                <option value="Elektryczny">Elektryczny</option>
+              </select>
+              <input
+                type="number"
+                placeholder="Moc (KM)"
+                value={editingCar.power || ''}
+                onChange={(e) => setEditingCar(prev => prev ? { ...prev, power: e.target.value ? parseInt(e.target.value) : 0 } : null)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                min="0"
+              />
+              <input
+                type="number"
+                placeholder="Cena (PLN)"
+                value={editingCar.price || ''}
+                onChange={(e) => setEditingCar(prev => prev ? { ...prev, price: e.target.value ? parseInt(e.target.value) : 0 } : null)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                min="0"
+                required
+              />
+              <select
+                value={editingCar.type || 'new'}
+                onChange={(e) => setEditingCar(prev => prev ? { ...prev, type: e.target.value as 'new' | 'used' | 'delivery' } : null)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="new">Nowy</option>
+                <option value="used">Używany</option>
+                <option value="delivery">Dostawczy</option>
+              </select>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={editingCar.featured || false}
+                  onChange={(e) => setEditingCar(prev => prev ? { ...prev, featured: e.target.checked } : null)}
+                  className="rounded"
+                  disabled={featuredCars.length >= 3 && !editingCar.featured}
+                />
+                <label className={`text-sm ${featuredCars.length >= 3 && !editingCar.featured ? 'text-gray-400' : 'text-gray-700'}`}>
+                  Polecany (na stronie głównej)
+                  {featuredCars.length >= 3 && !editingCar.featured && (
+                    <span className="block text-xs text-red-500 mt-1">
+                      Maksymalnie 3 polecane samochody ({featuredCars.length}/3)
+                    </span>
+                  )}
+                </label>
+              </div>
+            </div>
+            <textarea
+              placeholder="Opis samochodu (opcjonalnie)"
+              value={editingCar.description || ''}
+              onChange={(e) => setEditingCar(prev => prev ? { ...prev, description: e.target.value } : null)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              rows={3}
+            />
+            <div className="mt-4">
+              <MultipleImageUpload 
+                value={editingCar.images} 
+                onChange={(images) => setEditingCar(prev => prev ? { ...prev, images } : null)}
+                placeholder="Dodaj zdjęcia samochodu"
+              />
+            </div>
+            
+            {/* Error and Success Messages */}
+            {formError && (
+              <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center">
+                <AlertCircle className="h-5 w-5 text-red-600 mr-3" />
+                <span className="text-sm text-red-700">{formError}</span>
+              </div>
+            )}
+            
+            {formSuccess && (
+              <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center">
+                <div className="h-5 w-5 text-green-600 mr-3">✓</div>
+                <span className="text-sm text-green-700">{formSuccess}</span>
+              </div>
+            )}
+            
+            <div className="flex space-x-4 mt-4">
+              <Button onClick={handleEditCar} className="bg-blue-600 hover:bg-blue-700">
+                Zapisz zmiany
+              </Button>
+              <Button onClick={handleCancelEdit} variant="outline">
                 Anuluj
               </Button>
             </div>
