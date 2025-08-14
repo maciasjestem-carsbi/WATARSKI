@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Car, Phone, MapPin, Calendar, Zap, Fuel, Gauge, Star, ArrowLeft, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import type { CarData } from '@/lib/database'
+import type { CarData } from '@/lib/database-supabase'
 
 export default function CarDetailsPage() {
   const params = useParams()
