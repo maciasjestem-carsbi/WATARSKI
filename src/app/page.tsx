@@ -157,7 +157,7 @@ export default function HomePage() {
                     )}
                     
                     <div className="relative overflow-hidden rounded-2xl shadow-2xl">
-                      <Link href={`/car/${currentCar.id}`}>
+                      <Link href={`/car/${currentCar.id}`} className="block">
                         <Image
                           src={currentCar.imageUrl || "/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"}
                           alt={`${currentCar.brand} ${currentCar.model}`}
@@ -165,9 +165,9 @@ export default function HomePage() {
                           height={600}
                           className="w-full h-[400px] object-cover object-center cursor-pointer hover:scale-105 transition-transform duration-300"
                         />
+                        {/* Gradient overlay for better text readability - pointer-events-none so it doesn't block clicks */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
                       </Link>
-                      {/* Gradient overlay for better text readability */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                     </div>
                     
                     <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-xl">
@@ -201,7 +201,7 @@ export default function HomePage() {
                 ) : (
                   <>
                     <div className="relative overflow-hidden rounded-2xl shadow-2xl">
-                      <Link href="/inventory">
+                      <Link href="/inventory" className="block">
                         <Image
                           src="/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"
                           alt="Volkswagen T-Roc"
@@ -209,9 +209,9 @@ export default function HomePage() {
                           height={600}
                           className="w-full h-[400px] object-cover object-center cursor-pointer hover:scale-105 transition-transform duration-300"
                         />
+                        {/* Gradient overlay for better text readability - pointer-events-none so it doesn't block clicks */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none"></div>
                       </Link>
-                      {/* Gradient overlay for better text readability */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                     </div>
                     <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-xl">
                       <Link href="/inventory" className="block hover:scale-105 transition-transform duration-200">

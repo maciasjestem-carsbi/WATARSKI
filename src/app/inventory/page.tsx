@@ -243,7 +243,7 @@ export default function InventoryPage() {
                 <div key={car.id} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
                   <div className="relative">
                     {/* Car Image with 16:9 aspect ratio */}
-                    <div className="relative w-full h-48 overflow-hidden rounded-t-xl">
+                    <div className="relative w-full aspect-[16/9] overflow-hidden rounded-t-xl">
                       {currentImage ? (
                         <Image
                           src={currentImage}
