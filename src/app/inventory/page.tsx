@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Car, Star, Search, Filter, ChevronDown, ChevronUp } from 'lucide-react'
+import { Car, Star, Search, Filter, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { CarData } from '@/lib/database-supabase'
@@ -17,6 +17,7 @@ export default function InventoryPage() {
   const [selectedBrand, setSelectedBrand] = useState<string>('all')
   const [priceRange, setPriceRange] = useState<string>('all')
   const [showFilters, setShowFilters] = useState(false)
+  const [carImageIndices, setCarImageIndices] = useState<{ [key: string]: number }>({})
 
   useEffect(() => {
     const loadCars = async () => {
@@ -26,9 +27,16 @@ export default function InventoryPage() {
         if (!response.ok) {
           throw new Error('Failed to fetch cars')
         }
-        const allCars = await response.json()
+        const allCars: CarData[] = await response.json()
         setCars(allCars)
         setFilteredCars(allCars)
+        
+        // Initialize image indices for each car
+        const initialIndices: { [key: string]: number } = {}
+        allCars.forEach((car: CarData) => {
+          initialIndices[car.id] = 0
+        })
+        setCarImageIndices(initialIndices)
       } catch (error) {
         console.error('Error loading cars:', error)
       } finally {
@@ -37,6 +45,36 @@ export default function InventoryPage() {
     }
     loadCars()
   }, [])
+
+  const getCarImages = (car: CarData) => {
+    return (car.images && car.images.length > 0) ? car.images : (car.imageUrl ? [car.imageUrl] : [])
+  }
+
+  const nextImage = (carId: string) => {
+    const car = cars.find(c => c.id === carId)
+    if (!car) return
+    
+    const images = getCarImages(car)
+    if (images.length <= 1) return
+    
+    setCarImageIndices(prev => ({
+      ...prev,
+      [carId]: (prev[carId] + 1) % images.length
+    }))
+  }
+
+  const prevImage = (carId: string) => {
+    const car = cars.find(c => c.id === carId)
+    if (!car) return
+    
+    const images = getCarImages(car)
+    if (images.length <= 1) return
+    
+    setCarImageIndices(prev => ({
+      ...prev,
+      [carId]: (prev[carId] - 1 + images.length) % images.length
+    }))
+  }
 
   useEffect(() => {
     let filtered = cars
@@ -195,29 +233,81 @@ export default function InventoryPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredCars.map((car) => (
-              <Link key={car.id} href={`/car/${car.id}`} className="group">
-                <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+            {filteredCars.map((car) => {
+              const images = getCarImages(car)
+              const currentImageIndex = carImageIndices[car.id] || 0
+              const currentImage = images[currentImageIndex]
+              const hasMultipleImages = images.length > 1
+              
+              return (
+                <div key={car.id} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
                   <div className="relative">
-                    <Image
-                      src={(car.images && car.images.length > 0) ? car.images[0] : (car.imageUrl || '/api/placeholder/400/300')}
-                      alt={`${car.brand} ${car.model}`}
-                      width={400}
-                      height={300}
-                      className="w-full h-48 object-cover rounded-t-xl"
-                    />
+                    {/* Car Image with 16:9 aspect ratio */}
+                    <div className="relative w-full h-48 overflow-hidden rounded-t-xl">
+                      {currentImage ? (
+                        <Image
+                          src={currentImage}
+                          alt={`${car.brand} ${car.model}`}
+                          width={400}
+                          height={225}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <Car className="h-16 w-16 text-gray-400" />
+                        </div>
+                      )}
+                      
+                      {/* Navigation arrows for multiple images */}
+                      {hasMultipleImages && (
+                        <>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              prevImage(car.id)
+                            }}
+                            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-all duration-200 hover:scale-110 z-10"
+                          >
+                            <ChevronLeft className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              nextImage(car.id)
+                            }}
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-all duration-200 hover:scale-110 z-10"
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </button>
+                        </>
+                      )}
+                      
+                      {/* Image counter */}
+                      {hasMultipleImages && (
+                        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                          {currentImageIndex + 1} / {images.length}
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Featured badge */}
                     {car.featured && (
                       <div className="absolute top-3 right-3 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
                         <Star className="h-3 w-3 mr-1" />
                         Polecane
                       </div>
                     )}
+                    
+                    {/* Car type badge */}
                     <div className="absolute bottom-3 left-3 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
                       {car.type === 'new' ? 'Nowy' : car.type === 'used' ? 'Używany' : 'Dostawczy'}
                     </div>
                   </div>
                   
-                  <div className="p-6 flex-1 flex flex-col">
+                  {/* Car details - clickable area */}
+                  <Link href={`/car/${car.id}`} className="p-6 flex-1 flex flex-col group">
                     <div className="mb-4">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                         {car.brand} {car.model}
@@ -252,10 +342,10 @@ export default function InventoryPage() {
                         {car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł
                       </p>
                     </div>
-                  </div>
+                  </Link>
                 </div>
-              </Link>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
