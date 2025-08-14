@@ -157,24 +157,28 @@ export default function HomePage() {
                     )}
                     
                     <div className="relative overflow-hidden rounded-2xl shadow-2xl">
-                      <Image
-                        src={currentCar.imageUrl || "/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"}
-                        alt={`${currentCar.brand} ${currentCar.model}`}
-                        width={600}
-                        height={600}
-                        className="w-full h-[400px] object-cover object-center"
-                      />
+                      <Link href={`/car/${currentCar.id}`}>
+                        <Image
+                          src={currentCar.imageUrl || "/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"}
+                          alt={`${currentCar.brand} ${currentCar.model}`}
+                          width={600}
+                          height={600}
+                          className="w-full h-[400px] object-cover object-center cursor-pointer hover:scale-105 transition-transform duration-300"
+                        />
+                      </Link>
                       {/* Gradient overlay for better text readability */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                     </div>
                     
                     <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-xl">
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-blue-600">
-                          {currentCar.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł
-                        </p>
-                        <p className="text-sm text-gray-600">{currentCar.brand} {currentCar.model}</p>
-                      </div>
+                      <Link href={`/car/${currentCar.id}`} className="block hover:scale-105 transition-transform duration-200">
+                        <div className="text-center">
+                          <p className="text-2xl font-bold text-blue-600">
+                            {currentCar.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł
+                          </p>
+                          <p className="text-sm text-gray-600">{currentCar.brand} {currentCar.model}</p>
+                        </div>
+                      </Link>
                     </div>
                     
                     {/* Car indicator dots */}
@@ -197,21 +201,25 @@ export default function HomePage() {
                 ) : (
                   <>
                     <div className="relative overflow-hidden rounded-2xl shadow-2xl">
-                      <Image
-                        src="/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"
-                        alt="Volkswagen T-Roc"
-                        width={600}
-                        height={600}
-                        className="w-full h-[400px] object-cover object-center"
-                      />
+                      <Link href="/inventory">
+                        <Image
+                          src="/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp"
+                          alt="Volkswagen T-Roc"
+                          width={600}
+                          height={600}
+                          className="w-full h-[400px] object-cover object-center cursor-pointer hover:scale-105 transition-transform duration-300"
+                        />
+                      </Link>
                       {/* Gradient overlay for better text readability */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"></div>
                     </div>
                     <div className="absolute -bottom-6 -left-6 bg-white rounded-xl p-4 shadow-xl">
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-blue-600">129 900 zł</p>
-                        <p className="text-sm text-gray-600">Volkswagen T-Roc</p>
-                      </div>
+                      <Link href="/inventory" className="block hover:scale-105 transition-transform duration-200">
+                        <div className="text-center">
+                          <p className="text-2xl font-bold text-blue-600">129 900 zł</p>
+                          <p className="text-sm text-gray-600">Volkswagen T-Roc</p>
+                        </div>
+                      </Link>
                     </div>
                   </>
                 )}
