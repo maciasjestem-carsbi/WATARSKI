@@ -106,19 +106,21 @@ export default function CarDetailsPage() {
       {/* Main Content */}
       <div className="min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Car Images */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-              {currentImage ? (
-                <div className="relative">
-                  <Image 
-                    src={currentImage}
-                    alt={`${car.brand} ${car.model}`}
-                    width={600}
-                    height={400}
-                    className="w-full h-96 object-cover cursor-pointer"
-                    onClick={() => setShowImageModal(true)}
-                  />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Left Column - Images */}
+            <div className="space-y-6">
+              {/* Main Image */}
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                {currentImage ? (
+                  <div className="relative">
+                    <Image 
+                      src={currentImage}
+                      alt={`${car.brand} ${car.model}`}
+                      width={600}
+                      height={400}
+                      className="w-full h-[500px] object-cover cursor-pointer"
+                      onClick={() => setShowImageModal(true)}
+                    />
                   {images.length > 1 && (
                     <>
                       <button
@@ -140,7 +142,7 @@ export default function CarDetailsPage() {
                   )}
                 </div>
               ) : (
-                <div className="w-full h-96 bg-gray-200 flex items-center justify-center">
+                <div className="w-full h-[500px] bg-gray-200 flex items-center justify-center">
                   <Car className="h-24 w-24 text-gray-400" />
                 </div>
               )}
@@ -148,12 +150,12 @@ export default function CarDetailsPage() {
 
             {/* Thumbnail Gallery */}
             {images.length > 1 && (
-              <div className="grid grid-cols-5 gap-2">
+              <div className="grid grid-cols-6 gap-3">
                 {images.map((image, index) => (
                   <div
                     key={index}
-                    className={`relative cursor-pointer rounded-lg overflow-hidden border-2 ${
-                      index === selectedImageIndex ? 'border-blue-500' : 'border-gray-200'
+                    className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                      index === selectedImageIndex ? 'border-blue-500 scale-105' : 'border-gray-200 hover:border-gray-300'
                     }`}
                     onClick={() => setSelectedImageIndex(index)}
                   >
@@ -162,7 +164,7 @@ export default function CarDetailsPage() {
                       alt={`${car.brand} ${car.model} - zdjęcie ${index + 1}`}
                       width={120}
                       height={80}
-                      className="w-full h-20 object-cover"
+                      className="w-full h-24 object-cover"
                     />
                   </div>
                 ))}
@@ -170,12 +172,12 @@ export default function CarDetailsPage() {
             )}
           </div>
 
-          {/* Car Details */}
+          {/* Right Column - Car Details */}
           <div className="space-y-8">
             {/* Header */}
-            <div>
-              <div className="flex items-center space-x-4 mb-4">
-                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+            <div className="bg-white rounded-2xl shadow-lg p-8">
+              <div className="flex items-center space-x-3 mb-6">
+                <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
                   car.type === 'new' ? 'bg-green-100 text-green-800' :
                   car.type === 'used' ? 'bg-purple-100 text-purple-800' :
                   'bg-blue-100 text-blue-800'
@@ -183,90 +185,90 @@ export default function CarDetailsPage() {
                   {car.type === 'new' ? 'Nowy' : car.type === 'used' ? 'Używany' : 'Dostawczy'}
                 </span>
                 {car.featured && (
-                  <span className="px-3 py-1 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">
+                  <span className="px-4 py-2 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">
                     <Star className="h-4 w-4 inline mr-1" />
                     Polecany
                   </span>
                 )}
               </div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">{car.brand} {car.model}</h1>
+              <h1 className="text-5xl font-bold text-gray-900 mb-3">{car.brand} {car.model}</h1>
               {car.version && car.version.trim() && (
-                <p className="text-xl text-blue-600 font-medium mb-2">{car.version}</p>
+                <p className="text-2xl text-blue-600 font-medium mb-4">{car.version}</p>
               )}
-              <p className="text-2xl font-bold text-blue-600">{car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł</p>
+              <p className="text-4xl font-bold text-blue-600">{car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł</p>
             </div>
 
             {/* Key Specs */}
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               <div className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="flex items-center space-x-3 mb-2">
-                  <Calendar className="h-5 w-5 text-blue-600" />
-                  <span className="text-sm text-gray-600">Rok produkcji</span>
+                <div className="flex items-center space-x-4 mb-3">
+                  <Calendar className="h-6 w-6 text-blue-600" />
+                  <span className="text-lg text-gray-600 font-medium">Rok produkcji</span>
                 </div>
-                <p className="text-xl font-semibold text-gray-900">{car.year || 'N/A'}</p>
+                <p className="text-2xl font-bold text-gray-900">{car.year || 'N/A'}</p>
               </div>
               
               <div className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="flex items-center space-x-3 mb-2">
-                  <Gauge className="h-5 w-5 text-green-600" />
-                  <span className="text-sm text-gray-600">Przebieg</span>
+                <div className="flex items-center space-x-4 mb-3">
+                  <Gauge className="h-6 w-6 text-green-600" />
+                  <span className="text-lg text-gray-600 font-medium">Przebieg</span>
                 </div>
-                <p className="text-xl font-semibold text-gray-900">{car.mileage ? car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' km' : 'N/A'}</p>
+                <p className="text-2xl font-bold text-gray-900">{car.mileage ? car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' km' : 'N/A'}</p>
               </div>
               
               <div className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="flex items-center space-x-3 mb-2">
-                  <Fuel className="h-5 w-5 text-orange-600" />
-                  <span className="text-sm text-gray-600">Paliwo</span>
+                <div className="flex items-center space-x-4 mb-3">
+                  <Fuel className="h-6 w-6 text-orange-600" />
+                  <span className="text-lg text-gray-600 font-medium">Paliwo</span>
                 </div>
-                <p className="text-xl font-semibold text-gray-900">{car.fuel}</p>
+                <p className="text-2xl font-bold text-gray-900">{car.fuel}</p>
               </div>
               
               <div className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="flex items-center space-x-3 mb-2">
-                  <Zap className="h-5 w-5 text-purple-600" />
-                  <span className="text-sm text-gray-600">Moc</span>
+                <div className="flex items-center space-x-4 mb-3">
+                  <Zap className="h-6 w-6 text-purple-600" />
+                  <span className="text-lg text-gray-600 font-medium">Moc</span>
                 </div>
-                <p className="text-xl font-semibold text-gray-900">{car.power ? `${car.power} KM` : 'N/A'}</p>
+                <p className="text-2xl font-bold text-gray-900">{car.power ? `${car.power} KM` : 'N/A'}</p>
               </div>
             </div>
 
             {/* Description */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Opis</h3>
-              <p className="text-gray-600 leading-relaxed">{car.description}</p>
+            <div className="bg-white rounded-xl p-8 shadow-sm">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Opis</h3>
+              <p className="text-lg text-gray-600 leading-relaxed">{car.description}</p>
             </div>
 
             {/* Contact & Actions */}
-            <div className="bg-white rounded-xl p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Interesuje Cię ten samochód?</h3>
+            <div className="bg-white rounded-xl p-8 shadow-sm">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Interesuje Cię ten samochód?</h3>
               <div className="space-y-4">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 py-4 text-lg font-semibold">
-                  <Phone className="h-5 w-5 mr-2" />
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 py-5 text-xl font-semibold rounded-xl">
+                  <Phone className="h-6 w-6 mr-3" />
                   Zadzwoń teraz
                 </Button>
-                <Button variant="outline" className="w-full py-4 text-lg font-semibold">
-                  <MapPin className="h-5 w-5 mr-2" />
+                <Button variant="outline" className="w-full py-5 text-xl font-semibold rounded-xl border-2">
+                  <MapPin className="h-6 w-6 mr-3" />
                   Umów wizytę w salonie
                 </Button>
               </div>
             </div>
 
             {/* Contact Info */}
-            <div className="bg-blue-50 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Dane kontaktowe</h3>
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <Phone className="h-5 w-5 text-blue-600" />
-                  <span className="text-gray-700">54 230 60 66</span>
+            <div className="bg-blue-50 rounded-xl p-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">Dane kontaktowe</h3>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-4">
+                  <Phone className="h-6 w-6 text-blue-600" />
+                  <span className="text-lg text-gray-700 font-medium">54 230 60 66</span>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <MapPin className="h-5 w-5 text-blue-600" />
-                  <span className="text-gray-700">ul. Toruńska 169, 87-800 Włocławek</span>
+                <div className="flex items-center space-x-4">
+                  <MapPin className="h-6 w-6 text-blue-600" />
+                  <span className="text-lg text-gray-700">ul. Toruńska 169, 87-800 Włocławek</span>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Calendar className="h-5 w-5 text-blue-600" />
-                  <span className="text-gray-700">Pon-Pt: 8:00-17:00, Sob: 9:00-14:00</span>
+                <div className="flex items-center space-x-4">
+                  <Calendar className="h-6 w-6 text-blue-600" />
+                  <span className="text-lg text-gray-700">Pon-Pt: 8:00-17:00, Sob: 9:00-14:00</span>
                 </div>
               </div>
             </div>

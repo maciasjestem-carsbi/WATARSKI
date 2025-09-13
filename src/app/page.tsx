@@ -308,8 +308,12 @@ export default function HomePage() {
                     ) : (
                       <CarIcon className="h-32 w-32 text-blue-600" />
                     )}
-                    <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                      {car.type === 'new' ? 'Nowy' : 'Używany'}
+                    <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-semibold ${
+                      car.type === 'new' ? 'bg-green-100 text-green-800' : 
+                      car.type === 'used' ? 'bg-purple-100 text-purple-800' : 
+                      'bg-blue-100 text-blue-800'
+                    }`}>
+                      {car.type === 'new' ? 'Nowy' : car.type === 'used' ? 'Używany' : 'Dostawczy'}
                     </div>
                   </div>
                   <div className="p-8 flex-1 flex flex-col">

@@ -301,7 +301,11 @@ export default function InventoryPage() {
                     )}
                     
                     {/* Car type badge */}
-                    <div className="absolute bottom-3 left-3 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                    <div className={`absolute bottom-3 left-3 px-3 py-1 rounded-full text-sm font-medium ${
+                      car.type === 'new' ? 'bg-green-100 text-green-800' : 
+                      car.type === 'used' ? 'bg-purple-100 text-purple-800' : 
+                      'bg-blue-100 text-blue-800'
+                    }`}>
                       {car.type === 'new' ? 'Nowy' : car.type === 'used' ? 'Używany' : 'Dostawczy'}
                     </div>
                   </div>
