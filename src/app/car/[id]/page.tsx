@@ -141,134 +141,135 @@ export default function CarDetailsPage() {
                       </>
                     )}
                   </div>
-              ) : (
-                <div className="w-full h-[500px] bg-gray-200 flex items-center justify-center">
-                  <Car className="h-24 w-24 text-gray-400" />
-                </div>
-              )}
-            </div>
-
-            {/* Thumbnail Gallery */}
-            {images.length > 1 && (
-              <div className="grid grid-cols-6 gap-3">
-                {images.map((image, index) => (
-                  <div
-                    key={index}
-                    className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
-                      index === selectedImageIndex ? 'border-blue-500 scale-105' : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                    onClick={() => setSelectedImageIndex(index)}
-                  >
-                    <Image
-                      src={image}
-                      alt={`${car.brand} ${car.model} - zdjęcie ${index + 1}`}
-                      width={120}
-                      height={80}
-                      className="w-full h-24 object-cover"
-                    />
+                ) : (
+                  <div className="w-full h-[500px] bg-gray-200 flex items-center justify-center">
+                    <Car className="h-24 w-24 text-gray-400" />
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Right Column - Car Details */}
-          <div className="space-y-8">
-            {/* Header */}
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              <div className="flex items-center space-x-3 mb-6">
-                <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                  car.type === 'new' ? 'bg-green-100 text-green-800' :
-                  car.type === 'used' ? 'bg-purple-100 text-purple-800' :
-                  'bg-blue-100 text-blue-800'
-                }`}>
-                  {car.type === 'new' ? 'Nowy' : car.type === 'used' ? 'Używany' : 'Dostawczy'}
-                </span>
-                {car.featured && (
-                  <span className="px-4 py-2 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">
-                    <Star className="h-4 w-4 inline mr-1" />
-                    Polecany
-                  </span>
                 )}
               </div>
-              <h1 className="text-5xl font-bold text-gray-900 mb-3">{car.brand} {car.model}</h1>
-              {car.version && car.version.trim() && (
-                <p className="text-2xl text-blue-600 font-medium mb-4">{car.version}</p>
+
+              {/* Thumbnail Gallery */}
+              {images.length > 1 && (
+                <div className="grid grid-cols-6 gap-3">
+                  {images.map((image, index) => (
+                    <div
+                      key={index}
+                      className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+                        index === selectedImageIndex ? 'border-blue-500 scale-105' : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => setSelectedImageIndex(index)}
+                    >
+                      <Image
+                        src={image}
+                        alt={`${car.brand} ${car.model} - zdjęcie ${index + 1}`}
+                        width={120}
+                        height={80}
+                        className="w-full h-24 object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
               )}
-              <p className="text-4xl font-bold text-blue-600">{car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł</p>
             </div>
 
-            {/* Key Specs */}
-            <div className="grid grid-cols-1 gap-6">
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="flex items-center space-x-4 mb-3">
-                  <Calendar className="h-6 w-6 text-blue-600" />
-                  <span className="text-lg text-gray-600 font-medium">Rok produkcji</span>
+            {/* Right Column - Car Details */}
+            <div className="space-y-8">
+              {/* Header */}
+              <div className="bg-white rounded-2xl shadow-lg p-8">
+                <div className="flex items-center space-x-3 mb-6">
+                  <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                    car.type === 'new' ? 'bg-green-100 text-green-800' :
+                    car.type === 'used' ? 'bg-purple-100 text-purple-800' :
+                    'bg-blue-100 text-blue-800'
+                  }`}>
+                    {car.type === 'new' ? 'Nowy' : car.type === 'used' ? 'Używany' : 'Dostawczy'}
+                  </span>
+                  {car.featured && (
+                    <span className="px-4 py-2 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">
+                      <Star className="h-4 w-4 inline mr-1" />
+                      Polecany
+                    </span>
+                  )}
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{car.year || 'N/A'}</p>
+                <h1 className="text-5xl font-bold text-gray-900 mb-3">{car.brand} {car.model}</h1>
+                {car.version && car.version.trim() && (
+                  <p className="text-2xl text-blue-600 font-medium mb-4">{car.version}</p>
+                )}
+                <p className="text-4xl font-bold text-blue-600">{car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł</p>
               </div>
-              
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="flex items-center space-x-4 mb-3">
-                  <Gauge className="h-6 w-6 text-green-600" />
-                  <span className="text-lg text-gray-600 font-medium">Przebieg</span>
-                </div>
-                <p className="text-2xl font-bold text-gray-900">{car.mileage ? car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' km' : 'N/A'}</p>
-              </div>
-              
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="flex items-center space-x-4 mb-3">
-                  <Fuel className="h-6 w-6 text-orange-600" />
-                  <span className="text-lg text-gray-600 font-medium">Paliwo</span>
-                </div>
-                <p className="text-2xl font-bold text-gray-900">{car.fuel}</p>
-              </div>
-              
-              <div className="bg-white rounded-xl p-6 shadow-sm">
-                <div className="flex items-center space-x-4 mb-3">
-                  <Zap className="h-6 w-6 text-purple-600" />
-                  <span className="text-lg text-gray-600 font-medium">Moc</span>
-                </div>
-                <p className="text-2xl font-bold text-gray-900">{car.power ? `${car.power} KM` : 'N/A'}</p>
-              </div>
-            </div>
 
-            {/* Description */}
-            <div className="bg-white rounded-xl p-8 shadow-sm">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Opis</h3>
-              <p className="text-lg text-gray-600 leading-relaxed">{car.description}</p>
-            </div>
-
-            {/* Contact & Actions */}
-            <div className="bg-white rounded-xl p-8 shadow-sm">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Interesuje Cię ten samochód?</h3>
-              <div className="space-y-4">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700 py-5 text-xl font-semibold rounded-xl">
-                  <Phone className="h-6 w-6 mr-3" />
-                  Zadzwoń teraz
-                </Button>
-                <Button variant="outline" className="w-full py-5 text-xl font-semibold rounded-xl border-2">
-                  <MapPin className="h-6 w-6 mr-3" />
-                  Umów wizytę w salonie
-                </Button>
+              {/* Key Specs */}
+              <div className="grid grid-cols-1 gap-6">
+                <div className="bg-white rounded-xl p-6 shadow-sm">
+                  <div className="flex items-center space-x-4 mb-3">
+                    <Calendar className="h-6 w-6 text-blue-600" />
+                    <span className="text-lg text-gray-600 font-medium">Rok produkcji</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">{car.year || 'N/A'}</p>
+                </div>
+                
+                <div className="bg-white rounded-xl p-6 shadow-sm">
+                  <div className="flex items-center space-x-4 mb-3">
+                    <Gauge className="h-6 w-6 text-green-600" />
+                    <span className="text-lg text-gray-600 font-medium">Przebieg</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">{car.mileage ? car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' km' : 'N/A'}</p>
+                </div>
+                
+                <div className="bg-white rounded-xl p-6 shadow-sm">
+                  <div className="flex items-center space-x-4 mb-3">
+                    <Fuel className="h-6 w-6 text-orange-600" />
+                    <span className="text-lg text-gray-600 font-medium">Paliwo</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">{car.fuel}</p>
+                </div>
+                
+                <div className="bg-white rounded-xl p-6 shadow-sm">
+                  <div className="flex items-center space-x-4 mb-3">
+                    <Zap className="h-6 w-6 text-purple-600" />
+                    <span className="text-lg text-gray-600 font-medium">Moc</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">{car.power ? `${car.power} KM` : 'N/A'}</p>
+                </div>
               </div>
-            </div>
 
-            {/* Contact Info */}
-            <div className="bg-blue-50 rounded-xl p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">Dane kontaktowe</h3>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-4">
-                  <Phone className="h-6 w-6 text-blue-600" />
-                  <span className="text-lg text-gray-700 font-medium">54 230 60 66</span>
+              {/* Description */}
+              <div className="bg-white rounded-xl p-8 shadow-sm">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Opis</h3>
+                <p className="text-lg text-gray-600 leading-relaxed">{car.description}</p>
+              </div>
+
+              {/* Contact & Actions */}
+              <div className="bg-white rounded-xl p-8 shadow-sm">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Interesuje Cię ten samochód?</h3>
+                <div className="space-y-4">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 py-5 text-xl font-semibold rounded-xl">
+                    <Phone className="h-6 w-6 mr-3" />
+                    Zadzwoń teraz
+                  </Button>
+                  <Button variant="outline" className="w-full py-5 text-xl font-semibold rounded-xl border-2">
+                    <MapPin className="h-6 w-6 mr-3" />
+                    Umów wizytę w salonie
+                  </Button>
                 </div>
-                <div className="flex items-center space-x-4">
-                  <MapPin className="h-6 w-6 text-blue-600" />
-                  <span className="text-lg text-gray-700">ul. Toruńska 169, 87-800 Włocławek</span>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <Calendar className="h-6 w-6 text-blue-600" />
-                  <span className="text-lg text-gray-700">Pon-Pt: 8:00-17:00, Sob: 9:00-14:00</span>
+              </div>
+
+              {/* Contact Info */}
+              <div className="bg-blue-50 rounded-xl p-8">
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Dane kontaktowe</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-4">
+                    <Phone className="h-6 w-6 text-blue-600" />
+                    <span className="text-lg text-gray-700 font-medium">54 230 60 66</span>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <MapPin className="h-6 w-6 text-blue-600" />
+                    <span className="text-lg text-gray-700">ul. Toruńska 169, 87-800 Włocławek</span>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <Calendar className="h-6 w-6 text-blue-600" />
+                    <span className="text-lg text-gray-700">Pon-Pt: 8:00-17:00, Sob: 9:00-14:00</span>
+                  </div>
                 </div>
               </div>
             </div>
