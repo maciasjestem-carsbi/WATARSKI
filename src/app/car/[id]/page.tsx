@@ -318,5 +318,3 @@ export default function CarDetailsPage() {
     </Layout>
   )
 }
-
-// End of component
