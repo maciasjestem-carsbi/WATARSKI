@@ -190,14 +190,14 @@ export default function CarDetailPage() {
                   <Calendar className="h-5 w-5 text-gray-400" />
                   <div>
                     <p className="text-sm text-gray-500">Rok produkcji</p>
-                    <p className="font-semibold">{car.year}</p>
+                    <p className="font-semibold">{car.year || 'Brak'}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Car className="h-5 w-5 text-gray-400" />
                   <div>
                     <p className="text-sm text-gray-500">Przebieg</p>
-                    <p className="font-semibold">{car.mileage.toLocaleString()} km</p>
+                    <p className="font-semibold">{car.mileage ? car.mileage.toLocaleString() : 'Brak'} km</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -211,7 +211,7 @@ export default function CarDetailPage() {
                   <Cog className="h-5 w-5 text-gray-400" />
                   <div>
                     <p className="text-sm text-gray-500">Moc</p>
-                    <p className="font-semibold">{car.power} KM</p>
+                    <p className="font-semibold">{car.power || 'Brak'} KM</p>
                   </div>
                 </div>
               </div>
