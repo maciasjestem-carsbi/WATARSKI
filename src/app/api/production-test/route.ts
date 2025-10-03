@@ -41,8 +41,11 @@ export async function GET() {
         mileage: 0,
         fuel: 'Test',
         power: 100,
+        engineCapacity: 2000,
+        transmission: 'manualna',
         price: 100000,
         type: 'new' as const,
+        vehicleType: 'osobowy' as const,
         description: 'Test car for production verification',
         featured: false,
         source: 'manual' as const

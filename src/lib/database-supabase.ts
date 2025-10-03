@@ -10,8 +10,11 @@ export interface CarData {
   mileage: number | null
   fuel: string
   power: number | null
+  engineCapacity: number | null // pojemność silnika w cm³
+  transmission: string // automatyczna/manualna
   price: number
   type: 'new' | 'used' | 'delivery'
+  vehicleType: 'osobowy' | 'dostawczy' | 'certyfikowany' // nowe pole dla filtrowania
   description: string
   imageUrl?: string
   images?: string[]
@@ -39,12 +42,16 @@ class SupabaseCarDatabase {
             mileage INTEGER,
             fuel VARCHAR(255) NOT NULL,
             power INTEGER,
+            engine_capacity INTEGER,
+            transmission VARCHAR(50) DEFAULT 'manualna',
             price INTEGER NOT NULL,
             type VARCHAR(50) NOT NULL,
+            vehicle_type VARCHAR(50) DEFAULT 'osobowy',
             description TEXT NOT NULL,
             image_url TEXT,
             images JSONB DEFAULT '[]',
             featured BOOLEAN DEFAULT FALSE,
+            featured_order INTEGER,
             source VARCHAR(50) DEFAULT 'manual',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -81,10 +88,13 @@ class SupabaseCarDatabase {
         version: 'R-Line',
         year: 2024,
         mileage: 10,
-        fuel: 'Hybryda',
+        fuel: 'hybryda',
         power: 150,
+        engine_capacity: 1500,
+        transmission: 'automatyczna',
         price: 129900,
         type: 'new',
+        vehicle_type: 'osobowy',
         description: 'Nowy Volkswagen T-Roc w doskonałym stanie. Samochód wyposażony w najnowsze technologie bezpieczeństwa i komfortu. Idealny do jazdy miejskiej i dalekich podróży.',
         image_url: '/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp',
         images: [
@@ -93,6 +103,7 @@ class SupabaseCarDatabase {
           '/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp'
         ],
         featured: true,
+        featured_order: 1,
         source: 'manual'
       },
       {
@@ -102,10 +113,13 @@ class SupabaseCarDatabase {
         version: 'SE',
         year: 2024,
         mileage: 5,
-        fuel: 'Diesel',
+        fuel: 'diesel',
         power: 150,
+        engine_capacity: 2000,
+        transmission: 'automatyczna',
         price: 189900,
         type: 'new',
+        vehicle_type: 'osobowy',
         description: 'Elegancki Volkswagen Passat - flagowy sedan marki. Luksusowe wnętrze, zaawansowane systemy bezpieczeństwa i doskonałe osiągi.',
         image_url: '/images/Passat_SE.webp',
         images: [
@@ -113,6 +127,7 @@ class SupabaseCarDatabase {
           '/images/Passat_SE.webp'
         ],
         featured: true,
+        featured_order: 2,
         source: 'manual'
       },
       {
@@ -122,10 +137,13 @@ class SupabaseCarDatabase {
         version: '2023',
         year: 2023,
         mileage: 45000,
-        fuel: 'Benzyna',
+        fuel: 'benzyna',
         power: 184,
+        engine_capacity: 2000,
+        transmission: 'manualna',
         price: 89900,
         type: 'used',
+        vehicle_type: 'certyfikowany',
         description: 'Używany Volkswagen Tiguan w świetnym stanie. Samochód z pełną historią serwisową, idealny dla rodzin.',
         image_url: '/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp',
         images: [
@@ -135,6 +153,29 @@ class SupabaseCarDatabase {
           '/images/TN2395_Tiguan-in-front-of-house-beauty_16-9-2.webp'
         ],
         featured: true,
+        featured_order: 3,
+        source: 'manual'
+      },
+      {
+        id: '4',
+        brand: 'Volkswagen Dostawcze',
+        model: 'Caddy',
+        version: 'Maxi',
+        year: 2024,
+        mileage: 0,
+        fuel: 'diesel',
+        power: 115,
+        engine_capacity: 2000,
+        transmission: 'manualna',
+        price: 89000,
+        type: 'delivery',
+        vehicle_type: 'dostawczy',
+        description: 'Nowy Volkswagen Caddy Maxi - idealny do transportu towarów. Przestronna kabina i duża powierzchnia ładunkowa.',
+        image_url: '/images/Tayron_exterior_parking_in_front_of_ocean-1.webp',
+        images: [
+          '/images/Tayron_exterior_parking_in_front_of_ocean-1.webp'
+        ],
+        featured: false,
         source: 'manual'
       }
     ]
@@ -170,8 +211,11 @@ class SupabaseCarDatabase {
         mileage: row.mileage,
         fuel: row.fuel,
         power: row.power,
+        engineCapacity: row.engine_capacity,
+        transmission: row.transmission,
         price: row.price,
         type: row.type as 'new' | 'used' | 'delivery',
+        vehicleType: row.vehicle_type as 'osobowy' | 'dostawczy' | 'certyfikowany',
         description: row.description,
         imageUrl: row.image_url || (row.images && row.images.length > 0 ? row.images[0] : null),
         images: row.images || [],
@@ -210,8 +254,11 @@ class SupabaseCarDatabase {
         mileage: row.mileage,
         fuel: row.fuel,
         power: row.power,
+        engineCapacity: row.engine_capacity,
+        transmission: row.transmission,
         price: row.price,
         type: row.type as 'new' | 'used' | 'delivery',
+        vehicleType: row.vehicle_type as 'osobowy' | 'dostawczy' | 'certyfikowany',
         description: row.description,
         imageUrl: row.image_url || (row.images && row.images.length > 0 ? row.images[0] : null),
         images: row.images || [],
@@ -249,8 +296,11 @@ class SupabaseCarDatabase {
         mileage: data.mileage,
         fuel: data.fuel,
         power: data.power,
+        engineCapacity: data.engine_capacity,
+        transmission: data.transmission,
         price: data.price,
         type: data.type as 'new' | 'used' | 'delivery',
+        vehicleType: data.vehicle_type as 'osobowy' | 'dostawczy' | 'certyfikowany',
         description: data.description,
         imageUrl: data.image_url || (data.images && data.images.length > 0 ? data.images[0] : null),
         images: data.images || [],
@@ -296,8 +346,11 @@ class SupabaseCarDatabase {
         mileage: data.mileage,
         fuel: data.fuel,
         power: data.power,
+        engineCapacity: data.engine_capacity,
+        transmission: data.transmission,
         price: data.price,
         type: data.type as 'new' | 'used' | 'delivery',
+        vehicleType: data.vehicle_type as 'osobowy' | 'dostawczy' | 'certyfikowany',
         description: data.description,
         imageUrl: data.image_url || (data.images && data.images.length > 0 ? data.images[0] : null),
         images: data.images || [],
@@ -349,8 +402,11 @@ class SupabaseCarDatabase {
         mileage: data.mileage,
         fuel: data.fuel,
         power: data.power,
+        engineCapacity: data.engine_capacity,
+        transmission: data.transmission,
         price: data.price,
         type: data.type as 'new' | 'used' | 'delivery',
+        vehicleType: data.vehicle_type as 'osobowy' | 'dostawczy' | 'certyfikowany',
         description: data.description,
         imageUrl: data.image_url || (data.images && data.images.length > 0 ? data.images[0] : null),
         images: data.images || [],
@@ -426,10 +482,14 @@ class SupabaseCarDatabase {
         mileage: data.mileage,
         fuel: data.fuel,
         power: data.power,
+        engineCapacity: data.engine_capacity,
+        transmission: data.transmission,
         price: data.price,
         type: data.type as 'new' | 'used' | 'delivery',
+        vehicleType: data.vehicle_type as 'osobowy' | 'dostawczy' | 'certyfikowany',
         description: data.description,
         imageUrl: data.image_url,
+        images: data.images || [],
         featured: data.featured,
         featuredOrder: newFeatured ? 1 : undefined, // Will be calculated in getFeaturedCars
         source: data.source as 'manual' | 'otomoto',

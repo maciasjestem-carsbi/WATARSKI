@@ -1,350 +1,475 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
-import { Car, Star, Search, Filter, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useEffect, useState, Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import type { CarData } from '@/lib/database-supabase'
 import Layout from '@/components/layout'
+import { Button } from '@/components/ui/button'
+import { useSearchParams } from 'next/navigation'
+import { Car, Star, ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import type { CarData } from '@/lib/database-supabase'
 
-export default function InventoryPage() {
+function InventoryContent() {
   const [cars, setCars] = useState<CarData[]>([])
   const [filteredCars, setFilteredCars] = useState<CarData[]>([])
   const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedType, setSelectedType] = useState<string>('all')
-  const [selectedBrand, setSelectedBrand] = useState<string>('all')
-  const [priceRange, setPriceRange] = useState<string>('all')
-  const [showFilters, setShowFilters] = useState(false)
-  const [carImageIndices, setCarImageIndices] = useState<{ [key: string]: number }>({})
+  const [carImageIndices, setCarImageIndices] = useState<Record<string, number>>({})
+  
+  // Search filters state (multiple selections) - same as homepage
+  const [searchFilters, setSearchFilters] = useState({
+    brand: [] as string[],
+    type: [] as string[],
+    fuel: [] as string[],
+    transmission: [] as string[]
+  })
+  
+  // Dropdown states - same as homepage
+  const [openDropdowns, setOpenDropdowns] = useState({
+    brand: false,
+    type: false,
+    fuel: false,
+    transmission: false
+  })
+  const searchParams = useSearchParams()
 
   useEffect(() => {
-    const loadCars = async () => {
+    const load = async () => {
       try {
-        // Use the API endpoint instead of direct database access
-        const response = await fetch('/api/cars')
-        if (!response.ok) {
-          throw new Error('Failed to fetch cars')
-        }
-        const allCars: CarData[] = await response.json()
-        setCars(allCars)
-        setFilteredCars(allCars)
-        
-        // Initialize image indices for each car
-        const initialIndices: { [key: string]: number } = {}
-        allCars.forEach((car: CarData) => {
-          initialIndices[car.id] = 0
-        })
-        setCarImageIndices(initialIndices)
-      } catch (error) {
-        console.error('Error loading cars:', error)
+        const res = await fetch('/api/cars')
+        if (!res.ok) throw new Error('Failed to fetch cars')
+        const data: CarData[] = await res.json()
+        setCars(data)
+        setFilteredCars(data)
+        const indices: Record<string, number> = {}
+        data.forEach(c => { indices[c.id] = 0 })
+        setCarImageIndices(indices)
+      } catch (e) {
+        console.error(e)
       } finally {
         setLoading(false)
       }
     }
-    loadCars()
+    load()
   }, [])
 
-  const getCarImages = (car: CarData) => {
-    return (car.images && car.images.length > 0) ? car.images : (car.imageUrl ? [car.imageUrl] : [])
+  // Close dropdowns when clicking outside - same as homepage
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      if (!target.closest('.dropdown-container')) {
+        closeAllDropdowns()
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Dropdown functions - same as homepage
+  const toggleDropdown = (dropdown: keyof typeof openDropdowns) => {
+    setOpenDropdowns(prev => {
+      // Close all other dropdowns first, then toggle the current one
+      const newState = {
+        brand: false,
+        type: false,
+        fuel: false,
+        transmission: false
+      }
+      newState[dropdown] = !prev[dropdown]
+      return newState
+    })
+  }
+  
+  const selectOption = (key: keyof typeof searchFilters, value: string) => {
+    if (value === '') return // Ignore placeholder clicks
+    
+    setSearchFilters(prev => ({
+      ...prev,
+      [key]: prev[key].includes(value)
+        ? prev[key].filter(v => v !== value) // Remove if already selected
+        : [...prev[key], value] // Add if not selected
+    }))
+  }
+  
+  const closeAllDropdowns = () => {
+    setOpenDropdowns({
+      brand: false,
+      type: false,
+      fuel: false,
+      transmission: false
+    })
+  }
+
+  // Apply initial filters from URL - convert to new format
+  useEffect(() => {
+    const typeParam = searchParams.get('type') || ''
+    const segmentParam = searchParams.get('segment') || ''
+    const brandParam = searchParams.get('brand') || ''
+    const fuelParam = searchParams.get('fuel') || ''
+    const newFilters = {
+      brand: [] as string[],
+      type: [] as string[],
+      fuel: [] as string[],
+      transmission: [] as string[]
+    }
+    
+    // Handle brand filters
+    if (brandParam) {
+      newFilters.brand = [brandParam]
+    }
+    
+    // Handle type/segment filters 
+    if (segmentParam === 'osobowe' || typeParam === 'new') {
+      newFilters.type = ['osobowe']
+    } else if (segmentParam === 'dostawcze') {
+      newFilters.type = ['dostawcze']
+    } else if (segmentParam === 'certyfikowane') {
+      newFilters.type = ['certyfikowane']
+    }
+    
+    // Handle fuel filters
+    if (fuelParam) {
+      newFilters.fuel = [fuelParam]
+    }
+    
+    setSearchFilters(newFilters)
+  }, [searchParams])
+
+  const getImages = (car: CarData) => {
+    return car.images && car.images.length > 0 ? car.images : (car.imageUrl ? [car.imageUrl] : [])
   }
 
   const nextImage = (carId: string) => {
     const car = cars.find(c => c.id === carId)
     if (!car) return
-    
-    const images = getCarImages(car)
-    if (images.length <= 1) return
-    
-    setCarImageIndices(prev => ({
-      ...prev,
-      [carId]: (prev[carId] + 1) % images.length
-    }))
+    const imgs = getImages(car)
+    if (imgs.length <= 1) return
+    setCarImageIndices(prev => ({ ...prev, [carId]: (prev[carId] + 1) % imgs.length }))
   }
 
   const prevImage = (carId: string) => {
     const car = cars.find(c => c.id === carId)
     if (!car) return
-    
-    const images = getCarImages(car)
-    if (images.length <= 1) return
-    
-    setCarImageIndices(prev => ({
-      ...prev,
-      [carId]: (prev[carId] - 1 + images.length) % images.length
-    }))
+    const imgs = getImages(car)
+    if (imgs.length <= 1) return
+    setCarImageIndices(prev => ({ ...prev, [carId]: (prev[carId] - 1 + imgs.length) % imgs.length }))
   }
 
+  // Filtering with new filter system
   useEffect(() => {
-    let filtered = cars
+    let list = cars
 
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(car =>
-        car.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        car.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        car.description.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+    // Brand filters
+    if (searchFilters.brand.length > 0) {
+      list = list.filter(c => searchFilters.brand.includes(c.brand))
     }
 
-    // Type filter
-    if (selectedType !== 'all') {
-      filtered = filtered.filter(car => car.type === selectedType)
-    }
-
-    // Brand filter
-    if (selectedBrand !== 'all') {
-      filtered = filtered.filter(car => car.brand === selectedBrand)
-    }
-
-    // Price range filter
-    if (priceRange !== 'all') {
-      const [min, max] = priceRange.split('-').map(Number)
-      filtered = filtered.filter(car => {
-        if (max) {
-          return car.price >= min && car.price <= max
-        } else {
-          return car.price >= min
-        }
+    // Type filters
+    if (searchFilters.type.length > 0) {
+      list = list.filter(c => {
+        return searchFilters.type.some(filterType => {
+          if (filterType === 'osobowe') {
+            return c.type !== 'delivery' && (c.type === 'new' || c.type === 'used')
+          } else if (filterType === 'dostawcze') {
+            return c.type === 'delivery'
+          } else if (filterType === 'certyfikowane') {
+            return c.featured
+          }
+          return false
+        })
       })
     }
 
-    setFilteredCars(filtered)
-  }, [cars, searchTerm, selectedType, selectedBrand, priceRange])
+    // Fuel filters
+    if (searchFilters.fuel.length > 0) {
+      list = list.filter(c => searchFilters.fuel.includes(c.fuel))
+    }
 
-  const brands = Array.from(new Set(cars.map(car => car.brand)))
+    // Transmission filters
+    if (searchFilters.transmission.length > 0) {
+      list = list.filter(c => searchFilters.transmission.includes(c.transmission))
+    }
+
+    setFilteredCars(list)
+  }, [cars, searchFilters])
 
   if (loading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="text-center">
-            <Car className="h-12 w-12 text-blue-600 mx-auto mb-4 animate-pulse" />
-            <p className="text-lg text-gray-700">Ładowanie samochodów...</p>
-          </div>
-        </div>
+        <div className="min-h-screen flex items-center justify-center text-gray-600">Ładowanie...</div>
       </Layout>
     )
   }
 
   return (
     <Layout>
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4">WĄTARSKI Włocławek</h1>
-            <p className="text-xl text-blue-100 mb-8">
-              Przeglądaj nasze samochody - nowe i używane
-            </p>
-            
-            {/* Search and Filters */}
-            <div className="max-w-4xl mx-auto">
-              <div className="flex flex-col lg:flex-row gap-4 mb-6">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <input
-                    type="text"
-                    placeholder="Szukaj samochodu..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-lg border-0 text-gray-900 focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <Button
-                  onClick={() => setShowFilters(!showFilters)}
-                  className="bg-white/20 hover:bg-white/30 border border-white/30"
+      {/* Search Section - same as homepage */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Filtruj samochody</h2>
+              <p className="text-lg text-gray-600">Znajdź idealny samochód dla siebie</p>
+            </div>
+            <div className="grid md:grid-cols-5 gap-6">
+              <div className="relative dropdown-container">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleDropdown('brand')
+                  }}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 hover:border-gray-300 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md text-left flex items-center justify-between overflow-hidden"
                 >
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filtry
-                  {showFilters ? <ChevronUp className="h-4 w-4 ml-2" /> : <ChevronDown className="h-4 w-4 ml-2" />}
-                </Button>
-              </div>
-
-              {/* Filters */}
-              {showFilters && (
-                <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 mb-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Typ samochodu</label>
-                      <select
-                        value={selectedType}
-                        onChange={(e) => setSelectedType(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg border-0 text-gray-900"
-                      >
-                        <option value="all">Wszystkie</option>
-                        <option value="new">Nowe</option>
-                        <option value="used">Używane</option>
-                        <option value="delivery">Dostawcze</option>
-                      </select>
+                  <span className={searchFilters.brand.length > 0 ? '' : 'text-gray-500'}>
+                    {searchFilters.brand.length > 0 
+                      ? searchFilters.brand.join(', ') 
+                      : 'Marka'
+                    }
+                  </span>
+                  <svg 
+                    className={`h-5 w-5 transition-transform ${openDropdowns.brand ? 'rotate-180' : ''}`} 
+                    viewBox="0 0 20 20" 
+                    fill="currentColor"
+                  >
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 111.02 1.1l-4.22 3.815a.75.75 0 01-1.02 0L5.21 4.33a.75.75 0 01.02-1.12z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                {openDropdowns.brand && (
+                  <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                    <div 
+                      onClick={() => selectOption('brand', 'Volkswagen')}
+                      className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+                    >
+                      Volkswagen
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Marka</label>
-                      <select
-                        value={selectedBrand}
-                        onChange={(e) => setSelectedBrand(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg border-0 text-gray-900"
-                      >
-                        <option value="all">Wszystkie marki</option>
-                        {brands.map(brand => (
-                          <option key={brand} value={brand}>{brand}</option>
-                        ))}
-                      </select>
+                    <div 
+                      onClick={() => selectOption('brand', 'Volkswagen Dostawcze')}
+                      className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+                    >
+                      Volkswagen Dostawcze
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Cena</label>
-                      <select
-                        value={priceRange}
-                        onChange={(e) => setPriceRange(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg border-0 text-gray-900"
-                      >
-                        <option value="all">Wszystkie ceny</option>
-                        <option value="0-50000">Do 50 000 zł</option>
-                        <option value="50000-100000">50 000 - 100 000 zł</option>
-                        <option value="100000-200000">100 000 - 200 000 zł</option>
-                        <option value="200000-">Powyżej 200 000 zł</option>
-                      </select>
+                    <div 
+                      onClick={() => selectOption('brand', 'Skoda')}
+                      className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+                    >
+                      Skoda
+                    </div>
+                    <div 
+                      onClick={() => selectOption('brand', 'Inne')}
+                      className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+                    >
+                      Inne
                     </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+              
+              <div className="relative dropdown-container">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleDropdown('type')
+                  }}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 hover:border-gray-300 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md text-left flex items-center justify-between overflow-hidden"
+                >
+                  <span className={searchFilters.type.length > 0 ? '' : 'text-gray-500'}>
+                    {searchFilters.type.length > 0 
+                      ? searchFilters.type.map(t => 
+                          t === 'osobowe' ? 'Nowe osobowe' : 
+                          t === 'dostawcze' ? 'Nowe dostawcze' : 
+                          t === 'certyfikowane' ? 'Certyfikowane używane' : t
+                        ).join(', ')
+                      : 'Typ pojazdu'
+                    }
+                  </span>
+                  <svg 
+                    className={`h-5 w-5 transition-transform ${openDropdowns.type ? 'rotate-180' : ''}`} 
+                    viewBox="0 0 20 20" 
+                    fill="currentColor"
+                  >
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 111.02 1.1l-4.22 3.815a.75.75 0 01-1.02 0L5.21 4.33a.75.75 0 01.02-1.12z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                {openDropdowns.type && (
+                  <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                    <div 
+                      onClick={() => selectOption('type', 'osobowe')}
+                      className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+                    >
+                      Nowe osobowe
+                    </div>
+                    <div 
+                      onClick={() => selectOption('type', 'dostawcze')}
+                      className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+                    >
+                      Nowe dostawcze
+                    </div>
+                    <div 
+                      onClick={() => selectOption('type', 'certyfikowane')}
+                      className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+                    >
+                      Certyfikowane używane
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="relative dropdown-container">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleDropdown('fuel')
+                  }}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 hover:border-gray-300 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md text-left flex items-center justify-between overflow-hidden"
+                >
+                  <span className={searchFilters.fuel.length > 0 ? '' : 'text-gray-500'}>
+                    {searchFilters.fuel.length > 0 
+                      ? searchFilters.fuel.map(f => f.charAt(0).toUpperCase() + f.slice(1)).join(', ')
+                      : 'Rodzaj paliwa'
+                    }
+                  </span>
+                  <svg 
+                    className={`h-5 w-5 transition-transform ${openDropdowns.fuel ? 'rotate-180' : ''}`} 
+                    viewBox="0 0 20 20" 
+                    fill="currentColor"
+                  >
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 111.02 1.1l-4.22 3.815a.75.75 0 01-1.02 0L5.21 4.33a.75.75 0 01.02-1.12z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                {openDropdowns.fuel && (
+                  <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                    <div 
+                      onClick={() => selectOption('fuel', 'benzyna')}
+                      className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+                    >
+                      Benzyna
+                    </div>
+                    <div 
+                      onClick={() => selectOption('fuel', 'diesel')}
+                      className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+                    >
+                      Diesel
+                    </div>
+                    <div 
+                      onClick={() => selectOption('fuel', 'hybryda')}
+                      className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+                    >
+                      Hybryda
+                    </div>
+                    <div 
+                      onClick={() => selectOption('fuel', 'elektryk')}
+                      className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+                    >
+                      Elektryk
+                    </div>
+                    <div 
+                      onClick={() => selectOption('fuel', 'lpg')}
+                      className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+                    >
+                      LPG
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="relative dropdown-container">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleDropdown('transmission')
+                  }}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-2xl bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-700 hover:border-gray-300 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md text-left flex items-center justify-between overflow-hidden"
+                >
+                  <span className={searchFilters.transmission.length > 0 ? '' : 'text-gray-500'}>
+                    {searchFilters.transmission.length > 0 
+                      ? searchFilters.transmission.map(t => t.charAt(0).toUpperCase() + t.slice(1)).join(', ')
+                      : 'Skrzynia biegów'
+                    }
+                  </span>
+                  <svg 
+                    className={`h-5 w-5 transition-transform ${openDropdowns.transmission ? 'rotate-180' : ''}`} 
+                    viewBox="0 0 20 20" 
+                    fill="currentColor"
+                  >
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 111.02 1.1l-4.22 3.815a.75.75 0 01-1.02 0L5.21 4.33a.75.75 0 01.02-1.12z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                {openDropdowns.transmission && (
+                  <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden" onClick={(e) => e.stopPropagation()}>
+                    <div 
+                      onClick={() => selectOption('transmission', 'automatyczna')}
+                      className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+                    >
+                      Automatyczna
+                    </div>
+                    <div 
+                      onClick={() => selectOption('transmission', 'manualna')}
+                      className="px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
+                    >
+                      Manualna
+                    </div>
+                  </div>
+                )}
+              </div>
+              
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Cars Grid */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Znalezione samochody ({filteredCars.length})
-          </h2>
-          <p className="text-gray-600">
-            {filteredCars.length === 0 ? 'Nie znaleziono samochodów spełniających kryteria' : 'Przeglądaj nasze oferty'}
-          </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">Znalezione samochody ({filteredCars.length})</h2>
         </div>
 
         {filteredCars.length === 0 ? (
-          <div className="text-center py-12">
-            <Car className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Brak wyników</h3>
-            <p className="text-gray-600">Spróbuj zmienić kryteria wyszukiwania</p>
+          <div className="text-center py-20 text-gray-500">
+            <Car className="h-12 w-12 mx-auto mb-4" />
+            Brak wyników dla wybranych filtrów
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredCars.map((car) => {
-              const images = getCarImages(car)
-              const currentImageIndex = carImageIndices[car.id] || 0
-              const currentImage = images[currentImageIndex]
-              const hasMultipleImages = images.length > 1
-              
+              const imgs = getImages(car)
+              const idx = carImageIndices[car.id] || 0
+              const img = imgs[idx]
+              const multi = imgs.length > 1
               return (
-                <div key={car.id} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+                <div key={car.id} className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden flex flex-col">
                   <div className="relative">
-                    {/* Car Image with 16:9 aspect ratio */}
-                    <div className="relative w-full aspect-[16/9] overflow-hidden rounded-t-xl">
-                      {currentImage ? (
-                        <Image
-                          src={currentImage}
-                          alt={`${car.brand} ${car.model}`}
-                          width={400}
-                          height={225}
-                          className="w-full h-full object-cover"
-                        />
+                    <div className="relative w-full aspect-[16/9] bg-gray-100">
+                      {img ? (
+                        <Image src={img} alt={`${car.brand} ${car.model}`} fill className="object-cover" />
                       ) : (
-                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                          <Car className="h-16 w-16 text-gray-400" />
-                        </div>
+                        <div className="w-full h-full flex items-center justify-center text-gray-400"><Car className="h-8 w-8" /></div>
                       )}
-                      
-                      {/* Navigation arrows for multiple images */}
-                      {hasMultipleImages && (
+                      {multi && (
                         <>
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault()
-                              e.stopPropagation()
-                              prevImage(car.id)
-                            }}
-                            className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-all duration-200 hover:scale-110 z-10"
-                          >
+                          <button onClick={(e)=>{e.preventDefault();e.stopPropagation();prevImage(car.id)}} className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full">
                             <ChevronLeft className="h-4 w-4" />
                           </button>
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault()
-                              e.stopPropagation()
-                              nextImage(car.id)
-                            }}
-                            className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-all duration-200 hover:scale-110 z-10"
-                          >
+                          <button onClick={(e)=>{e.preventDefault();e.stopPropagation();nextImage(car.id)}} className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full">
                             <ChevronRight className="h-4 w-4" />
                           </button>
+                          <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded-full">
+                            {idx+1}/{imgs.length}
+                          </div>
                         </>
                       )}
-                      
-                      {/* Image counter */}
-                      {hasMultipleImages && (
-                        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
-                          {currentImageIndex + 1} / {images.length}
+                      {car.featured && (
+                        <div className="absolute top-3 right-3 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
+                          <Star className="h-3 w-3 mr-1" /> Polecane
                         </div>
                       )}
                     </div>
-                    
-                    {/* Featured badge */}
-                    {car.featured && (
-                      <div className="absolute top-3 right-3 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
-                        <Star className="h-3 w-3 mr-1" />
-                        Polecane
-                      </div>
-                    )}
-                    
-                    {/* Car type badge */}
-                    <div className={`absolute bottom-3 left-3 px-3 py-1 rounded-full text-sm font-medium ${
-                      car.type === 'new' ? 'bg-green-100 text-green-800' : 
-                      car.type === 'used' ? 'bg-purple-100 text-purple-800' : 
-                      'bg-blue-100 text-blue-800'
-                    }`}>
-                      {car.type === 'new' ? 'Nowy' : car.type === 'used' ? 'Używany' : 'Dostawczy'}
-                    </div>
                   </div>
-                  
-                  {/* Car details - clickable area */}
-                  <Link href={`/car/${car.id}`} className="p-6 flex-1 flex flex-col group">
-                    <div className="mb-4">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                        {car.brand} {car.model}
-                      </h3>
-                      {car.version && (
-                        <p className="text-blue-600 text-sm font-medium mb-2">{car.version}</p>
-                      )}
-                      <p className="text-gray-600 text-sm mb-3">{car.description}</p>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                      <div>
-                        <span className="text-gray-500">Rok:</span>
-                        <p className="font-medium">{car.year || 'N/A'}</p>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Przebieg:</span>
-                        <p className="font-medium">{car.mileage ? car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' km' : 'N/A'}</p>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Paliwo:</span>
-                        <p className="font-medium">{car.fuel}</p>
-                      </div>
-                      <div>
-                        <span className="text-gray-500">Moc:</span>
-                        <p className="font-medium">{car.power ? `${car.power} KM` : 'N/A'}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="mt-auto">
-                      <p className="text-2xl font-bold text-blue-600">
-                        {car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł
-                      </p>
+                  <Link href={`/car/${car.id}`} className="p-5 flex-1 flex flex-col group">
+                    <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600">{car.brand} {car.model}</h3>
+                    {car.version && <p className="text-blue-600 text-sm font-medium mb-1">{car.version}</p>}
+                    <p className="text-sm text-gray-600 line-clamp-2 mb-3">{car.description}</p>
+                    <div className="mt-auto flex items-center justify-between">
+                      <span className="text-xl font-bold text-blue-600">{car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł</span>
+                      <span className="text-xs text-gray-500">{car.year} • {car.mileage ? `${car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} km` : 'N/A'}</span>
                     </div>
                   </Link>
                 </div>
@@ -355,4 +480,12 @@ export default function InventoryPage() {
       </div>
     </Layout>
   )
-} 
+}
+
+export default function InventoryPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <InventoryContent />
+    </Suspense>
+  )
+}

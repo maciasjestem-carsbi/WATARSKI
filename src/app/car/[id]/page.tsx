@@ -2,57 +2,54 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Car, Phone, MapPin, Calendar, Zap, Fuel, Gauge, Star, ArrowLeft, ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Phone, Car, Calendar, Fuel, Cog, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import Layout from '@/components/layout'
 import type { CarData } from '@/lib/database-supabase'
 
-export default function CarDetailsPage() {
+export default function CarDetailPage() {
   const params = useParams()
+  const carId = params?.id as string
+  
   const [car, setCar] = useState<CarData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
-  const [showImageModal, setShowImageModal] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchCar = async () => {
+      if (!carId) return
+      
       try {
-        const carId = params.id as string
         const response = await fetch(`/api/cars/${carId}`)
-        
-        if (!response.ok) {
-          throw new Error('Car not found')
+        if (response.ok) {
+          const carData = await response.json()
+          setCar(carData)
+        } else {
+          setError('Samochód nie został znaleziony')
         }
-        
-        const carData = await response.json()
-        setCar(carData)
-      } catch (error) {
-        console.error('Error fetching car:', error)
-        setCar(null)
+      } catch (err) {
+        setError('Błąd podczas ładowania danych samochodu')
+        console.error('Error fetching car:', err)
       } finally {
         setLoading(false)
       }
     }
 
     fetchCar()
-  }, [params.id])
-
-  const getImages = () => {
-    if (!car) return []
-    return (car.images && car.images.length > 0) ? car.images : (car.imageUrl ? [car.imageUrl] : [])
-  }
-
-  const images = getImages()
-  const currentImage = images[selectedImageIndex]
+  }, [carId])
 
   const nextImage = () => {
-    setSelectedImageIndex((prev) => (prev + 1) % images.length)
+    if (car?.images && car.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % car.images!.length)
+    }
   }
 
   const prevImage = () => {
-    setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length)
+    if (car?.images && car.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev - 1 + car.images!.length) % car.images!.length)
+    }
   }
 
   if (loading) {
@@ -60,27 +57,26 @@ export default function CarDetailsPage() {
       <Layout>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Ładowanie...</p>
+            <Car className="h-12 w-12 text-blue-600 mx-auto mb-4 animate-pulse" />
+            <p className="text-lg text-gray-700">Ładowanie szczegółów samochodu...</p>
           </div>
         </div>
       </Layout>
     )
   }
 
-  if (!car) {
+  if (error || !car) {
     return (
       <Layout>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center">
           <div className="text-center">
-            <Car className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Samochód nie został znaleziony</h1>
-            <p className="text-gray-600 mb-4">Przepraszamy, ale nie mogliśmy znaleźć tego samochodu.</p>
+            <Car className="h-12 w-12 text-red-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Samochód nie został znaleziony</h1>
+            <p className="text-lg text-gray-700 mb-8">{error}</p>
             <Link href="/inventory">
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Wróć do listy samochodów
-              </Button>
+              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                Powrót do listy samochodów
+              </button>
             </Link>
           </div>
         </div>
@@ -88,234 +84,180 @@ export default function CarDetailsPage() {
     )
   }
 
+  const currentImage = car.images && car.images.length > 0 
+    ? car.images[currentImageIndex] 
+    : car.imageUrl || '/images/TC0861-t-roc-r-line-white-exterior-driving_crop-1.webp'
+
   return (
     <Layout>
-      {/* Breadcrumb */}
-      <div className="bg-gray-50 border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <Link href="/" className="hover:text-blue-600">Strona główna</Link>
-            <span>/</span>
-            <Link href="/inventory" className="hover:text-blue-600">Samochody</Link>
-            <span>/</span>
-            <span className="text-gray-900">{car.brand} {car.model}</span>
+      <div className="min-h-screen bg-white">
+        {/* Breadcrumb Navigation */}
+        <div className="bg-gray-50 py-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <nav className="flex items-center space-x-2 text-sm">
+              <Link href="/" className="text-gray-500 hover:text-gray-700">Strona główna</Link>
+              <span className="text-gray-400">/</span>
+              <Link href="/inventory" className="text-gray-500 hover:text-gray-700">Samochody</Link>
+              <span className="text-gray-400">/</span>
+              <span className="text-gray-900 font-medium">{car.brand} {car.model}</span>
+            </nav>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="min-h-screen bg-gray-50">
+        {/* Main Content */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Left Column - Images */}
-            <div className="space-y-6">
-              {/* Main Image */}
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                {currentImage ? (
-                  <div className="relative">
-                    <Image 
-                      src={currentImage}
-                      alt={`${car.brand} ${car.model}`}
-                      width={600}
-                      height={400}
-                      className="w-full h-[500px] object-cover cursor-pointer"
-                      onClick={() => setShowImageModal(true)}
-                    />
-                    {images.length > 1 && (
-                      <>
-                        <button
-                          onClick={prevImage}
-                          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
-                        >
-                          <ChevronLeft className="h-6 w-6" />
-                        </button>
-                        <button
-                          onClick={nextImage}
-                          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
-                        >
-                          <ChevronRight className="h-6 w-6" />
-                        </button>
-                        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-                          {selectedImageIndex + 1} / {images.length}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ) : (
-                  <div className="w-full h-[500px] bg-gray-200 flex items-center justify-center">
-                    <Car className="h-24 w-24 text-gray-400" />
-                  </div>
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Image Gallery */}
+            <div className="space-y-4">
+              <div className="relative overflow-hidden rounded-2xl shadow-xl bg-white aspect-square">
+                <Image
+                  src={currentImage}
+                  alt={`${car.brand} ${car.model}`}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                
+                {car.images && car.images.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevImage}
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-700 rounded-full p-3 transition-all duration-200 hover:scale-110 shadow-lg"
+                    >
+                      <ChevronLeft className="h-6 w-6" />
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-700 rounded-full p-3 transition-all duration-200 hover:scale-110 shadow-lg"
+                    >
+                      <ChevronRight className="h-6 w-6" />
+                    </button>
+                    
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                      {currentImageIndex + 1} / {car.images.length}
+                    </div>
+                  </>
                 )}
               </div>
-
-              {/* Thumbnail Gallery */}
-              {images.length > 1 && (
-                <div className="grid grid-cols-6 gap-3">
-                  {images.map((image, index) => (
-                    <div
+              
+              {/* Image Thumbnails */}
+              {car.images && car.images.length > 1 && (
+                <div className="grid grid-cols-4 gap-4">
+                  {car.images.slice(0, 4).map((image, index) => (
+                    <button
                       key={index}
-                      className={`relative cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
-                        index === selectedImageIndex ? 'border-blue-500 scale-105' : 'border-gray-200 hover:border-gray-300'
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`relative overflow-hidden rounded-xl aspect-square ${
+                        index === currentImageIndex ? 'ring-2 ring-blue-500' : ''
                       }`}
-                      onClick={() => setSelectedImageIndex(index)}
                     >
                       <Image
                         src={image}
-                        alt={`${car.brand} ${car.model} - zdjęcie ${index + 1}`}
-                        width={120}
-                        height={80}
-                        className="w-full h-24 object-cover"
+                        alt={`${car.brand} ${car.model}`}
+                        fill
+                        className="object-cover hover:scale-105 transition-transform duration-200"
                       />
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Right Column - Car Details */}
+            {/* Car Details */}
             <div className="space-y-8">
               {/* Header */}
-              <div className="bg-white rounded-2xl shadow-lg p-8">
-                <div className="flex items-center space-x-3 mb-6">
+              <div>
+                <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                  {car.brand} {car.model}
+                </h1>
+                <div className="flex items-center space-x-4 mb-6">
                   <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                    car.type === 'new' ? 'bg-green-100 text-green-800' :
-                    car.type === 'used' ? 'bg-purple-100 text-purple-800' :
+                    car.type === 'new' ? 'bg-green-100 text-green-800' : 
+                    car.type === 'used' ? 'bg-purple-100 text-purple-800' : 
                     'bg-blue-100 text-blue-800'
                   }`}>
                     {car.type === 'new' ? 'Nowy' : car.type === 'used' ? 'Używany' : 'Dostawczy'}
                   </span>
-                  {car.featured && (
-                    <span className="px-4 py-2 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">
-                      <Star className="h-4 w-4 inline mr-1" />
-                      Polecany
-                    </span>
-                  )}
                 </div>
-                <h1 className="text-5xl font-bold text-gray-900 mb-3">{car.brand} {car.model}</h1>
-                {car.version && car.version.trim() && (
-                  <p className="text-2xl text-blue-600 font-medium mb-4">{car.version}</p>
-                )}
-                <p className="text-4xl font-bold text-blue-600">{car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł</p>
+                <div className="text-4xl font-bold text-blue-600 mb-4">
+                  {car.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} zł
+                </div>
               </div>
 
-              {/* Key Specs */}
-              <div className="grid grid-cols-1 gap-6">
-                <div className="bg-white rounded-xl p-6 shadow-sm">
-                  <div className="flex items-center space-x-4 mb-3">
-                    <Calendar className="h-6 w-6 text-blue-600" />
-                    <span className="text-lg text-gray-600 font-medium">Rok produkcji</span>
+              {/* Specifications */}
+              <div className="grid grid-cols-2 gap-6 py-6 border-t border-b border-gray-200">
+                <div className="flex items-center space-x-3">
+                  <Calendar className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-500">Rok produkcji</p>
+                    <p className="font-semibold">{car.year}</p>
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">{car.year || 'N/A'}</p>
                 </div>
-                
-                <div className="bg-white rounded-xl p-6 shadow-sm">
-                  <div className="flex items-center space-x-4 mb-3">
-                    <Gauge className="h-6 w-6 text-green-600" />
-                    <span className="text-lg text-gray-600 font-medium">Przebieg</span>
+                <div className="flex items-center space-x-3">
+                  <Car className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-500">Przebieg</p>
+                    <p className="font-semibold">{car.mileage.toLocaleString()} km</p>
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">{car.mileage ? car.mileage.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' km' : 'N/A'}</p>
                 </div>
-                
-                <div className="bg-white rounded-xl p-6 shadow-sm">
-                  <div className="flex items-center space-x-4 mb-3">
-                    <Fuel className="h-6 w-6 text-orange-600" />
-                    <span className="text-lg text-gray-600 font-medium">Paliwo</span>
+                <div className="flex items-center space-x-3">
+                  <Fuel className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-500">Rodzaj paliwa</p>
+                    <p className="font-semibold">{car.fuel}</p>
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">{car.fuel}</p>
                 </div>
-                
-                <div className="bg-white rounded-xl p-6 shadow-sm">
-                  <div className="flex items-center space-x-4 mb-3">
-                    <Zap className="h-6 w-6 text-purple-600" />
-                    <span className="text-lg text-gray-600 font-medium">Moc</span>
+                <div className="flex items-center space-x-3">
+                  <Cog className="h-5 w-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-500">Moc</p>
+                    <p className="font-semibold">{car.power} KM</p>
                   </div>
-                  <p className="text-2xl font-bold text-gray-900">{car.power ? `${car.power} KM` : 'N/A'}</p>
                 </div>
               </div>
 
               {/* Description */}
-              <div className="bg-white rounded-xl p-8 shadow-sm">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Opis</h3>
-                <p className="text-lg text-gray-600 leading-relaxed">{car.description}</p>
-              </div>
-
-              {/* Contact & Actions */}
-              <div className="bg-white rounded-xl p-8 shadow-sm">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Interesuje Cię ten samochód?</h3>
-                <div className="space-y-4">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 py-5 text-xl font-semibold rounded-xl">
-                    <Phone className="h-6 w-6 mr-3" />
-                    Zadzwoń teraz
-                  </Button>
-                  <Button variant="outline" className="w-full py-5 text-xl font-semibold rounded-xl border-2">
-                    <MapPin className="h-6 w-6 mr-3" />
-                    Umów wizytę w salonie
-                  </Button>
+              {car.description && (
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Opis</h3>
+                  <p className="text-gray-700 leading-relaxed">{car.description}</p>
                 </div>
-              </div>
+              )}
 
-              {/* Contact Info */}
-              <div className="bg-blue-50 rounded-xl p-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Dane kontaktowe</h3>
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <Phone className="h-6 w-6 text-blue-600" />
-                    <span className="text-lg text-gray-700 font-medium">54 230 60 66</span>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <MapPin className="h-6 w-6 text-blue-600" />
-                    <span className="text-lg text-gray-700">ul. Toruńska 169, 87-800 Włocławek</span>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <Calendar className="h-6 w-6 text-blue-600" />
-                    <span className="text-lg text-gray-700">Pon-Pt: 8:00-17:00, Sob: 9:00-14:00</span>
-                  </div>
+              {/* Contact Section */}
+              <div className="bg-blue-50 rounded-2xl p-6">
+                <h3 className="text-xl font-semibold mb-4">Kontakt</h3>
+                <p className="text-gray-700 mb-4">Interesuje Cię ten samochód? Skontaktuj się z nami!</p>
+                <div className="flex items-center space-x-4">
+                  <a 
+                    href="tel:542306060" 
+                    className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    <Phone className="h-5 w-5" />
+                    <span>54 230 60 60</span>
+                  </a>
+                  <Link 
+                    href="/contact" 
+                    className="flex items-center space-x-2 bg-white text-blue-600 px-6 py-3 rounded-lg border-2 border-blue-600 hover:bg-blue-600 hover:text-white transition-colors"
+                  >
+                    <span>Zadaj pytanie</span>
+                  </Link>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Image Modal */}
-      {showImageModal && currentImage && (
-        <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4">
-          <div className="relative max-w-4xl max-h-full">
-            <button
-              onClick={() => setShowImageModal(false)}
-              className="absolute top-4 right-4 text-white hover:text-gray-300 z-10"
-            >
-              <X className="h-8 w-8" />
-            </button>
-            <Image
-              src={currentImage}
-              alt={`${car.brand} ${car.model}`}
-              width={800}
-              height={600}
-              className="max-w-full max-h-full object-contain"
-            />
-            {images.length > 1 && (
-              <>
-                <button
-                  onClick={prevImage}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition-colors"
-                >
-                  <ChevronLeft className="h-8 w-8" />
-                </button>
-                <button
-                  onClick={nextImage}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-3 rounded-full hover:bg-black/70 transition-colors"
-                >
-                  <ChevronRight className="h-8 w-8" />
-                </button>
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full">
-                  {selectedImageIndex + 1} / {images.length}
-                </div>
-              </>
-            )}
+          {/* Back Button */}
+          <div className="mt-8">
+            <Link href="/inventory">
+              <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors">
+                <ArrowLeft className="h-5 w-5" />
+                <span>Powrót do listy samochodów</span>
+              </button>
+            </Link>
           </div>
         </div>
-      )}
+      </div>
     </Layout>
   )
 }

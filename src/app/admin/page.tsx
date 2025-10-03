@@ -6,7 +6,7 @@ import { Car, Plus, Trash2, Edit, Star, Upload, Download, Link, Loader2, Home, A
 import ImageUpload from '@/components/ui/image-upload'
 import MultipleImageUpload from '@/components/ui/multiple-image-upload'
 import Logo from '@/components/logo'
-import type { CarData } from '@/lib/database'
+import type { CarData } from '@/lib/database-supabase'
 
 export default function AdminPage() {
   const [cars, setCars] = useState<CarData[]>([])
@@ -26,10 +26,13 @@ export default function AdminPage() {
     version: '',
     year: 0,
     mileage: 0,
-    fuel: 'Benzyna',
+    fuel: 'benzyna',
     power: 0,
+    engineCapacity: 0,
+    transmission: 'manualna',
     price: undefined,
     type: 'new',
+    vehicleType: 'osobowy',
     description: '',
     featured: false,
     images: []
@@ -134,10 +137,13 @@ export default function AdminPage() {
         version: newCar.version?.trim() || '',
         year: newCar.year || 0,
         mileage: newCar.mileage || 0,
-        fuel: newCar.fuel || 'Benzyna',
+        fuel: newCar.fuel || 'benzyna',
         power: newCar.power || 0,
+        engineCapacity: newCar.engineCapacity || 0,
+        transmission: newCar.transmission || 'manualna',
         price: newCar.price,
         type: newCar.type || 'new',
+        vehicleType: newCar.vehicleType || 'osobowy',
         description: newCar.description?.trim() || '',
         imageUrl: newCar.imageUrl,
         images: newCar.images || [],
@@ -168,10 +174,13 @@ export default function AdminPage() {
         version: '',
         year: 0,
         mileage: 0,
-        fuel: 'Benzyna',
+        fuel: 'benzyna',
         power: 0,
+        engineCapacity: 0,
+        transmission: 'manualna',
         price: undefined,
         type: 'new',
+        vehicleType: 'osobowy',
         description: '',
         featured: false,
         images: []
@@ -214,10 +223,13 @@ export default function AdminPage() {
         version: editingCar.version?.trim() || '',
         year: editingCar.year || 0,
         mileage: editingCar.mileage || 0,
-        fuel: editingCar.fuel || 'Benzyna',
+        fuel: editingCar.fuel || 'benzyna',
         power: editingCar.power || 0,
+        engineCapacity: editingCar.engineCapacity || 0,
+        transmission: editingCar.transmission || 'manualna',
         price: editingCar.price,
         type: editingCar.type || 'new',
+        vehicleType: editingCar.vehicleType || 'osobowy',
         description: editingCar.description?.trim() || '',
         imageUrl: editingCar.imageUrl,
         images: editingCar.images || [],
@@ -479,10 +491,11 @@ export default function AdminPage() {
                 onChange={(e) => setNewCar(prev => ({ ...prev, fuel: e.target.value }))}
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="Benzyna">Benzyna</option>
-                <option value="Diesel">Diesel</option>
-                <option value="Hybryda">Hybryda</option>
-                <option value="Elektryczny">Elektryczny</option>
+                <option value="benzyna">Benzyna</option>
+                <option value="diesel">Diesel</option>
+                <option value="hybryda">Hybryda</option>
+                <option value="elektryk">Elektryk</option>
+                <option value="lpg">LPG</option>
               </select>
               <input
                 type="number"
@@ -501,6 +514,22 @@ export default function AdminPage() {
                 min="0"
                 required
               />
+              <input
+                type="number"
+                placeholder="Pojemność silnika (cm³)"
+                value={newCar.engineCapacity || ''}
+                onChange={(e) => setNewCar(prev => ({ ...prev, engineCapacity: e.target.value ? parseInt(e.target.value) : undefined }))}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                min="0"
+              />
+              <select
+                value={newCar.transmission || 'manualna'}
+                onChange={(e) => setNewCar(prev => ({ ...prev, transmission: e.target.value }))}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="manualna">Manualna</option>
+                <option value="automatyczna">Automatyczna</option>
+              </select>
               <select
                 value={newCar.type || 'new'}
                 onChange={(e) => setNewCar(prev => ({ ...prev, type: e.target.value as 'new' | 'used' | 'delivery' }))}
@@ -509,6 +538,15 @@ export default function AdminPage() {
                 <option value="new">Nowy</option>
                 <option value="used">Używany</option>
                 <option value="delivery">Dostawczy</option>
+              </select>
+              <select
+                value={newCar.vehicleType || 'osobowy'}
+                onChange={(e) => setNewCar(prev => ({ ...prev, vehicleType: e.target.value as 'osobowy' | 'dostawczy' | 'certyfikowany' }))}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="osobowy">Osobowy</option>
+                <option value="dostawczy">Dostawczy</option>
+                <option value="certyfikowany">Certyfikowany</option>
               </select>
               <div className="flex items-center space-x-2">
                 <input
@@ -619,10 +657,11 @@ export default function AdminPage() {
                 onChange={(e) => setEditingCar(prev => prev ? { ...prev, fuel: e.target.value } : null)}
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="Benzyna">Benzyna</option>
-                <option value="Diesel">Diesel</option>
-                <option value="Hybryda">Hybryda</option>
-                <option value="Elektryczny">Elektryczny</option>
+                <option value="benzyna">Benzyna</option>
+                <option value="diesel">Diesel</option>
+                <option value="hybryda">Hybryda</option>
+                <option value="elektryk">Elektryk</option>
+                <option value="lpg">LPG</option>
               </select>
               <input
                 type="number"
@@ -641,6 +680,22 @@ export default function AdminPage() {
                 min="0"
                 required
               />
+              <input
+                type="number"
+                placeholder="Pojemność silnika (cm³)"
+                value={editingCar.engineCapacity || ''}
+                onChange={(e) => setEditingCar(prev => prev ? { ...prev, engineCapacity: e.target.value ? parseInt(e.target.value) : 0 } : null)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                min="0"
+              />
+              <select
+                value={editingCar.transmission || 'manualna'}
+                onChange={(e) => setEditingCar(prev => prev ? { ...prev, transmission: e.target.value } : null)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="manualna">Manualna</option>
+                <option value="automatyczna">Automatyczna</option>
+              </select>
               <select
                 value={editingCar.type || 'new'}
                 onChange={(e) => setEditingCar(prev => prev ? { ...prev, type: e.target.value as 'new' | 'used' | 'delivery' } : null)}
@@ -649,6 +704,15 @@ export default function AdminPage() {
                 <option value="new">Nowy</option>
                 <option value="used">Używany</option>
                 <option value="delivery">Dostawczy</option>
+              </select>
+              <select
+                value={editingCar.vehicleType || 'osobowy'}
+                onChange={(e) => setEditingCar(prev => prev ? { ...prev, vehicleType: e.target.value as 'osobowy' | 'dostawczy' | 'certyfikowany' } : null)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="osobowy">Osobowy</option>
+                <option value="dostawczy">Dostawczy</option>
+                <option value="certyfikowany">Certyfikowany</option>
               </select>
               <div className="flex items-center space-x-2">
                 <input
@@ -737,6 +801,15 @@ export default function AdminPage() {
                     Typ
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Rodzaj pojazdu
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Paliwo
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Skrzynia
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Polecany
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -802,6 +875,27 @@ export default function AdminPage() {
                         'bg-blue-100 text-blue-800'
                       }`}>
                         {car.type === 'new' ? 'Nowy' : car.type === 'used' ? 'Używany' : 'Dostawczy'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                        car.vehicleType === 'osobowy' ? 'bg-blue-100 text-blue-800' :
+                        car.vehicleType === 'dostawczy' ? 'bg-orange-100 text-orange-800' :
+                        'bg-purple-100 text-purple-800'
+                      }`}>
+                        {car.vehicleType === 'osobowy' ? 'Osobowy' :
+                         car.vehicleType === 'dostawczy' ? 'Dostawczy' :
+                         'Certyfikowany'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded">
+                        {car.fuel?.charAt(0).toUpperCase() + car.fuel?.slice(1) || '-'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded">
+                        {car.transmission?.charAt(0).toUpperCase() + car.transmission?.slice(1) || '-'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

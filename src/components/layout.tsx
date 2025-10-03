@@ -1,6 +1,6 @@
 import { Car, Phone, MapPin, Clock, Mail, Facebook, Instagram } from 'lucide-react'
 import Link from 'next/link'
-import { ReactNode } from 'react'
+import { ReactNode, useState } from 'react'
 import Logo from './logo'
 
 interface LayoutProps {
@@ -21,16 +21,31 @@ export default function Layout({ children }: LayoutProps) {
                 </div>
               </Link>
             </div>
-            <nav className="hidden md:flex space-x-8">
+            <nav className="hidden md:flex items-center space-x-8">
               <Link href="/" className="text-gray-900 hover:text-blue-600 transition-colors font-medium">Strona główna</Link>
-              <Link href="/inventory" className="text-gray-900 hover:text-blue-600 transition-colors font-medium">Samochody</Link>
-              <Link href="/service" className="text-gray-900 hover:text-blue-600 transition-colors font-medium">Serwis</Link>
-              <Link href="/contact" className="text-gray-900 hover:text-blue-600 transition-colors font-medium">Kontakt</Link>
+
+              {/* Samochody dropdown */}
+              <div className="relative group">
+                <Link href="/inventory" className="text-gray-900 hover:text-blue-600 transition-colors font-medium inline-flex items-center">
+                  Samochody
+                  <svg className="ml-1 h-4 w-4 transition-transform group-hover:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 111.02 1.1l-4.22 3.815a.75.75 0 01-1.02 0L5.21 8.33a.75.75 0 01.02-1.12z" clipRule="evenodd" />
+                  </svg>
+                </Link>
+                <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-150 absolute left-0 mt-2 w-56 rounded-lg border border-gray-200 bg-white shadow-lg py-2">
+                  <Link href="/inventory?type=new&segment=osobowe" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Nowe osobowe</Link>
+                  <Link href="/inventory?type=new&segment=dostawcze" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Nowe dostawcze</Link>
+                  <Link href="/inventory?segment=certyfikowane" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Certyfikowane Używane</Link>
+                </div>
+              </div>
+
+              <Link href="/service" className="text-gray-900 hover:text-blue-600 transition-colors font-medium">Usługi</Link>
+              <Link href="/contact" className="text-gray-900 hover:text-blue-600 transition-colors font-medium">O nas</Link>
             </nav>
             <div className="flex items-center space-x-4">
               <div className="hidden lg:flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-full">
                 <Phone className="h-4 w-4 text-blue-600" />
-                <span className="text-sm font-semibold text-blue-900">54 230 60 66</span>
+                <span className="text-sm font-semibold text-blue-900">54 230 60 60</span>
               </div>
             </div>
           </div>
@@ -64,7 +79,7 @@ export default function Layout({ children }: LayoutProps) {
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
                   <Phone className="h-4 w-4 text-blue-400" />
-                  <span className="text-sm">54 230 60 66</span>
+                  <span className="text-sm">54 230 60 60</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="h-4 w-4 text-blue-400" />
@@ -100,10 +115,10 @@ export default function Layout({ children }: LayoutProps) {
                   Samochody
                 </Link>
                 <Link href="/service" className="block text-sm text-gray-400 hover:text-white transition-colors">
-                  Serwis
+                  Usługi
                 </Link>
                 <Link href="/contact" className="block text-sm text-gray-400 hover:text-white transition-colors">
-                  Kontakt
+                  O nas
                 </Link>
               </div>
             </div>
