@@ -231,7 +231,7 @@ function InventoryContent() {
                     viewBox="0 0 20 20" 
                     fill="currentColor"
                   >
-                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 111.02 1.1l-4.22 3.815a.75.75 0 01-1.02 0L5.21 4.33a.75.75 0 01.02-1.12z" clipRule="evenodd" />
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 111.02 1.1l-4.22 3.815a.75.75 0 01-1.02 0L5.21 8.33a.75.75 0 01.02-1.12z" clipRule="evenodd" />
                   </svg>
                 </button>
                 {openDropdowns.brand && (
@@ -287,7 +287,7 @@ function InventoryContent() {
                     viewBox="0 0 20 20" 
                     fill="currentColor"
                   >
-                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 111.02 1.1l-4.22 3.815a.75.75 0 01-1.02 0L5.21 4.33a.75.75 0 01.02-1.12z" clipRule="evenodd" />
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 111.02 1.1l-4.22 3.815a.75.75 0 01-1.02 0L5.21 8.33a.75.75 0 01.02-1.12z" clipRule="evenodd" />
                   </svg>
                 </button>
                 {openDropdowns.type && (
@@ -333,7 +333,7 @@ function InventoryContent() {
                     viewBox="0 0 20 20" 
                     fill="currentColor"
                   >
-                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 111.02 1.1l-4.22 3.815a.75.75 0 01-1.02 0L5.21 4.33a.75.75 0 01.02-1.12z" clipRule="evenodd" />
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 111.02 1.1l-4.22 3.815a.75.75 0 01-1.02 0L5.21 8.33a.75.75 0 01.02-1.12z" clipRule="evenodd" />
                   </svg>
                 </button>
                 {openDropdowns.fuel && (
@@ -391,7 +391,7 @@ function InventoryContent() {
                     viewBox="0 0 20 20" 
                     fill="currentColor"
                   >
-                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 111.02 1.1l-4.22 3.815a.75.75 0 01-1.02 0L5.21 4.33a.75.75 0 01.02-1.12z" clipRule="evenodd" />
+                    <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.585l3.71-3.354a.75.75 0 111.02 1.1l-4.22 3.815a.75.75 0 01-1.02 0L5.21 8.33a.75.75 0 01.02-1.12z" clipRule="evenodd" />
                   </svg>
                 </button>
                 {openDropdowns.transmission && (
