@@ -33,9 +33,9 @@ export default function Layout({ children }: LayoutProps) {
                   </svg>
                 </Link>
                 <div className="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-all duration-150 absolute left-0 mt-2 w-56 rounded-lg border border-gray-200 bg-white shadow-lg py-2">
-                  <Link href="/inventory?type=new&segment=osobowe" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Nowe osobowe</Link>
-                  <Link href="/inventory?type=new&segment=dostawcze" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Nowe dostawcze</Link>
-                  <Link href="/inventory?segment=certyfikowane" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Certyfikowane Używane</Link>
+                  <Link href="/inventory?type=osobowe" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Nowe osobowe</Link>
+                  <Link href="/inventory?type=dostawcze" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Nowe dostawcze</Link>
+                  <Link href="/inventory?type=certyfikowane" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Certyfikowane Używane</Link>
                 </div>
               </div>
 

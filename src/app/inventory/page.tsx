@@ -118,12 +118,12 @@ function InventoryContent() {
       newFilters.brand = [brandParam]
     }
     
-    // Handle type/segment filters 
-    if (segmentParam === 'osobowe' || typeParam === 'new') {
+    // Handle type filters 
+    if (typeParam === 'osobowe') {
       newFilters.type = ['osobowe']
-    } else if (segmentParam === 'dostawcze') {
+    } else if (typeParam === 'dostawcze') {
       newFilters.type = ['dostawcze']
-    } else if (segmentParam === 'certyfikowane') {
+    } else if (typeParam === 'certyfikowane') {
       newFilters.type = ['certyfikowane']
     }
     
