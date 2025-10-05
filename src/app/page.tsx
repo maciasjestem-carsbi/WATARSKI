@@ -216,7 +216,7 @@ export default function HomePage() {
                    <Link href="/inventory" className="md:col-span-5">
                      <Button
                        size="lg"
-                       className="w-full rounded-full bg-white text-blue-700 hover:bg-blue-50 shadow-xl font-semibold px-12 py-6 text-xl md:text-3xl flex items-center justify-center whitespace-normal text-center"
+                       className="w-full rounded-xl bg-white text-blue-800 hover:bg-blue-50 shadow-xl font-semibold px-12 py-6 text-xl md:text-3xl flex items-center justify-center whitespace-normal text-center"
                      >
                        <span className="mr-3">Przeglądaj samochody</span>
                        <ArrowRight className="h-7 w-7" />

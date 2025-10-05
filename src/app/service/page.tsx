@@ -9,9 +9,9 @@ export default function ServicePage() {
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4">Serwis</h1>
+            <h1 className="text-4xl font-bold mb-4">Nasze usługi</h1>
             <p className="text-xl text-blue-100">
-              Autoryzowany serwis Volkswagen i Skoda - profesjonalna obsługa
+              Oferujemy kompleksowe usługi serwisowe dla wszystkich marek
             </p>
           </div>
         </div>
@@ -20,12 +20,12 @@ export default function ServicePage() {
       {/* Services Grid */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          {/* <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Nasze usługi</h2>
             <p className="text-lg text-gray-600">
               Oferujemy kompleksowe usługi serwisowe dla wszystkich marek samochodów
             </p>
-          </div>
+          </div> */}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Mechanical Service */}
@@ -65,7 +65,7 @@ export default function ServicePage() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">Gwarancja marki</h3>
               <p className="text-gray-600 mb-6">
-                Autoryzowany serwis Volkswagen i Skoda z pełną gwarancją marki. 
+                Autoryzowany serwis marek Volkswagen, Skoda, Cupra i Seat z pełną gwarancją marki. 
                 Oryginalne części i profesjonalna obsługa.
               </p>
               <ul className="text-left space-y-2 text-sm text-gray-600">
