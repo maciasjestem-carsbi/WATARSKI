@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Car, Wrench, Phone, MapPin, Clock, Users, Shield, Star, ArrowRight, CheckCircle, Award, Zap, Search, Filter, Calendar, CreditCard, Truck, Car as CarIcon, ChevronRight, Play, WrenchIcon } from 'lucide-react'
 import Link from 'next/link'
@@ -9,6 +10,7 @@ import Layout from '@/components/layout'
 import type { CarData } from '@/lib/database-supabase'
 
 export default function HomePage() {
+  const router = useRouter()
   const [featuredCars, setFeaturedCars] = useState<CarData[]>([])
   const [latestCars, setLatestCars] = useState<CarData[]>([])
   const [loading, setLoading] = useState(true)
@@ -139,15 +141,7 @@ export default function HomePage() {
     // Handle multiple type selections
     if (searchFilters.type.length > 0) {
       searchFilters.type.forEach(type => {
-        if (type === 'osobowe') {
-          params.append('type', 'new')
-          params.append('segment', 'osobowe')
-        } else if (type === 'dostawcze') {
-          params.append('type', 'new')
-          params.append('segment', 'dostawcze')
-        } else if (type === 'certyfikowane') {
-          params.append('segment', 'certyfikowane')
-        }
+        params.append('type', type)
       })
     }
     
@@ -162,7 +156,7 @@ export default function HomePage() {
     }
     
     const searchUrl = `/inventory${params.toString() ? `?${params.toString()}` : ''}`
-    window.location.href = searchUrl
+    router.push(searchUrl)
   }
 
   if (loading) {
@@ -694,7 +688,7 @@ export default function HomePage() {
       </section>
 
       {/* Services Section - Professional Design */}
-      <section className="py-24 bg-gradient-to-br from-slate-50 to-blue-50">
+      <section className="py-12 bg-gradient-to-br from-slate-50 to-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
@@ -757,7 +751,7 @@ export default function HomePage() {
       </section>
 
       {/* Stats Section - Professional Design */}
-      <section className="py-24 bg-gradient-to-br from-white to-slate-50">
+      <section className="py-12 bg-gradient-to-br from-white to-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
